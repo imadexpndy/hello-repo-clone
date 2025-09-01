@@ -13,7 +13,14 @@ export const ProtectedRoute = ({ children, requiredRole, allowedRoles }: Protect
 
   // Check for admin bypass first
   const adminBypass = localStorage.getItem('admin_bypass');
-  if (adminBypass === 'true') {
+  const adminAccess = sessionStorage.getItem('adminAccess');
+  const adminTimestamp = sessionStorage.getItem('adminTimestamp');
+  const currentTime = Date.now();
+  
+  // Check if admin access is valid (within 1 hour)
+  if (adminBypass === 'true' || 
+      (adminAccess === 'true' && adminTimestamp && 
+       (currentTime - parseInt(adminTimestamp)) < 3600000)) {
     return <>{children}</>;
   }
 
