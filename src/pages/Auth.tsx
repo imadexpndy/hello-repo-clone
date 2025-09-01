@@ -31,14 +31,27 @@ const Auth = () => {
     // Check URL parameters to set initial mode
     const urlParams = new URLSearchParams(window.location.search);
     const modeParam = urlParams.get('mode');
+    const adminParam = urlParams.get('admin');
+    
     if (modeParam === 'register') {
       setMode('register');
-    } else if (modeParam === 'admin') {
+    } else if (modeParam === 'admin' || adminParam === 'true') {
       setMode('login');
       // Focus on admin login
       setEmail('admin@edjs.art');
+      
+      // Check if admin access is granted
+      const adminAccess = sessionStorage.getItem('adminAccess');
+      const adminTimestamp = sessionStorage.getItem('adminTimestamp');
+      const currentTime = Date.now();
+      
+      // If admin access is valid (within 1 hour), redirect to admin
+      if (adminAccess === 'true' && adminTimestamp && 
+          (currentTime - parseInt(adminTimestamp)) < 3600000) {
+        navigate('/admin');
+      }
     }
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     if (user) {
