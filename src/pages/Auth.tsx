@@ -33,6 +33,10 @@ const Auth = () => {
     const modeParam = urlParams.get('mode');
     if (modeParam === 'register') {
       setMode('register');
+    } else if (modeParam === 'admin') {
+      setMode('login');
+      // Focus on admin login
+      setEmail('admin@edjs.art');
     }
   }, []);
 
