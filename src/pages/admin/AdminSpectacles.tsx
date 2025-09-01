@@ -321,7 +321,94 @@ export default function AdminSpectacles() {
     >
       {/* Search */}
       <Card className="mb-6">
-...
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Search className="h-5 w-5" />
+            Rechercher des spectacles
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Input
+            placeholder="Rechercher par titre ou description..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="max-w-md"
+          />
+        </CardContent>
+      </Card>
+
+      {/* Spectacles Table */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Liste des Spectacles</CardTitle>
+          <CardDescription>
+            {filteredSpectacles.length} spectacle(s) trouvé(s)
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {loading ? (
+            <div className="flex justify-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Titre</TableHead>
+                  <TableHead>Description</TableHead>
+                  <TableHead>Niveaux</TableHead>
+                  <TableHead>Âge</TableHead>
+                  <TableHead>Durée</TableHead>
+                  <TableHead>Prix</TableHead>
+                  <TableHead>Statut</TableHead>
+                  <TableHead>Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredSpectacles.map((spectacle) => (
+                  <TableRow key={spectacle.id}>
+                    <TableCell className="font-medium">{spectacle.title}</TableCell>
+                    <TableCell className="max-w-xs truncate">
+                      {spectacle.description || 'Aucune description'}
+                    </TableCell>
+                    <TableCell>{spectacle.level_range || 'Non spécifié'}</TableCell>
+                    <TableCell>
+                      {spectacle.age_range_min && spectacle.age_range_max 
+                        ? `${spectacle.age_range_min}-${spectacle.age_range_max} ans`
+                        : 'Non spécifié'
+                      }
+                    </TableCell>
+                    <TableCell>{spectacle.duration_minutes ? `${spectacle.duration_minutes} min` : 'Non spécifié'}</TableCell>
+                    <TableCell>{spectacle.price}€</TableCell>
+                    <TableCell>
+                      <Badge variant={spectacle.is_active ? 'default' : 'secondary'}>
+                        {spectacle.is_active ? 'Actif' : 'Inactif'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex space-x-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEdit(spectacle)}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDelete(spectacle.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
+        </CardContent>
       </Card>
     </DashboardLayout>
   );
