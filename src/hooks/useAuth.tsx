@@ -105,10 +105,31 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     // Check for admin bypass first
     const adminBypass = localStorage.getItem('admin_bypass');
     const adminUser = localStorage.getItem('admin_user');
+    const adminAccess = sessionStorage.getItem('adminAccess');
+    const adminTimestamp = sessionStorage.getItem('adminTimestamp');
+    const currentTime = Date.now();
     
-    if (adminBypass === 'true' && adminUser) {
+    // Check if admin access is valid (within 1 hour)
+    if ((adminBypass === 'true' && adminUser) || 
+        (adminAccess === 'true' && adminTimestamp && 
+         (currentTime - parseInt(adminTimestamp)) < 3600000)) {
       try {
-        const bypassProfile = JSON.parse(adminUser);
+        let bypassProfile;
+        if (adminUser) {
+          bypassProfile = JSON.parse(adminUser);
+        } else {
+          // Create a default admin profile for session-based access
+          bypassProfile = {
+            id: 'admin-session',
+            user_id: 'admin-session',
+            email: 'admin@edjs.art',
+            first_name: 'Admin',
+            last_name: 'EDJS',
+            full_name: 'Admin EDJS',
+            name: 'Admin EDJS'
+          };
+        }
+        
         setProfile({
           ...bypassProfile,
           role: 'admin_full' as Profile['role']
