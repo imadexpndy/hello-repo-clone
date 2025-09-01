@@ -11,6 +11,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Unauthorized from "./pages/Unauthorized";
 import AdminDashboard from "./pages/dashboards/AdminDashboard";
+import AdminSpectacles from "./pages/admin/AdminSpectacles";
 import AdminSessions from "./pages/admin/AdminSessions";
 import AdminApiKeys from "./pages/admin/AdminApiKeys";
 import AdminUsers from "./pages/admin/AdminUsers";
@@ -95,7 +96,7 @@ const App = () => {
                 path="/admin/spectacles" 
                 element={
                   <ProtectedRoute allowedRoles={['super_admin', 'admin_full', 'admin_spectacles', 'admin_schools', 'admin_partners', 'admin_support', 'admin_notifications', 'admin_editor']}>
-                    <AdminDashboard />
+                    <AdminSpectacles />
                   </ProtectedRoute>
                 } 
               />
