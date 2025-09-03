@@ -59,11 +59,18 @@ const Auth = () => {
       const urlParams = new URLSearchParams(window.location.search);
       const returnUrl = urlParams.get('return_url');
       
+      console.log('Auth useEffect - Current URL:', window.location.href);
+      console.log('Auth useEffect - return_url parameter:', returnUrl);
+      console.log('Auth useEffect - User:', user.email);
+      
       if (returnUrl) {
+        console.log('Auth useEffect - Redirecting back to EDJS');
         // User came from EDJS - redirect back immediately
         const decodedReturnUrl = decodeURIComponent(returnUrl);
         const separator = decodedReturnUrl.includes('?') ? '&' : '?';
         const redirectUrl = `${decodedReturnUrl}${separator}logged_in=true&user_email=${encodeURIComponent(user.email || '')}&user_name=${encodeURIComponent(user.user_metadata?.full_name || user.email || '')}`;
+        
+        console.log('Auth useEffect - Redirect URL:', redirectUrl);
         
         toast({
           title: "Connexion réussie",
@@ -76,6 +83,7 @@ const Auth = () => {
         return;
       }
       
+      console.log('Auth useEffect - No return_url, proceeding with normal flow');
       checkUserConsent();
     }
   }, [user]);

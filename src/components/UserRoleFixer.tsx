@@ -11,6 +11,9 @@ export const UserRoleFixer = () => {
       const urlParams = new URLSearchParams(window.location.search);
       const returnUrl = urlParams.get('return_url');
       
+      console.log('UserRoleFixer - Current URL:', window.location.href);
+      console.log('UserRoleFixer - return_url parameter:', returnUrl);
+      
       if (returnUrl) {
         console.log('Skipping role fixing - user came from EDJS');
         return;
