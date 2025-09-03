@@ -21,18 +21,40 @@ const AuthStatus = () => {
           timestamp: new Date().toISOString()
         };
 
-        // Execute JSONP callback immediately
+        // Execute JSONP callback using postMessage to parent window
         try {
-          const callbackFn = (window as any)[callback];
-          if (typeof callbackFn === 'function') {
-            callbackFn(authData);
-          } else {
-            // Fallback: create and execute script
-            const script = document.createElement('script');
-            script.textContent = `if(typeof ${callback} === 'function') ${callback}(${JSON.stringify(authData)});`;
-            document.head.appendChild(script);
-            setTimeout(() => document.head.removeChild(script), 100);
+          // Try direct callback first
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage({
+              type: 'AUTH_STATUS_RESPONSE',
+              callback: callback,
+              data: authData
+            }, '*');
           }
+          
+          // Also try the traditional JSONP approach
+          const script = document.createElement('script');
+          script.textContent = `
+            try {
+              if (typeof ${callback} === 'function') {
+                ${callback}(${JSON.stringify(authData)});
+              } else if (window.parent && window.parent !== window) {
+                window.parent.postMessage({
+                  type: 'JSONP_CALLBACK',
+                  callback: '${callback}',
+                  data: ${JSON.stringify(authData)}
+                }, '*');
+              }
+            } catch(e) {
+              console.error('JSONP callback error:', e);
+            }
+          `;
+          document.head.appendChild(script);
+          setTimeout(() => {
+            try {
+              document.head.removeChild(script);
+            } catch(e) {}
+          }, 1000);
         } catch (error) {
           console.error('JSONP callback error:', error);
         }
