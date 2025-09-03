@@ -1,9 +1,4 @@
 {
-  "functions": {
-    "api/auth/status.js": {
-      "runtime": "nodejs18.x"
-    }
-  },
   "rewrites": [
     {
       "source": "/(.*)",
