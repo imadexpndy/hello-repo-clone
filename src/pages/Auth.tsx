@@ -55,6 +55,27 @@ const Auth = () => {
 
   useEffect(() => {
     if (user) {
+      // Check if we have a return_url - if so, skip profile checks and redirect back to EDJS
+      const urlParams = new URLSearchParams(window.location.search);
+      const returnUrl = urlParams.get('return_url');
+      
+      if (returnUrl) {
+        // User came from EDJS - redirect back immediately
+        const decodedReturnUrl = decodeURIComponent(returnUrl);
+        const separator = decodedReturnUrl.includes('?') ? '&' : '?';
+        const redirectUrl = `${decodedReturnUrl}${separator}logged_in=true&user_email=${encodeURIComponent(user.email || '')}&user_name=${encodeURIComponent(user.user_metadata?.full_name || user.email || '')}`;
+        
+        toast({
+          title: "Connexion réussie",
+          description: "Redirection vers EDJS...",
+        });
+        
+        setTimeout(() => {
+          window.location.href = redirectUrl;
+        }, 1000);
+        return;
+      }
+      
       checkUserConsent();
     }
   }, [user]);
