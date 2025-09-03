@@ -23,8 +23,9 @@ const AuthStatus = () => {
 
         // Execute JSONP callback immediately
         try {
-          if (window[callback as any]) {
-            window[callback as any](authData);
+          const callbackFn = (window as any)[callback];
+          if (typeof callbackFn === 'function') {
+            callbackFn(authData);
           } else {
             // Fallback: create and execute script
             const script = document.createElement('script');
