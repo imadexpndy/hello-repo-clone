@@ -43,6 +43,7 @@ import NotFound from "./pages/NotFound";
 import { Privacy } from "./pages/Privacy";
 import { Terms } from "./pages/Terms";
 import { healthCheck } from "./pages/api/health";
+import AuthPero from "./pages/AuthPero";
 
 const queryClient = new QueryClient();
 
@@ -75,8 +76,9 @@ const App = () => {
           <UserRoleFixer />
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Index />} />
+              <Route path="/" element={<Auth />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/auth-pero" element={<AuthPero />} />
               <Route path="/unauthorized" element={<Unauthorized />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/privacy" element={<Privacy />} />
