@@ -7,7 +7,7 @@ export const realSpectaclesData = [
     description: "L'histoire touchante de Charlotte, une petite fille qui découvre la force de l'amitié et du courage. Un spectacle émouvant sur la résilience et l'espoir qui explore les thèmes de l'amitié et de la détermination.",
     duration: 50,
     price_individual: 80,
-    main_image_url: "/Users/Imad/Downloads/edjs-site1/assets/edjs img/Casse-Noisette_Web_007.webp",
+    poster_url: "https://edjs.art/assets/edjs%20img/Casse-Noisette_Web_007.webp",
     gallery_images: [
       "/Users/Imad/Downloads/edjs-site1/assets/edjs img/Casse-Noisette_Web_007.webp",
       "/Users/Imad/Downloads/edjs-site1/assets/edjs img/Casse-Noisette_Web_013-1024x683.webp",
@@ -37,7 +37,7 @@ export const realSpectaclesData = [
     price_individual: 90,
     price_group: 80,
     price_school: 70,
-    main_image_url: "assets/img/spectacles/tara sur la lune.png",
+    poster_url: "https://edjs.art/assets/img/spectacles/tara%20sur%20la%20lune.png",
     video_url: "",
     synopsis: "Une aventure spatiale musicale bilingue qui emmène les enfants dans un voyage extraordinaire à travers l'espace et l'imagination. Tara découvre les merveilles de l'univers dans cette production captivante. Catégorie: Musical, Lieu: Théâtre Mohammed V, Dates: Nov - Déc 2025"
   },
@@ -52,7 +52,7 @@ export const realSpectaclesData = [
     price_individual: 85,
     price_group: 75,
     price_school: 65,
-    main_image_url: "assets/img/spectacles/l'eau la.png",
+    poster_url: "https://edjs.art/assets/img/spectacles/l'eau%20la.png",
     video_url: "",
     synopsis: "Un spectacle poétique et rafraîchissant porté par la voix de Zaz, explorant la beauté et l'importance de l'eau dans nos vies et notre environnement. Une sensibilisation écologique à travers l'art. Catégorie: Poétique, Lieu: Centre Culturel Sidi Belyout, Dates: Jan - Fév 2026"
   },
@@ -67,7 +67,7 @@ export const realSpectaclesData = [
     price_individual: 75,
     price_group: 65,
     price_school: 55,
-    main_image_url: "assets/img/spectacles/enfant de l'arbre.png",
+    poster_url: "https://edjs.art/assets/img/spectacles/enfant%20de%20l'arbre.png",
     video_url: "",
     synopsis: "Un conte poétique sur la relation entre l'homme et la nature, racontant l'histoire d'un enfant qui grandit avec un arbre centenaire. Une fable écologique touchante. Catégorie: Conte Écologique, Lieu: Théâtre National, Dates: Mar - Avr 2026"
   },
@@ -82,7 +82,7 @@ export const realSpectaclesData = [
     price_individual: 95,
     price_group: 85,
     price_school: 75,
-    main_image_url: "assets/img/spectacles/alice chez le .png",
+    poster_url: "https://edjs.art/assets/img/spectacles/alice%20chez%20le%20.png",
     video_url: "",
     synopsis: "Une adaptation moderne et créative du classique de Lewis Carroll, plongeant Alice et le public dans un monde fantastique rempli de surprises, de personnages colorés et d'aventures extraordinaires. Catégorie: Conte Fantastique, Lieu: Opéra de Casablanca, Dates: Déc 2025"
   },
@@ -97,7 +97,7 @@ export const realSpectaclesData = [
     price_individual: 85,
     price_group: 75,
     price_school: 65,
-    main_image_url: "assets/img/spectacles/petite prince.png",
+    poster_url: "https://edjs.art/assets/img/spectacles/petite%20prince.png",
     video_url: "",
     synopsis: "L'adaptation en arabe du chef-d'œuvre de Saint-Exupéry, une histoire poétique universelle sur l'amitié, l'amour et les valeurs humaines essentielles. Une production bilingue touchante. Catégorie: Conte Musical Arabe, Lieu: Théâtre Mohammed V, Dates: Fév - Mar 2026"
   },
@@ -112,7 +112,7 @@ export const realSpectaclesData = [
     price_individual: 70,
     price_group: 60,
     price_school: 50,
-    main_image_url: "assets/img/spectacles/simple.png",
+    poster_url: "https://edjs.art/assets/img/spectacles/simple.png",
     video_url: "",
     synopsis: "Un spectacle joyeux et interactif de Jacques Serres, célébrant la simplicité des petits bonheurs quotidiens avec musique, chants et sourires. Une ode à la joie de vivre. Catégorie: Musical, Lieu: Centre Culturel Sidi Belyout, Dates: Avr - Mai 2026"
   },
@@ -127,7 +127,7 @@ export const realSpectaclesData = [
     price_individual: 100,
     price_group: 90,
     price_school: 80,
-    main_image_url: "assets/img/spectacles/estavine.png",
+    poster_url: "https://edjs.art/assets/img/spectacles/estavine.png",
     video_url: "",
     synopsis: "Une pièce contemporaine explorant les rencontres entre différentes cultures, comme les eaux qui se mélangent dans un estuaire. Une réflexion sur l'identité et l'appartenance. Catégorie: Théâtre Contemporain, Lieu: Institut Français, Dates: Mai - Juin 2026"
   },
@@ -142,7 +142,7 @@ export const realSpectaclesData = [
     price_individual: 110,
     price_group: 100,
     price_school: 90,
-    main_image_url: "assets/img/spectacles/antigone.png",
+    poster_url: "https://edjs.art/assets/img/spectacles/antigone.png",
     video_url: "",
     synopsis: "La tragédie intemporelle de Sophocle adaptée pour les jeunes spectateurs. Une œuvre puissante sur la résistance, le courage et les valeurs morales face à la tyrannie. Catégorie: Tragédie Classique, Lieu: Théâtre National, Dates: Mars - Avril 2025"
   },
@@ -157,7 +157,7 @@ export const realSpectaclesData = [
     price_individual: 120,
     price_group: 110,
     price_school: 100,
-    main_image_url: "assets/img/spectacles/casse-noisette.png",
+    poster_url: "https://edjs.art/assets/img/spectacles/casse-noisette.png",
     video_url: "",
     synopsis: "Le célèbre ballet de Tchaïkovski adapté pour les jeunes spectateurs, une féerie musicale et visuelle qui transporte les enfants dans un monde magique de Noël. Catégorie: Ballet Musical, Lieu: Opéra de Casablanca, Dates: Décembre 2025 - Jan 2026"
   }
@@ -210,7 +210,7 @@ export async function seedRealSpectacles() {
             price: spectacle.price_individual || 50,
             age_range_min: spectacle.age_range_min || 4,
             age_range_max: spectacle.age_range_max || 16,
-            poster_url: spectacle.main_image_url || '',
+            poster_url: spectacle.poster_url || '',
             is_active: true
           }])
           .select()
