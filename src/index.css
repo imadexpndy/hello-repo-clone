@@ -121,4 +121,25 @@ All colors MUST be HSL.
     font-family: 'Amatic SC', cursive;
     font-weight: 700;
   }
+
+  /* Ensure all text elements use Raleway by default */
+  p, span, div, label, input, textarea, select, button {
+    font-family: 'Raleway', sans-serif;
+  }
+
+  /* Force headings and titles to use Amatic SC */
+  .card-title, .dialog-title, .sheet-title, .alert-dialog-title {
+    font-family: 'Amatic SC', cursive;
+    font-weight: 700;
+  }
+
+  /* Override any conflicting font styles */
+  .font-heading {
+    font-family: 'Amatic SC', cursive !important;
+    font-weight: 700 !important;
+  }
+
+  .font-body {
+    font-family: 'Raleway', sans-serif !important;
+  }
 }

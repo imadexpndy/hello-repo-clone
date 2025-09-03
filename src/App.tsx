@@ -44,6 +44,12 @@ import { Privacy } from "./pages/Privacy";
 import { Terms } from "./pages/Terms";
 import { healthCheck } from "./pages/api/health";
 import AuthPero from "./pages/AuthPero";
+import LePetitPrinceReservation from "./pages/reservation/le-petit-prince";
+import CharlotteReservation from "./pages/reservation/charlotte";
+import EstvanicoReservation from "./pages/reservation/estevanico";
+import AntigoneReservation from "./pages/reservation/antigone";
+import CasseNoisetteReservation from "./pages/reservation/casse-noisette";
+import AuthStatus from "./pages/api/auth/status";
 
 const queryClient = new QueryClient();
 
@@ -65,6 +71,11 @@ const App = () => {
         </pre>
       </div>
     );
+  }
+
+  // Auth status API for cross-domain requests
+  if (window.location.pathname === '/api/auth/status') {
+    return <AuthStatus />;
   }
 
   return (
@@ -343,6 +354,48 @@ const App = () => {
                 element={
                   <ProtectedRoute allowedRoles={['super_admin', 'admin_full', 'admin_schools']}>
                     <AdminRegistrations />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Reservation Routes */}
+              <Route 
+                path="/reservation/le-petit-prince" 
+                element={
+                  <ProtectedRoute>
+                    <LePetitPrinceReservation />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/reservation/charlotte" 
+                element={
+                  <ProtectedRoute>
+                    <CharlotteReservation />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/reservation/estevanico" 
+                element={
+                  <ProtectedRoute>
+                    <EstvanicoReservation />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/reservation/antigone" 
+                element={
+                  <ProtectedRoute>
+                    <AntigoneReservation />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/reservation/casse-noisette" 
+                element={
+                  <ProtectedRoute>
+                    <CasseNoisetteReservation />
                   </ProtectedRoute>
                 } 
               />
