@@ -1,18 +1,15 @@
 import React from 'react';
+import { DashboardLayout } from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Theater, ShoppingCart, Ticket, User, Calendar, LogOut } from 'lucide-react';
+import { QuickRoleSwitch } from '@/components/QuickRoleSwitch';
 import { useAuth } from '@/hooks/useAuth';
-import { 
-  Theater, 
-  ShoppingCart, 
-  Ticket, 
-  User, 
-  Calendar,
-  LogOut 
-} from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function B2CDashboard() {
   const { profile, signOut } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4">
@@ -39,7 +36,7 @@ export default function B2CDashboard() {
             <p className="text-muted-foreground mb-6">
               Découvrez nos spectacles pour enfants et réservez vos places
             </p>
-            <Button size="lg" className="text-lg px-8">
+            <Button size="lg" className="text-lg px-8" onClick={() => navigate('/spectacles')}>
               <ShoppingCart className="h-5 w-5 mr-2" />
               Voir les spectacles
             </Button>
@@ -55,7 +52,7 @@ export default function B2CDashboard() {
               <CardDescription>Voir mes réservations</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button className="w-full">Mes réservations</Button>
+              <Button className="w-full" onClick={() => navigate('/teacher/bookings')}>Mes réservations</Button>
             </CardContent>
           </Card>
 
@@ -81,6 +78,9 @@ export default function B2CDashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Quick Role Switch for Development */}
+        <QuickRoleSwitch />
 
         {/* Simple Info Footer */}
         <div className="mt-8 text-center">

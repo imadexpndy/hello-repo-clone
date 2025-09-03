@@ -5,7 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Navigation } from '@/components/Navigation';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { DashboardLayout } from '@/components/DashboardLayout';
+import { SpectacleAccessControl } from '@/components/SpectacleAccessControl';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -200,12 +201,11 @@ export default function PublicSchoolBooking() {
   const totalRequestedSeats = parseInt(studentCount || '0') + parseInt(accompanistCount || '0');
 
   return (
-    <div className="min-h-screen bg-background flex">
-      <Navigation />
-      
-      <main className="flex-1 p-6">
-        <Breadcrumbs />
-        
+    <SpectacleAccessControl>
+      <DashboardLayout 
+        title="Demande de Places Gratuites"
+        subtitle="Demander des places gratuites pour votre école publique"
+      >
         <div className="max-w-4xl mx-auto">
           <div className="mb-8">
             <h1 className="text-4xl font-bold text-primary mb-2">Demande de Places Gratuites</h1>
@@ -397,7 +397,7 @@ export default function PublicSchoolBooking() {
             </CardContent>
           </Card>
         </div>
-      </main>
-    </div>
+      </DashboardLayout>
+    </SpectacleAccessControl>
   );
 }

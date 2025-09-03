@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import AdminDashboard from '@/pages/dashboards/AdminDashboard';
-import TeacherDashboard from '@/pages/dashboards/TeacherDashboard';
+import TeacherDashboard from '@/pages/teacher/TeacherDashboard';
 import AssociationDashboard from '@/pages/dashboards/AssociationDashboard';
 import PartnerDashboard from '@/pages/dashboards/PartnerDashboard';
 import B2CDashboard from '@/pages/dashboards/B2CDashboard';
@@ -18,35 +18,7 @@ export const RoleBasedRouter = () => {
   console.log('RoleBasedRouter - Loading:', loading);
   console.log('RoleBasedRouter - Profile Role:', profile?.role);
 
-  // Auto-fix admin role - force update for any user with b2c_user role
-  useEffect(() => {
-    const fixAdminRole = async () => {
-      if (profile && profile.role === 'b2c_user' && user && !isFixingRole && !fixAttempted) {
-        // Auto-fix: Update admin_role to super_admin for this user
-        console.log('Auto-fixing admin role for user:', user.id);
-        setIsFixingRole(true);
-        setFixAttempted(true);
-        
-        const { error: updateError } = await supabase
-          .from('profiles')
-          .update({ admin_role: 'super_admin' })
-          .eq('user_id', user.id);
-          
-        if (!updateError) {
-          console.log('Admin role fixed successfully, reloading...');
-          setTimeout(() => {
-            window.location.reload();
-          }, 500);
-        } else {
-          console.error('Failed to fix admin role:', updateError);
-          setIsFixingRole(false);
-          // Don't retry - stay on current dashboard to avoid infinite loop
-        }
-      }
-    };
-    
-    fixAdminRole();
-  }, [profile, user, isFixingRole, fixAttempted]);
+  // Remove auto-fix admin role logic - users should have correct roles assigned
 
   if (loading || isFixingRole) {
     return (

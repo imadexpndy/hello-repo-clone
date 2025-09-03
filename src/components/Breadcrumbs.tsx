@@ -1,70 +1,93 @@
-import { useLocation, Link } from 'react-router-dom';
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { ChevronRight, Home } from 'lucide-react';
 
 interface BreadcrumbItem {
   label: string;
-  href?: string;
+  href: string;
 }
 
-const routeConfig: Record<string, BreadcrumbItem[]> = {
-  '/': [{ label: 'Accueil' }],
-  '/admin': [{ label: 'Accueil', href: '/' }, { label: 'Admin' }],
-  '/admin/spectacles': [{ label: 'Accueil', href: '/' }, { label: 'Admin', href: '/admin' }, { label: 'Spectacles' }],
-  '/admin/users': [{ label: 'Accueil', href: '/' }, { label: 'Admin', href: '/admin' }, { label: 'Utilisateurs' }],
-  '/admin/organizations': [{ label: 'Accueil', href: '/' }, { label: 'Admin', href: '/admin' }, { label: 'Organisations' }],
-  '/admin/communications': [{ label: 'Accueil', href: '/' }, { label: 'Admin', href: '/admin' }, { label: 'Communications' }],
-  '/admin/audit': [{ label: 'Accueil', href: '/' }, { label: 'Admin', href: '/admin' }, { label: 'Audit' }],
-  
-  '/teacher': [{ label: 'Accueil', href: '/' }, { label: 'Enseignant' }],
-  '/teacher/bookings': [{ label: 'Accueil', href: '/' }, { label: 'Enseignant', href: '/teacher' }, { label: 'Réservations' }],
-  '/teacher/new-booking': [{ label: 'Accueil', href: '/' }, { label: 'Enseignant', href: '/teacher' }, { label: 'Nouvelle Réservation' }],
-  '/teacher/organization': [{ label: 'Accueil', href: '/' }, { label: 'Enseignant', href: '/teacher' }, { label: 'Mon École' }],
-  
-  '/association': [{ label: 'Accueil', href: '/' }, { label: 'Association' }],
-  '/association/bookings': [{ label: 'Accueil', href: '/' }, { label: 'Association', href: '/association' }, { label: 'Réservations' }],
-  '/association/request': [{ label: 'Accueil', href: '/' }, { label: 'Association', href: '/association' }, { label: 'Demander Places' }],
-  '/association/profile': [{ label: 'Accueil', href: '/' }, { label: 'Association', href: '/association' }, { label: 'Mon Association' }],
-  
-  '/partner': [{ label: 'Accueil', href: '/' }, { label: 'Partenaire' }],
-  '/partner/quota': [{ label: 'Accueil', href: '/' }, { label: 'Partenaire', href: '/partner' }, { label: 'Mon Quota' }],
-  '/partner/allocate': [{ label: 'Accueil', href: '/' }, { label: 'Partenaire', href: '/partner' }, { label: 'Allouer Places' }],
-  '/partner/associations': [{ label: 'Accueil', href: '/' }, { label: 'Partenaire', href: '/partner' }, { label: 'Mes Associations' }],
-  
-  '/b2c': [{ label: 'Accueil', href: '/' }, { label: 'Billetterie' }],
-  '/b2c/shows': [{ label: 'Accueil', href: '/' }, { label: 'Billetterie', href: '/b2c' }, { label: 'Spectacles' }],
-  '/b2c/book': [{ label: 'Accueil', href: '/' }, { label: 'Billetterie', href: '/b2c' }, { label: 'Réserver' }],
-  '/b2c/bookings': [{ label: 'Accueil', href: '/' }, { label: 'Billetterie', href: '/b2c' }, { label: 'Mes Réservations' }],
-  
-  '/profile': [{ label: 'Accueil', href: '/' }, { label: 'Mon Profil' }],
-  '/unauthorized': [{ label: 'Accueil', href: '/' }, { label: 'Accès refusé' }],
-};
+interface BreadcrumbsProps {
+  items?: BreadcrumbItem[];
+}
 
-export const Breadcrumbs = () => {
+export const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
   const location = useLocation();
-  const breadcrumbs = routeConfig[location.pathname] || [{ label: 'Page inconnue' }];
+  
+  // Auto-generate breadcrumbs if not provided
+  const generateBreadcrumbs = (): BreadcrumbItem[] => {
+    const pathSegments = location.pathname.split('/').filter(Boolean);
+    const breadcrumbs: BreadcrumbItem[] = [
+      { label: 'Accueil', href: '/' }
+    ];
 
-  if (breadcrumbs.length <= 1) {
+    let currentPath = '';
+    pathSegments.forEach((segment, index) => {
+      currentPath += `/${segment}`;
+      
+      // Convert segment to readable label
+      let label = segment;
+      switch (segment) {
+        case 'b2c':
+          label = 'Espace Client';
+          break;
+        case 'booking':
+          label = 'Réservation';
+          break;
+        case 'teacher':
+          label = 'Espace Enseignant';
+          break;
+        case 'admin':
+          label = 'Administration';
+          break;
+        case 'association':
+          label = 'Association';
+          break;
+        case 'partner':
+          label = 'Partenaire';
+          break;
+        default:
+          label = segment.charAt(0).toUpperCase() + segment.slice(1);
+      }
+
+      breadcrumbs.push({
+        label,
+        href: currentPath
+      });
+    });
+
+    return breadcrumbs;
+  };
+
+  const breadcrumbItems = items || generateBreadcrumbs();
+
+  if (breadcrumbItems.length <= 1) {
     return null;
   }
 
   return (
     <nav className="flex items-center space-x-1 text-sm text-muted-foreground mb-6">
-      {breadcrumbs.map((item, index) => (
-        <div key={index} className="flex items-center">
-          {index > 0 && <ChevronRight className="h-4 w-4 mx-1" />}
-          {item.href ? (
+      {breadcrumbItems.map((item, index) => (
+        <React.Fragment key={item.href}>
+          {index === 0 && <Home className="h-4 w-4" />}
+          
+          {index < breadcrumbItems.length - 1 ? (
             <Link 
               to={item.href} 
               className="hover:text-foreground transition-colors"
             >
-              {index === 0 ? <Home className="h-4 w-4" /> : item.label}
+              {item.label}
             </Link>
           ) : (
             <span className="text-foreground font-medium">
-              {index === 0 ? <Home className="h-4 w-4" /> : item.label}
+              {item.label}
             </span>
           )}
-        </div>
+          
+          {index < breadcrumbItems.length - 1 && (
+            <ChevronRight className="h-4 w-4" />
+          )}
+        </React.Fragment>
       ))}
     </nav>
   );

@@ -104,7 +104,6 @@ export default function B2CBooking() {
         `)
         .eq('spectacle_id', selectedSpectacleId)
         .eq('is_active', true)
-        .eq('session_type', 'b2c')
         .gte('session_date', new Date().toISOString().split('T')[0]);
 
       if (error) throw error;

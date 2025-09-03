@@ -3,10 +3,10 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AdminBypass } from '@/components/AdminBypass';
 import { AuthProvider } from '@/hooks/useAuth';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { RoleBasedRouter } from "@/components/RoleBasedRouter";
+import { UserRoleFixer } from '@/components/UserRoleFixer';
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Unauthorized from "./pages/Unauthorized";
@@ -23,10 +23,16 @@ import AdminSettings from "./pages/admin/AdminSettings";
 import AdminSetup from "./pages/admin/AdminSetup";
 import AdminBookings from "./pages/admin/AdminBookings";
 import AdminInvitations from "./pages/admin/AdminInvitations";
-import TeacherDashboard from "./pages/dashboards/TeacherDashboard";
+import AdminRegistrations from '@/pages/admin/AdminRegistrations';
+import { SpectacleAccessControl } from '@/components/SpectacleAccessControl';
+import TeacherDashboard from '@/pages/teacher/TeacherDashboard';
+import SpectacleBooking from '@/pages/teacher/SpectacleBooking';
+import MyBookings from '@/pages/teacher/MyBookings';
+import MyQuotes from '@/pages/teacher/MyQuotes';
+import PrivateSchoolBooking from '@/pages/teacher/PrivateSchoolBooking';
+import SpectacleCatalog from '@/pages/b2c/SpectacleCatalog';
 import AssociationDashboard from "./pages/dashboards/AssociationDashboard";
 import PartnerDashboard from "./pages/dashboards/PartnerDashboard";
-import PrivateSchoolBooking from "./pages/teacher/PrivateSchoolBooking";
 import PublicSchoolBooking from "./pages/teacher/PublicSchoolBooking";
 import AssociationBooking from "./pages/association/AssociationBooking";
 import PartnerTicketAllocation from "./pages/partner/PartnerTicketAllocation";
@@ -66,23 +72,17 @@ const App = () => {
         <TooltipProvider>
           <Toaster />
           <Sonner />
+          <UserRoleFixer />
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Auth />} />
+              <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
-              <Route path="/admin/spectacles" element={<AdminDashboard />} />
+              <Route path="/unauthorized" element={<Unauthorized />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
-              <Route path="/unauthorized" element={<Unauthorized />} />
-              <Route 
-                path="/profile" 
-                element={
-                  <ProtectedRoute>
-                    <Profile />
-                  </ProtectedRoute>
-                } 
-              />
-              
+              <Route path="/spectacles" element={<SpectacleCatalog />} />
+
               {/* Protected Admin Routes */}
               <Route 
                 path="/admin" 
@@ -183,7 +183,71 @@ const App = () => {
                 } 
               />
               <Route 
-                path="/teacher/public-booking" 
+                path="/teacher/dashboard" 
+                element={
+                  <ProtectedRoute requiredRole="teacher_private">
+                    <TeacherDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/teacher/dashboard" 
+                element={
+                  <ProtectedRoute requiredRole="teacher_public">
+                    <TeacherDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/teacher/spectacles" 
+                element={
+                  <ProtectedRoute requiredRole="teacher_private">
+                    <SpectacleBooking />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/teacher/spectacles" 
+                element={
+                  <ProtectedRoute requiredRole="teacher_public">
+                    <SpectacleBooking />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/teacher/bookings" 
+                element={
+                  <ProtectedRoute requiredRole="teacher_private">
+                    <MyBookings />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/teacher/bookings" 
+                element={
+                  <ProtectedRoute requiredRole="teacher_public">
+                    <MyBookings />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/teacher/quotes" 
+                element={
+                  <ProtectedRoute requiredRole="teacher_private">
+                    <MyQuotes />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/teacher/quotes" 
+                element={
+                  <ProtectedRoute requiredRole="teacher_public">
+                    <MyQuotes />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/teacher/public-school-booking" 
                 element={
                   <ProtectedRoute requiredRole="teacher_public">
                     <PublicSchoolBooking />
@@ -269,6 +333,14 @@ const App = () => {
                 element={
                   <ProtectedRoute allowedRoles={['super_admin', 'admin_full']}>
                     <AdminInvitations />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/admin/registrations" 
+                element={
+                  <ProtectedRoute allowedRoles={['super_admin', 'admin_full', 'admin_schools']}>
+                    <AdminRegistrations />
                   </ProtectedRoute>
                 } 
               />

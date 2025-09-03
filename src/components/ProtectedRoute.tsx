@@ -11,17 +11,22 @@ export const ProtectedRoute = ({ children, requiredRole, allowedRoles }: Protect
   const { user, profile, loading } = useAuth();
   const location = useLocation();
 
-  // Check for admin bypass first
+  // Check for admin bypass first - but only allow for actual admin users
   const adminBypass = localStorage.getItem('admin_bypass');
-  const adminAccess = sessionStorage.getItem('adminAccess');
-  const adminTimestamp = sessionStorage.getItem('adminTimestamp');
-  const currentTime = Date.now();
+  const adminUser = localStorage.getItem('admin_user');
   
-  // Check if admin access is valid (within 1 hour)
-  if (adminBypass === 'true' || 
-      (adminAccess === 'true' && adminTimestamp && 
-       (currentTime - parseInt(adminTimestamp)) < 3600000)) {
-    return <>{children}</>;
+  // Only allow bypass if user is actually an admin
+  if (adminBypass === 'true' && adminUser) {
+    try {
+      const adminData = JSON.parse(adminUser);
+      if (adminData.email === 'aitmoulidimad@gmail.com' && adminData.admin_role === 'admin_full') {
+        return <>{children}</>;
+      }
+    } catch (e) {
+      // Invalid admin data, clear it
+      localStorage.removeItem('admin_bypass');
+      localStorage.removeItem('admin_user');
+    }
   }
 
   if (loading) {

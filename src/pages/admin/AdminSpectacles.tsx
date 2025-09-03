@@ -25,7 +25,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Plus, Pencil, Trash2, Search } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, Database } from 'lucide-react';
+import { seedAllData } from '@/utils/seedData';
 
 interface Spectacle {
   id: string;
@@ -185,6 +186,34 @@ export default function AdminSpectacles() {
     setEditingSpectacle(null);
   };
 
+  const handleSeedData = async () => {
+    setLoading(true);
+    try {
+      const success = await seedAllData();
+      if (success) {
+        toast({
+          title: "Succès",
+          description: "Données d'exemple ajoutées avec succès.",
+        });
+        fetchSpectacles();
+      } else {
+        toast({
+          title: "Erreur",
+          description: "Échec de l'ajout des données d'exemple.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de l'ajout des données.",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const filteredSpectacles = spectacles.filter(spectacle =>
     spectacle.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     spectacle.description?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -197,13 +226,20 @@ export default function AdminSpectacles() {
   }
 
   const headerActions = (
-    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button onClick={resetForm}>
-                  <Plus className="h-4 w-4 mr-2" />
-                  Nouveau Spectacle
-                </Button>
-              </DialogTrigger>
+    <div className="flex gap-2">
+      {spectacles.length === 0 && (
+        <Button variant="outline" onClick={handleSeedData} disabled={loading}>
+          <Database className="h-4 w-4 mr-2" />
+          Ajouter des données d'exemple
+        </Button>
+      )}
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogTrigger asChild>
+          <Button onClick={resetForm}>
+            <Plus className="h-4 w-4 mr-2" />
+            Nouveau Spectacle
+          </Button>
+        </DialogTrigger>
               <DialogContent className="max-w-2xl">
                 <DialogHeader>
                   <DialogTitle>
@@ -311,6 +347,7 @@ export default function AdminSpectacles() {
                 </form>
               </DialogContent>
             </Dialog>
+    </div>
   );
 
   return (
@@ -379,7 +416,7 @@ export default function AdminSpectacles() {
                       }
                     </TableCell>
                     <TableCell>{spectacle.duration_minutes ? `${spectacle.duration_minutes} min` : 'Non spécifié'}</TableCell>
-                    <TableCell>{spectacle.price}€</TableCell>
+                    <TableCell>{spectacle.price} MAD</TableCell>
                     <TableCell>
                       <Badge variant={spectacle.is_active ? 'default' : 'secondary'}>
                         {spectacle.is_active ? 'Actif' : 'Inactif'}

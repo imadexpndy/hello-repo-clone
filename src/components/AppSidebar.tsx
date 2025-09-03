@@ -1,26 +1,28 @@
 import React from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import {
-  Calendar,
-  Users,
-  BookOpen,
-  Settings,
-  BarChart3,
-  Ticket,
-  Building2,
-  GraduationCap,
-  Heart,
-  ShoppingCart,
-  Shield,
-  Home,
-  UserCheck,
-  Mail,
-  FileText,
-  LogOut,
-  Theater,
-  ClipboardList
-} from 'lucide-react';
+import { 
+  Calendar, 
+  Users, 
+  Settings, 
+  LogOut, 
+  ChevronUp, 
+  Building2, 
+  Mail, 
+  Shield, 
+  BarChart3, 
+  Theater, 
+  Ticket, 
+  ClipboardList, 
+  GraduationCap, 
+  FileText, 
+  Heart, 
+  ShoppingCart, 
+  BookOpen, 
+  LayoutDashboard, 
+  Home, 
+  UserCheck 
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -63,6 +65,7 @@ export function AppSidebar() {
           { title: "Spectacles", url: "/admin/spectacles", icon: Theater },
           { title: "Sessions", url: "/admin/sessions", icon: Calendar },
           { title: "Réservations", url: "/admin/bookings", icon: ClipboardList },
+          { title: "Demandes d'Inscription", url: "/admin/registrations", icon: UserCheck },
           { title: "Utilisateurs", url: "/admin/users", icon: Users },
           { title: "Organisations", url: "/admin/organizations", icon: Building2 },
           { title: "Communications", url: "/admin/communications", icon: Mail },
@@ -74,11 +77,11 @@ export function AppSidebar() {
       case 'teacher_public':
         return [
           ...commonItems,
-          { title: "Spectacles", url: "/teacher/shows", icon: Theater },
-          { title: "Réserver", url: profile?.role === 'teacher_private' ? "/teacher/new-booking" : "/teacher/public-booking", icon: Ticket },
+          { title: "Tableau de Bord", url: "/teacher/dashboard", icon: LayoutDashboard },
+          { title: "Réserver un Spectacle", url: "/teacher/spectacles", icon: Theater },
           { title: "Mes Réservations", url: "/teacher/bookings", icon: ClipboardList },
+          { title: "Mes Devis", url: "/teacher/quotes", icon: FileText },
           { title: "Mon École", url: "/teacher/school", icon: GraduationCap },
-          ...(profile?.role === 'teacher_private' ? [{ title: "Devis", url: "/teacher/quotes", icon: FileText }] : []),
         ];
 
       case 'association':
