@@ -177,6 +177,27 @@ const handleLogin = async (e: React.FormEvent) => {
       }
     } else if (data?.user) {
       toast({ title: "Connexion réussie", description: "Bienvenue !" });
+      // Check for return URL before redirecting
+      const urlParams = new URLSearchParams(window.location.search);
+      const returnUrl = urlParams.get('return_url');
+      
+      if (returnUrl) {
+        // User came from EDJS - redirect back immediately
+        const decodedReturnUrl = decodeURIComponent(returnUrl);
+        const separator = decodedReturnUrl.includes('?') ? '&' : '?';
+        const redirectUrl = `${decodedReturnUrl}${separator}logged_in=true&user_email=${encodeURIComponent(data.user.email || '')}&user_name=${encodeURIComponent(data.user.user_metadata?.full_name || data.user.email || '')}`;
+        
+        toast({
+          title: "Connexion réussie",
+          description: "Redirection vers EDJS...",
+        });
+        
+        setTimeout(() => {
+          window.location.href = redirectUrl;
+        }, 1000);
+        return;
+      }
+      
       // Force a full reload to ensure a clean authenticated state
       window.location.href = '/';
     }
