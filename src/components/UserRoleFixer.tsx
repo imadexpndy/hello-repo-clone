@@ -7,6 +7,15 @@ export const UserRoleFixer = () => {
 
   useEffect(() => {
     const fixUserRole = async () => {
+      // Skip role fixing if user came from EDJS (has return_url parameter)
+      const urlParams = new URLSearchParams(window.location.search);
+      const returnUrl = urlParams.get('return_url');
+      
+      if (returnUrl) {
+        console.log('Skipping role fixing - user came from EDJS');
+        return;
+      }
+      
       // Clear any admin bypass for non-admin users
       const adminBypass = localStorage.getItem('admin_bypass');
       const adminUser = localStorage.getItem('admin_user');
