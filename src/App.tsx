@@ -50,6 +50,7 @@ import EstvanicoReservation from "./pages/reservation/estevanico";
 import AntigoneReservation from "./pages/reservation/antigone";
 import CasseNoisetteReservation from "./pages/reservation/casse-noisette";
 import AuthStatus from "./pages/api/auth/status";
+import Spectacles from "./pages/Spectacles";
 
 const queryClient = new QueryClient();
 
@@ -94,7 +95,7 @@ const App = () => {
               <Route path="/profile" element={<Profile />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
-              <Route path="/spectacles" element={<SpectacleCatalog />} />
+              <Route path="/spectacles" element={<Spectacles />} />
 
               {/* Protected Admin Routes */}
               <Route 
