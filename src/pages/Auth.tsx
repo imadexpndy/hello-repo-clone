@@ -32,6 +32,25 @@ const Auth = () => {
     const urlParams = new URLSearchParams(window.location.search);
     const modeParam = urlParams.get('mode');
     const adminParam = urlParams.get('admin');
+    const returnUrl = urlParams.get('return_url');
+    
+    // If user is already logged in and has return_url, redirect immediately
+    if (user && returnUrl) {
+      console.log('User already logged in with return_url, redirecting immediately');
+      const decodedReturnUrl = decodeURIComponent(returnUrl);
+      const separator = decodedReturnUrl.includes('?') ? '&' : '?';
+      const redirectUrl = `${decodedReturnUrl}${separator}logged_in=true&user_email=${encodeURIComponent(user.email || '')}&user_name=${encodeURIComponent(user.user_metadata?.full_name || user.email || '')}`;
+      
+      toast({
+        title: "Déjà connecté",
+        description: "Redirection vers EDJS...",
+      });
+      
+      setTimeout(() => {
+        window.location.href = redirectUrl;
+      }, 500);
+      return;
+    }
     
     if (modeParam === 'register') {
       setMode('register');
@@ -51,7 +70,7 @@ const Auth = () => {
         navigate('/admin');
       }
     }
-  }, [navigate]);
+  }, [navigate, user]);
 
   useEffect(() => {
     if (user) {
