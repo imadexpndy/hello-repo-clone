@@ -175,18 +175,28 @@ export type Database = {
           accompanists_count: number | null
           booking_type: string
           confirmation_deadline: string | null
+          contact_phone: string | null
           created_at: string
           devis_url: string | null
+          grade_level: string | null
           id: string
           notes: string | null
           number_of_tickets: number
           organization_id: string | null
           payment_reference: string | null
           payment_status: Database["public"]["Enums"]["payment_status"] | null
+          quote_generated_at: string | null
+          quote_pdf_url: string | null
+          school_address: string | null
           session_id: string
+          special_requirements: string | null
+          spectacle_id: string | null
           status: Database["public"]["Enums"]["booking_status"] | null
+          student_count: number | null
           students_count: number | null
+          teacher_count: number | null
           total_amount: number | null
+          total_price: number | null
           updated_at: string
           user_id: string
         }
@@ -194,18 +204,28 @@ export type Database = {
           accompanists_count?: number | null
           booking_type: string
           confirmation_deadline?: string | null
+          contact_phone?: string | null
           created_at?: string
           devis_url?: string | null
+          grade_level?: string | null
           id?: string
           notes?: string | null
           number_of_tickets: number
           organization_id?: string | null
           payment_reference?: string | null
           payment_status?: Database["public"]["Enums"]["payment_status"] | null
+          quote_generated_at?: string | null
+          quote_pdf_url?: string | null
+          school_address?: string | null
           session_id: string
+          special_requirements?: string | null
+          spectacle_id?: string | null
           status?: Database["public"]["Enums"]["booking_status"] | null
+          student_count?: number | null
           students_count?: number | null
+          teacher_count?: number | null
           total_amount?: number | null
+          total_price?: number | null
           updated_at?: string
           user_id: string
         }
@@ -213,18 +233,28 @@ export type Database = {
           accompanists_count?: number | null
           booking_type?: string
           confirmation_deadline?: string | null
+          contact_phone?: string | null
           created_at?: string
           devis_url?: string | null
+          grade_level?: string | null
           id?: string
           notes?: string | null
           number_of_tickets?: number
           organization_id?: string | null
           payment_reference?: string | null
           payment_status?: Database["public"]["Enums"]["payment_status"] | null
+          quote_generated_at?: string | null
+          quote_pdf_url?: string | null
+          school_address?: string | null
           session_id?: string
+          special_requirements?: string | null
+          spectacle_id?: string | null
           status?: Database["public"]["Enums"]["booking_status"] | null
+          student_count?: number | null
           students_count?: number | null
+          teacher_count?: number | null
           total_amount?: number | null
+          total_price?: number | null
           updated_at?: string
           user_id?: string
         }
@@ -657,6 +687,7 @@ export type Database = {
           level_range: string | null
           poster_url: string | null
           price: number | null
+          short_description: string | null
           slug: string
           title: string
           updated_at: string

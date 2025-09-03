@@ -78,32 +78,13 @@ export default function SpectacleBooking() {
     try {
       const { data, error } = await supabase
         .from('spectacles')
-        .select(`
-          id,
-          title,
-          description,
-          short_description,
-          age_range,
-          duration,
-          language,
-          main_image_url,
-          price_school,
-          status,
-          spectacle_sessions (
-            id,
-            date,
-            time,
-            venue,
-            available_spots,
-            max_capacity
-          )
-        `)
-        .eq('status', 'active')
+        .select('*')
+        .eq('is_active', true)
         .order('title');
 
       if (error) throw error;
 
-      const transformedSpectacles: Spectacle[] = (data || []).map(spectacle => ({
+      const transformedSpectacles: Spectacle[] = (data || []).map((spectacle: any) => ({
         ...spectacle,
         sessions: spectacle.spectacle_sessions || []
       }));
@@ -134,6 +115,8 @@ export default function SpectacleBooking() {
           user_id: profile.user_id,
           spectacle_id: selectedSpectacle.id,
           session_id: selectedSession.id,
+          booking_type: 'school',
+          number_of_tickets: bookingForm.student_count + bookingForm.teacher_count,
           student_count: bookingForm.student_count,
           teacher_count: bookingForm.teacher_count,
           grade_level: bookingForm.grade_level,

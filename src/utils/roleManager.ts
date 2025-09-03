@@ -26,7 +26,7 @@ export async function getUserByEmail(email: string): Promise<UserProfile | null>
       return null;
     }
 
-    return data;
+    return { ...data, role: data.admin_role || 'b2c_user' } as any;
   } catch (error) {
     console.error('Error in getUserByEmail:', error);
     return null;
@@ -40,7 +40,7 @@ export async function updateUserRole(userId: string, newRole: string): Promise<b
   try {
     const { error } = await supabase
       .from('profiles')
-      .update({ role: newRole })
+      .update({ admin_role: newRole } as any)
       .eq('user_id', userId);
 
     if (error) {

@@ -28,7 +28,7 @@ export const UserRoleFixer = () => {
         console.log('Checking role for expndyllc@gmail.com:', profile.role);
         
         // If user has wrong role, fix it based on admin_role field
-        if (profile.admin_role !== 'teacher_public') {
+        if ((profile as any).admin_role !== 'teacher_public') {
           console.log('Fixing admin_role for public school teacher');
           
           const { error } = await supabase

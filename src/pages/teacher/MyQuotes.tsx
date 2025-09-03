@@ -54,14 +54,14 @@ export default function MyQuotes() {
 
       if (error) throw error;
 
-      const transformedQuotes: Quote[] = (data || []).map(booking => ({
+      const transformedQuotes: Quote[] = (data || []).map((booking: any) => ({
         id: booking.id,
-        spectacle_title: booking.spectacle_sessions.spectacles.title,
-        session_date: booking.spectacle_sessions.session_date,
-        total_price: booking.spectacle_sessions.spectacles.price || 15.00,
-        status: booking.status,
-        quote_pdf_url: booking.quote_pdf_url,
-        quote_generated_at: booking.quote_generated_at,
+        spectacle_title: booking.spectacle_sessions?.spectacles?.title || 'Unknown',
+        session_date: booking.spectacle_sessions?.session_date || '',
+        total_price: booking.spectacle_sessions?.spectacles?.price || 15.00,
+        status: booking.status || 'pending',
+        quote_pdf_url: booking.quote_pdf_url || null,
+        quote_generated_at: booking.quote_generated_at || null,
         created_at: booking.created_at
       }));
 

@@ -72,23 +72,23 @@ export default function MyBookings() {
 
       if (error) throw error;
 
-      const transformedBookings: Booking[] = (data || []).map(booking => ({
+      const transformedBookings: Booking[] = (data || []).map((booking: any) => ({
         id: booking.id,
-        spectacle_title: booking.spectacle_sessions.spectacles.title,
-        session_date: booking.spectacle_sessions.date,
-        session_time: booking.spectacle_sessions.time,
-        venue: booking.spectacle_sessions.venue,
-        student_count: booking.student_count,
-        teacher_count: booking.teacher_count,
-        grade_level: booking.grade_level,
-        total_price: booking.total_price,
-        status: booking.status,
-        quote_pdf_url: booking.quote_pdf_url,
-        quote_generated_at: booking.quote_generated_at,
+        spectacle_title: booking.spectacle_sessions?.spectacles?.title || 'Unknown',
+        session_date: booking.spectacle_sessions?.date || '',
+        session_time: booking.spectacle_sessions?.time || '',
+        venue: booking.spectacle_sessions?.venue || '',
+        student_count: booking.student_count || booking.students_count || 0,
+        teacher_count: booking.teacher_count || 0,
+        grade_level: booking.grade_level || '',
+        total_price: booking.total_price || booking.total_amount || 0,
+        status: booking.status || 'pending',
+        quote_pdf_url: booking.quote_pdf_url || null,
+        quote_generated_at: booking.quote_generated_at || null,
         created_at: booking.created_at,
-        special_requirements: booking.special_requirements,
-        contact_phone: booking.contact_phone,
-        school_address: booking.school_address
+        special_requirements: booking.special_requirements || null,
+        contact_phone: booking.contact_phone || null,
+        school_address: booking.school_address || null
       }));
 
       setBookings(transformedBookings);
