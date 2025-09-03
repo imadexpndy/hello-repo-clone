@@ -77,6 +77,28 @@ const Auth = () => {
   };
 
   const redirectUser = async () => {
+    // Check for return URL from EDJS website
+    const urlParams = new URLSearchParams(window.location.search);
+    const returnUrl = urlParams.get('return_url');
+    
+    if (returnUrl) {
+      // User came from EDJS website - redirect back with login confirmation
+      const decodedReturnUrl = decodeURIComponent(returnUrl);
+      const separator = decodedReturnUrl.includes('?') ? '&' : '?';
+      const redirectUrl = `${decodedReturnUrl}${separator}logged_in=true&user_email=${encodeURIComponent(user?.email || '')}&user_name=${encodeURIComponent(user?.user_metadata?.full_name || user?.email || '')}`;
+      
+      toast({
+        title: "Connexion réussie",
+        description: "Redirection vers EDJS...",
+      });
+      
+      // Redirect back to EDJS with login parameters
+      setTimeout(() => {
+        window.location.href = redirectUrl;
+      }, 1000);
+      return;
+    }
+
     const { data: profile } = await supabase
       .from('profiles')
       .select('admin_role, verification_status')
