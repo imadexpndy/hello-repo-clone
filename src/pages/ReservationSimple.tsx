@@ -22,6 +22,8 @@ interface ReservationData {
   spectacle: string;
   selectedSession: SpectacleSession | null;
   profileType: 'PRO' | 'Particulier' | '';
+  location: 'Rabat' | 'Casablanca' | '';
+  publicType: 'Écoles privées' | 'Écoles publiques' | 'Associations' | '';
   
   // Common fields
   fullName: string;
@@ -56,6 +58,7 @@ export default function ReservationSimple() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [reservationData, setReservationData] = useState<ReservationData>({
     spectacle: spectacleId || '',
+    selectedSession: null,
     profileType: '',
     location: '',
     publicType: '',
