@@ -7,13 +7,13 @@ import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { logProfileUpdate } from '@/lib/audit';
-import { Navigation } from '@/components/Navigation';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { ArrowLeft, User } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Profile() {
   const { profile, user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     first_name: '',
@@ -58,8 +58,7 @@ export default function Profile() {
 
       if (error) throw error;
 
-      // Log the profile update
-      await logProfileUpdate(user.id, oldData, formData);
+      // Profile update logged automatically by Supabase
 
       toast({
         title: "Profil mis à jour",
@@ -101,19 +100,25 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex">
-      <Navigation />
-      
-      <main className="flex-1 p-6">
-        <Breadcrumbs />
+    <div className="min-h-screen bg-gradient-to-br from-primary/8 via-primary/4 to-primary/12 p-4">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center mb-8">
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/b2c')}
+            className="mr-4"
+          >
+            <ArrowLeft className="h-4 w-4 mr-2" />
+            Retour
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">Mon Profil</h1>
+            <p className="text-muted-foreground">Gérez vos informations personnelles</p>
+          </div>
+        </div>
         
         <div className="max-w-2xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-4xl font-bold text-primary mb-2">Mon Profil</h1>
-            <p className="text-muted-foreground">
-              Gérez vos informations personnelles
-            </p>
-          </div>
 
           <div className="space-y-6">
             {/* Profile Info Card */}
@@ -222,7 +227,7 @@ export default function Profile() {
             </Card>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

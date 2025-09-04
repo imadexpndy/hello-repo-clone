@@ -23,10 +23,6 @@ interface PendingRegistration {
   verification_status: string;
   verification_documents: string[];
   created_at: string;
-  organizations: {
-    name: string;
-    type: string;
-  };
 }
 
 export default function AdminRegistrations() {
@@ -64,13 +60,8 @@ export default function AdminRegistrations() {
           organization_id,
           verification_status,
           verification_documents,
-          created_at,
-          organizations!inner (
-            name,
-            type
-          )
+          created_at
         `)
-        .eq('organizations.type', 'public_school')
         .in('verification_status', ['pending', 'under_review'])
         .order('created_at', { ascending: false });
 
@@ -166,8 +157,7 @@ export default function AdminRegistrations() {
 
   const filteredRegistrations = registrations.filter(reg =>
     reg.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    reg.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    reg.organizations.name.toLowerCase().includes(searchTerm.toLowerCase())
+    reg.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -177,9 +167,9 @@ export default function AdminRegistrations() {
     >
       <Card>
         <CardHeader>
-          <CardTitle>Écoles Publiques - Demandes en Attente</CardTitle>
+          <CardTitle>Demandes d'Inscription en Attente</CardTitle>
           <CardDescription>
-            Les écoles publiques nécessitent une approbation avant d'accéder aux spectacles
+            Gestion des demandes d'inscription nécessitant une approbation administrative
           </CardDescription>
           <div className="flex items-center space-x-2">
             <Search className="h-4 w-4 text-muted-foreground" />
@@ -221,7 +211,7 @@ export default function AdminRegistrations() {
                         {registration.full_name || 'N/A'}
                       </TableCell>
                       <TableCell>{registration.email}</TableCell>
-                      <TableCell>{registration.organizations.name}</TableCell>
+                      <TableCell>{registration.organization_id || 'N/A'}</TableCell>
                       <TableCell>{registration.phone || 'N/A'}</TableCell>
                       <TableCell>{getStatusBadge(registration.verification_status)}</TableCell>
                       <TableCell>
@@ -299,12 +289,8 @@ export default function AdminRegistrations() {
                   <p>{selectedRegistration.phone || 'N/A'}</p>
                 </div>
                 <div>
-                  <Label className="font-semibold">École</Label>
-                  <p>{selectedRegistration.organizations.name}</p>
-                </div>
-                <div>
-                  <Label className="font-semibold">Type d'École</Label>
-                  <p>{selectedRegistration.organizations.type === 'public_school' ? 'École Publique' : 'École Privée'}</p>
+                  <Label className="font-semibold">Organisation ID</Label>
+                  <p>{selectedRegistration.organization_id || 'N/A'}</p>
                 </div>
                 <div>
                   <Label className="font-semibold">Statut</Label>

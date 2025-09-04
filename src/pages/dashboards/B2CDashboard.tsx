@@ -52,7 +52,7 @@ export default function B2CDashboard() {
               <CardDescription>Voir mes réservations</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button className="w-full" onClick={() => navigate('/teacher/bookings')}>Mes réservations</Button>
+              <Button className="w-full" onClick={() => navigate('/my-reservations')}>Mes réservations</Button>
             </CardContent>
           </Card>
 
@@ -74,24 +74,11 @@ export default function B2CDashboard() {
               <CardDescription>Mes informations</CardDescription>
             </CardHeader>
             <CardContent>
-              <Button className="w-full" variant="outline">Modifier</Button>
+              <Button className="w-full" variant="outline" onClick={() => navigate('/profile')}>Modifier</Button>
             </CardContent>
           </Card>
         </div>
 
-        {/* Quick Role Switch for Development */}
-        <QuickRoleSwitch />
-
-        {/* Simple Info Footer */}
-        <div className="mt-8 text-center">
-          <Card className="bg-blue-50 border-blue-200">
-            <CardContent className="p-4">
-              <p className="text-sm text-blue-700">
-                💳 Paiement par carte CMI • 🎫 Billets électroniques • 📱 QR codes
-              </p>
-            </CardContent>
-          </Card>
-        </div>
       </div>
     </div>
   );

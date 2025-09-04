@@ -44,13 +44,16 @@ import { Privacy } from "./pages/Privacy";
 import { Terms } from "./pages/Terms";
 import { healthCheck } from "./pages/api/health";
 import AuthPero from "./pages/AuthPero";
-import LePetitPrinceReservation from "./pages/reservation/le-petit-prince";
-import CharlotteReservation from "./pages/reservation/charlotte";
-import EstvanicoReservation from "./pages/reservation/estevanico";
-import AntigoneReservation from "./pages/reservation/antigone";
-import CasseNoisetteReservation from "./pages/reservation/casse-noisette";
+import ReservationFlow from "./pages/ReservationFlow";
 import AuthStatus from "./pages/api/auth/status";
 import Spectacles from "./pages/Spectacles";
+import SpectacleMinimal from "./pages/SpectacleMinimal";
+import SpectacleLePetitPrince from "./pages/SpectacleLePetitPrince";
+import SpectacleTaraSurLaLune from "./pages/SpectacleTaraSurLaLune";
+import SpectacleEstevanico from "./pages/SpectacleEstevanico";
+import SpectacleCharlotte from "./pages/SpectacleCharlotte";
+import SpectacleAliceChezLesMerveilles from "./pages/SpectacleAliceChezLesMerveilles";
+import MyReservations from "./pages/MyReservations";
 
 const queryClient = new QueryClient();
 
@@ -95,7 +98,13 @@ const App = () => {
               <Route path="/profile" element={<Profile />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
+              <Route path="/reservation/:spectacleId" element={<ReservationFlow />} />
               <Route path="/spectacles" element={<Spectacles />} />
+              <Route path="/spectacle/le-petit-prince" element={<SpectacleMinimal />} />
+              <Route path="/spectacle/tara-sur-la-lune" element={<SpectacleTaraSurLaLune />} />
+              <Route path="/spectacle/estevanico" element={<SpectacleEstevanico />} />
+              <Route path="/spectacle/charlotte" element={<SpectacleCharlotte />} />
+              <Route path="/spectacle/alice-chez-les-merveilles" element={<SpectacleAliceChezLesMerveilles />} />
 
               {/* Protected Admin Routes */}
               <Route 
@@ -361,45 +370,39 @@ const App = () => {
               
               {/* Reservation Routes */}
               <Route 
-                path="/reservation/le-petit-prince" 
+                path="/reservation/:spectacleId" 
                 element={
                   <ProtectedRoute>
-                    <LePetitPrinceReservation />
+                    <ReservationFlow />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* User Pages */}
+              <Route 
+                path="/my-reservations" 
+                element={
+                  <ProtectedRoute>
+                    <MyReservations />
                   </ProtectedRoute>
                 } 
               />
               <Route 
-                path="/reservation/charlotte" 
+                path="/profile" 
                 element={
                   <ProtectedRoute>
-                    <CharlotteReservation />
+                    <Profile />
                   </ProtectedRoute>
                 } 
               />
-              <Route 
-                path="/reservation/estevanico" 
-                element={
-                  <ProtectedRoute>
-                    <EstvanicoReservation />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/reservation/antigone" 
-                element={
-                  <ProtectedRoute>
-                    <AntigoneReservation />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/reservation/casse-noisette" 
-                element={
-                  <ProtectedRoute>
-                    <CasseNoisetteReservation />
-                  </ProtectedRoute>
-                } 
-              />
+              
+              {/* Spectacles Routes */}
+              <Route path="/spectacles" element={<Spectacles />} />
+              <Route path="/spectacle-le-petit-prince" element={<SpectacleLePetitPrince />} />
+              <Route path="/spectacle-tara-sur-la-lune" element={<SpectacleTaraSurLaLune />} />
+              <Route path="/spectacle-estevanico" element={<SpectacleEstevanico />} />
+              <Route path="/spectacle-charlotte" element={<SpectacleCharlotte />} />
+              <Route path="/spectacle-alice-chez-les-merveilles" element={<SpectacleAliceChezLesMerveilles />} />
               
               {/* Catch-all route */}
               <Route path="*" element={<NotFound />} />

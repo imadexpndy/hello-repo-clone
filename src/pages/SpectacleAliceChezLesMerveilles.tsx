@@ -29,6 +29,11 @@ export default function SpectacleAliceChezLesMerveilles() {
     }
   };
 
+  useEffect(() => {
+    // Expose handleReservation to window object for inline event handlers
+    (window as any).handleReservation = handleReservation;
+  }, [user]);
+
   return (
     <div dangerouslySetInnerHTML={{
       __html: `
@@ -52,7 +57,7 @@ export default function SpectacleAliceChezLesMerveilles() {
 
           .spectacle-hero {
             position: relative;
-            min-height: 100vh;
+            min-height: 60vh;
             display: flex;
             align-items: center;
             overflow: hidden;
@@ -83,6 +88,33 @@ export default function SpectacleAliceChezLesMerveilles() {
             background: url('https://edjs.art/assets/img/Asset 9@4x.png') center/cover;
           }
 
+          .vintage-tv-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            padding: 2rem;
+          }
+
+          .tv-frame {
+            background: linear-gradient(145deg, #9C27B0, #E1BEE7);
+            border-radius: 20px;
+            padding: 30px 25px 40px 25px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.3), inset 0 0 20px rgba(0,0,0,0.2), inset 0 2px 5px rgba(255,255,255,0.1);
+            position: relative;
+            max-width: 400px;
+            margin: 0 auto;
+          }
+
+          .tv-screen {
+            background: #000;
+            border-radius: 15px;
+            padding: 15px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
+          }
+
           .hero-character {
             position: absolute;
             top: 50%;
@@ -91,7 +123,6 @@ export default function SpectacleAliceChezLesMerveilles() {
             z-index: 15;
             width: 200px;
             height: 280px;
-            animation: float 3s ease-in-out infinite;
           }
 
           .hero-character img {
@@ -99,11 +130,6 @@ export default function SpectacleAliceChezLesMerveilles() {
             height: 100%;
             object-fit: contain;
             filter: drop-shadow(0 10px 30px rgba(0,0,0,0.3));
-          }
-
-          @keyframes float {
-            0%, 100% { transform: translate(-50%, -50%) translateY(0px); }
-            50% { transform: translate(-50%, -50%) translateY(-20px); }
           }
 
           .hero-badge {
@@ -241,6 +267,23 @@ export default function SpectacleAliceChezLesMerveilles() {
             color: var(--primary-color);
           }
 
+          .btn-outline {
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: 'Raleway', sans-serif;
+          }
+
+          .btn-outline:hover {
+            background: var(--primary-color);
+            color: white;
+            text-decoration: none;
+          }
+
           .info-item {
             display: flex;
             align-items: center;
@@ -318,12 +361,24 @@ export default function SpectacleAliceChezLesMerveilles() {
               </div>
             </div>
             
-            <div class="hero-character">
-              <img src="https://edjs.art/assets/img/spectacles elements/alice@4x.png" alt="Alice Character">
-            </div>
-            
             <div class="hero-right">
-              <img src="https://edjs.art/assets/img/spectacles/alice.png" alt="Alice Chez Les Merveilles Affiche" style="width: 100%; height: 100%; object-fit: cover;">
+              <div class="vintage-tv-container">
+                <div class="tv-frame">
+                  <div class="tv-screen">
+                    <img src="https://edjs.art/assets/img/spectacles/alice.png" alt="Alice Chez Les Merveilles Affiche" class="tv-video" style="width: 100%; height: auto; border-radius: 10px; display: block;">
+                    <div class="play-button-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.3); cursor: pointer; transition: all 0.3s ease;">
+                      <div class="play-button" style="background: rgba(255,255,255,0.9); border-radius: 50%; width: 80px; height: 80px; display: flex; justify-content: center; align-items: center; font-size: 2rem; color: #333; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: all 0.3s ease;">
+                        <i class="fas fa-play" style="margin-left: 4px;"></i>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="tv-controls" style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; padding: 0 20px;">
+                    <div class="tv-knob" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(145deg, #C0C0C0, #808080); box-shadow: inset 0 2px 4px rgba(255,255,255,0.3), inset 0 -2px 4px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.2); position: relative;"></div>
+                    <div class="tv-brand" style="color: #FFD700; font-weight: bold; font-size: 1.2rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); letter-spacing: 2px;">EDJS</div>
+                    <div class="tv-knob" style="width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(145deg, #C0C0C0, #808080); box-shadow: inset 0 2px 4px rgba(255,255,255,0.3), inset 0 -2px 4px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.2); position: relative;"></div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -390,13 +445,136 @@ export default function SpectacleAliceChezLesMerveilles() {
                     <i class="fas fa-graduation-cap"></i>
                     Valeur pédagogique
                   </h2>
-                  <p>Ce spectacle stimule l'imagination et développe la pensée créative des enfants. Il les encourage à questionner le monde qui les entoure et à accepter que plusieurs réponses peuvent coexister.</p>
+                  <p>Ce spectacle stimule l'imagination et la créativité des enfants tout en abordant des thèmes importants comme la curiosité, le courage et la découverte de soi. Alice inspire les jeunes spectateurs à explorer leur propre monde intérieur.</p>
                   
-                  <p>Les enseignants peuvent utiliser cette représentation pour aborder des concepts philosophiques simples, développer le vocabulaire, et encourager l'expression créative à travers des discussions sur les personnages et leurs caractéristiques uniques.</p>
+                  <p>Les enseignants peuvent utiliser cette adaptation pour encourager la lecture, développer l'expression orale et aborder les notions de rêve, de réalité et d'identité.</p>
                 </div>
-              </div>
 
-              <div class="col-lg-4">
+                <!-- Gallery Section -->
+                <div class="content-card">
+                  <h2 class="card-title">
+                    <i class="fas fa-images"></i>
+                    Galerie Photos
+                  </h2>
+                  <div class="gallery-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
+                    <div class="gallery-item" style="position: relative; border-radius: 0.75rem; overflow: hidden; cursor: pointer; transition: transform 0.3s ease;">
+                      <img src="https://edjs.art/assets/img/spectacles/alice.png" alt="Alice - Photo 1" class="gallery-img" style="width: 100%; height: 200px; object-fit: cover; transition: transform 0.3s ease;">
+                      <div class="gallery-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(156, 39, 176, 0.8); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
+                        <i class="fas fa-expand" style="color: white; font-size: 1.5rem;"></i>
+                      </div>
+                    </div>
+                    <div class="gallery-item" style="position: relative; border-radius: 0.75rem; overflow: hidden; cursor: pointer; transition: transform 0.3s ease;">
+                      <img src="https://edjs.art/assets/img/spectacles elements/alice@4x.png" alt="Alice - Character" class="gallery-img" style="width: 100%; height: 200px; object-fit: cover; transition: transform 0.3s ease;">
+                      <div class="gallery-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(156, 39, 176, 0.8); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
+                        <i class="fas fa-expand" style="color: white; font-size: 1.5rem;"></i>
+                      </div>
+                    </div>
+                    <div class="gallery-item" style="position: relative; border-radius: 0.75rem; overflow: hidden; cursor: pointer; transition: transform 0.3s ease;">
+                      <img src="https://edjs.art/assets/img/spectacles/alice.png" alt="Alice - Scene" class="gallery-img" style="width: 100%; height: 200px; object-fit: cover; transition: transform 0.3s ease;">
+                      <div class="gallery-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(156, 39, 176, 0.8); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
+                        <i class="fas fa-expand" style="color: white; font-size: 1.5rem;"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Reviews Section -->
+                <div class="content-card">
+                  <h2 class="card-title">
+                    <i class="fas fa-star"></i>
+                    Avis des Spectateurs
+                  </h2>
+                  <div class="reviews-container" style="margin-top: 1.5rem;">
+                    <div class="review-item" style="background: var(--bg-light); padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 1rem; border-left: 4px solid var(--primary-color);">
+                      <div class="review-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <div class="review-author" style="font-weight: 600; color: var(--text-dark); font-size: 0.9rem;">Leila K. - Maman</div>
+                        <div class="review-stars" style="color: #ffc107;">
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                        </div>
+                      </div>
+                      <p class="review-text" style="color: var(--text-light); font-style: italic; line-height: 1.6; margin: 0;">"Ma fille de 6 ans était fascinée par l'univers d'Alice. Un spectacle féerique qui nourrit l'imagination !"</p>
+                    </div>
+                    <div class="review-item" style="background: var(--bg-light); padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 1rem; border-left: 4px solid var(--primary-color);">
+                      <div class="review-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <div class="review-author" style="font-weight: 600; color: var(--text-dark); font-size: 0.9rem;">Youssef A. - Enseignant</div>
+                        <div class="review-stars" style="color: #ffc107;">
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                          <i class="fas fa-star"></i>
+                        </div>
+                      </div>
+                      <p class="review-text" style="color: var(--text-light); font-style: italic; line-height: 1.6; margin: 0;">"Parfait pour initier les enfants à la littérature classique de manière ludique et interactive !"</p>
+                    </div>
+                  </div>
+                  
+                  <!-- Review Submission Form -->
+                  <div style="margin-top: 2rem; padding: 1.5rem; background: var(--bg-light); border-radius: 0.75rem;">
+                    <h3 style="color: var(--text-dark); font-size: 1.2rem; font-weight: 600; margin-bottom: 1rem;">Laissez votre avis</h3>
+                    <form id="reviewForm">
+                      <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-dark);">Votre nom</label>
+                        <input type="text" id="reviewName" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-light); border-radius: 0.5rem; font-family: 'Raleway', sans-serif;" placeholder="Votre nom" required>
+                      </div>
+                      <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-dark);">Note</label>
+                        <div class="star-rating" style="display: flex; gap: 0.25rem; margin-bottom: 0.5rem;">
+                          <i class="fas fa-star star-btn" data-rating="1" style="color: #ddd; cursor: pointer; font-size: 1.5rem; transition: color 0.2s;"></i>
+                          <i class="fas fa-star star-btn" data-rating="2" style="color: #ddd; cursor: pointer; font-size: 1.5rem; transition: color 0.2s;"></i>
+                          <i class="fas fa-star star-btn" data-rating="3" style="color: #ddd; cursor: pointer; font-size: 1.5rem; transition: color 0.2s;"></i>
+                          <i class="fas fa-star star-btn" data-rating="4" style="color: #ddd; cursor: pointer; font-size: 1.5rem; transition: color 0.2s;"></i>
+                          <i class="fas fa-star star-btn" data-rating="5" style="color: #ddd; cursor: pointer; font-size: 1.5rem; transition: color 0.2s;"></i>
+                        </div>
+                      </div>
+                      <div style="margin-bottom: 1rem;">
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--text-dark);">Votre avis</label>
+                        <textarea id="reviewText" rows="4" style="width: 100%; padding: 0.75rem; border: 1px solid var(--border-light); border-radius: 0.5rem; font-family: 'Raleway', sans-serif; resize: vertical;" placeholder="Partagez votre expérience..." required></textarea>
+                      </div>
+                      <button type="submit" class="btn-primary" style="background: var(--primary-color); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
+                        <i class="fas fa-paper-plane"></i>
+                        Publier l'avis
+                      </button>
+                    </form>
+                  </div>
+                </div>
+
+                <!-- Available Sessions Card -->
+                <div class="sidebar-card">
+                  <h3>
+                    <i class="fas fa-calendar-alt"></i>
+                    Séances Disponibles
+                  </h3>
+                  <div class="showtime-item" style="background: var(--bg-light); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem; border-left: 4px solid var(--primary-color);">
+                    <div class="showtime-date" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.25rem; font-family: 'Raleway', sans-serif;">2 au 6 Avril 2026</div>
+                    <div class="showtime-time" style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.75rem; font-family: 'Raleway', sans-serif;">Rabat - Représentations</div>
+                    <button class="showtime-btn" onclick="window.handleReservation()" style="background: var(--primary-color); color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.9rem; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem; transition: all 0.3s ease; font-family: 'Raleway', sans-serif; cursor: pointer;">
+                      <i class="fas fa-ticket-alt"></i>
+                      Réserver
+                    </button>
+                  </div>
+                  <div class="showtime-item" style="background: var(--bg-light); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem; border-left: 4px solid var(--primary-color);">
+                    <div class="showtime-date" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.25rem; font-family: 'Raleway', sans-serif;">9 au 13 Avril 2026</div>
+                    <div class="showtime-time" style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.75rem; font-family: 'Raleway', sans-serif;">Casablanca - Représentations</div>
+                    <button class="showtime-btn" onclick="window.handleReservation()" style="background: var(--primary-color); color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.9rem; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem; transition: all 0.3s ease; font-family: 'Raleway', sans-serif; cursor: pointer;">
+                      <i class="fas fa-ticket-alt"></i>
+                      Réserver
+                    </button>
+                  </div>
+                  <div class="showtime-item" style="background: var(--bg-light); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem; border-left: 4px solid var(--primary-color);">
+                    <div class="showtime-date" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.25rem; font-family: 'Raleway', sans-serif;">Avril 2026</div>
+                    <div class="showtime-time" style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.75rem; font-family: 'Raleway', sans-serif;">Séances supplémentaires</div>
+                    <button class="showtime-btn" onclick="window.handleReservation()" style="background: var(--primary-color); color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.9rem; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem; transition: all 0.3s ease; font-family: 'Raleway', sans-serif; cursor: pointer;">
+                      <i class="fas fa-ticket-alt"></i>
+                      Réserver
+                    </button>
+                  </div>
+                </div>
+
                 <!-- Booking Info Card -->
                 <div class="sidebar-card">
                   <h3>
@@ -417,7 +595,7 @@ export default function SpectacleAliceChezLesMerveilles() {
                   </div>
                   <div class="info-item">
                     <i class="fas fa-calendar"></i>
-                    <span>Période : Février 2026</span>
+                    <span>Période : Avril 2026</span>
                   </div>
                   <div class="info-item">
                     <i class="fas fa-language"></i>
@@ -425,7 +603,7 @@ export default function SpectacleAliceChezLesMerveilles() {
                   </div>
                   <div class="info-item">
                     <i class="fas fa-magic"></i>
-                    <span>Genre : Fantastique & Merveilleux</span>
+                    <span>Genre : Merveilleux</span>
                   </div>
                 </div>
 
@@ -450,6 +628,24 @@ export default function SpectacleAliceChezLesMerveilles() {
                   </h3>
                   <p style="color: var(--text-light); font-size: 0.9rem; line-height: 1.6;">"Alice au pays des merveilles" de Lewis Carroll a été publié en 1865 et reste l'un des livres pour enfants les plus traduits au monde. L'histoire a inspiré d'innombrables adaptations théâtrales, cinématographiques et artistiques.</p>
                 </div>
+
+                ${user && (user.user_metadata?.role === 'teacher_private' || user.user_metadata?.role === 'teacher_public' || user.user_metadata?.role === 'association') ? `
+                <!-- Pedagogical Resources Card - Only for Schools -->
+                <div class="sidebar-card">
+                  <h3>
+                    <i class="fas fa-file-pdf"></i>
+                    Ressources pédagogiques
+                  </h3>
+                  <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 1rem;">Téléchargez le dossier pédagogique pour préparer votre classe.</p>
+                  <a href="https://edjs.art/assets/dossier%20pres%20edjs%20horaire%20association%20crea%20print%20double%20page.pdf" 
+                     target="_blank" 
+                     class="btn-outline w-100" 
+                     style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; text-decoration: none;">
+                    <i class="fas fa-download"></i>
+                    Télécharger le dossier PDF
+                  </a>
+                </div>
+                ` : ''}
               </div>
             </div>
           </div>
@@ -462,6 +658,68 @@ export default function SpectacleAliceChezLesMerveilles() {
               window.location.href = '/auth?return_url=' + returnUrl;
             `}
           };
+
+          // Gallery hover effects
+          document.addEventListener('DOMContentLoaded', function() {
+            const galleryItems = document.querySelectorAll('.gallery-item');
+            galleryItems.forEach(item => {
+              const overlay = item.querySelector('.gallery-overlay');
+              item.addEventListener('mouseenter', () => {
+                item.style.transform = 'scale(1.05)';
+                overlay.style.opacity = '1';
+              });
+              item.addEventListener('mouseleave', () => {
+                item.style.transform = 'scale(1)';
+                overlay.style.opacity = '0';
+              });
+            });
+
+            // Star rating functionality
+            const starBtns = document.querySelectorAll('.star-btn');
+            let selectedRating = 0;
+            
+            starBtns.forEach((star, index) => {
+              star.addEventListener('click', () => {
+                selectedRating = index + 1;
+                updateStars(selectedRating);
+              });
+              
+              star.addEventListener('mouseenter', () => {
+                updateStars(index + 1);
+              });
+            });
+            
+            document.querySelector('.star-rating').addEventListener('mouseleave', () => {
+              updateStars(selectedRating);
+            });
+            
+            function updateStars(rating) {
+              starBtns.forEach((star, index) => {
+                if (index < rating) {
+                  star.style.color = '#ffc107';
+                } else {
+                  star.style.color = '#ddd';
+                }
+              });
+            }
+
+            // Review form submission
+            document.getElementById('reviewForm').addEventListener('submit', function(e) {
+              e.preventDefault();
+              const name = document.getElementById('reviewName').value;
+              const text = document.getElementById('reviewText').value;
+              
+              if (selectedRating === 0) {
+                alert('Veuillez sélectionner une note');
+                return;
+              }
+              
+              alert('Merci pour votre avis ! Il sera publié après modération.');
+              this.reset();
+              selectedRating = 0;
+              updateStars(0);
+            });
+          });
         </script>
       `
     }} />
