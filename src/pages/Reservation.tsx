@@ -206,8 +206,10 @@ export default function Reservation() {
   };
 
   return (
-    <div className="reservation-container">
-      <style>{`
+    <div 
+      dangerouslySetInnerHTML={{
+        __html: `
+        <style>
         :root {
           --primary-color: #BDCF00;
           --text-dark: #2c3e50;
@@ -217,11 +219,6 @@ export default function Reservation() {
           --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
           --shadow-hover: 0 8px 25px rgba(0,0,0,0.15);
         }
-            --bg-light: #f8f9fa;
-            --border-light: #e9ecef;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --shadow-hover: 0 8px 25px rgba(0,0,0,0.15);
-          }
 
           body { 
             background-color: #f8f9fa; 
@@ -733,7 +730,9 @@ export default function Reservation() {
             window.submitReservationHandler();
           };
         </script>
-      \`
-    }} />
+        </div>
+        `
+      }}
+    />
   );
 }

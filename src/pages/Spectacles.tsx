@@ -321,6 +321,130 @@ export default function Spectacles() {
           }
 
           /* Authentication Gate Styles */
+    .auth-gate-section {
+      padding: 80px 0;
+      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+    }
+
+    .auth-gate-wrapper {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .auth-gate-header {
+      margin-bottom: 50px;
+    }
+
+    .auth-gate-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #2c3e50;
+      margin-bottom: 15px;
+    }
+
+    .auth-gate-subtitle {
+      font-size: 1.1rem;
+      color: #6c757d;
+      margin-bottom: 30px;
+    }
+
+    .auth-gate-divider {
+      width: 80px;
+      height: 4px;
+      background: #BDCF00;
+      margin: 0 auto;
+      border-radius: 2px;
+    }
+
+    .auth-gate-options {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+
+    .auth-option {
+      background: white;
+      border: 3px solid #e9ecef;
+      border-radius: 20px;
+      padding: 40px 30px;
+      width: 320px;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    }
+
+    .auth-option:hover {
+      transform: translateY(-8px);
+      border-color: #BDCF00;
+      box-shadow: 0 15px 40px rgba(189, 207, 0, 0.2);
+    }
+
+    .option-icon {
+      margin-bottom: 20px;
+    }
+
+    .option-icon i {
+      font-size: 3rem;
+      color: #BDCF00;
+      transition: color 0.3s ease;
+    }
+
+    .auth-option:hover .option-icon i {
+      color: #BDCF00;
+    }
+
+    .option-content h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #2c3e50;
+      margin-bottom: 10px;
+    }
+
+    .option-content p {
+      font-size: 1rem;
+      color: #6c757d;
+      margin-bottom: 25px;
+    }
+
+    .auth-btn {
+      background: #BDCF00;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .auth-btn:hover {
+      background: #a8b800;
+      color: white;
+      text-decoration: none;
+      transform: translateY(-2px);
+    }
+
+    .guest-link {
+      display: block;
+      margin-top: 15px;
+      color: #6c757d;
+      text-decoration: underline;
+      font-size: 0.9rem;
+    }
+
+    .guest-link:hover {
+      color: #BDCF00;
+      text-decoration: none;
+    }
           .auth-gate-section {
             padding: 80px 0;
             background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
@@ -635,9 +759,58 @@ export default function Spectacles() {
               </button>
             </div>
           </div>
-        </section>
+          <!-- Breadcrumb End -->
 
-        <!-- Spectacles Grid -->
+          <!-- Authentication Gate Section -->
+          <section class="auth-gate-section" id="authGateSection">
+            <div class="container">
+              <div class="auth-gate-wrapper">
+                <div class="auth-gate-header">
+                  <h2 class="auth-gate-title">Je réserve mon spectacle</h2>
+                  <p class="auth-gate-subtitle">Choisissez votre profil et réservez en quelques clics !</p>
+                  <div class="auth-gate-divider"></div>
+                </div>
+
+                <div class="auth-gate-options">
+                  <div class="auth-option professional">
+                    <div class="option-icon">
+                      <i class="fas fa-building"></i>
+                    </div>
+                    <div class="option-content">
+                      <h3>Professionnel</h3>
+                      <p>Écoles privées, écoles publiques, associations</p>
+                      <a href="/auth" class="auth-btn" id="professionalLoginBtn">
+                        <span>Se connecter</span>
+                        <i class="fas fa-sign-in-alt"></i>
+                      </a>
+                    </div>
+                  </div>
+
+                  <div class="auth-option guest">
+                    <div class="option-icon">
+                      <i class="fas fa-eye"></i>
+                    </div>
+                    <div class="option-content">
+                      <h3>PARTICULIER</h3>
+                      <p>Parents, familles, amis, amoureux du théâtre</p>
+                      <a href="/auth" class="auth-btn login-btn" id="individualLoginBtn">
+                        <span>Se connecter</span>
+                        <i class="fas fa-users"></i>
+                      </a>
+                      <a href="/auth-pero" class="guest-link" id="guestAccessBtn" style="color: #666; text-decoration: underline; font-size: 14px; margin-top: 10px; display: inline-block;">
+                        Continuer en tant qu'invité
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="auth-gate-footer">
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Spectacles Section -->
         <section class="spectacles-grid" id="spectaclesSection">
           <div class="container">
             <div class="row g-4">
