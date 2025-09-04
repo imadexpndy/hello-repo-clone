@@ -97,12 +97,13 @@ export default function SpectacleAliceChezLesMerveilles() {
           }
 
           .tv-frame {
-            background: linear-gradient(145deg, #9C27B0, #E1BEE7);
+            background: linear-gradient(145deg, #BDCF00, #D4E157);
             border-radius: 20px;
             padding: 30px 25px 40px 25px;
             box-shadow: 0 0 30px rgba(0,0,0,0.3), inset 0 0 20px rgba(0,0,0,0.2), inset 0 2px 5px rgba(255,255,255,0.1);
             position: relative;
-            max-width: 400px;
+            width: 400px;
+            height: 400px;
             margin: 0 auto;
           }
 
@@ -113,6 +114,9 @@ export default function SpectacleAliceChezLesMerveilles() {
             position: relative;
             overflow: hidden;
             box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
+            width: 100%;
+            height: calc(100% - 60px);
+            aspect-ratio: 1;
           }
 
           .hero-character {
