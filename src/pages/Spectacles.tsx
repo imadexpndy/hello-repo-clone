@@ -7,11 +7,15 @@ export default function Spectacles() {
 
   const handleReservation = (spectacleId: string) => {
     if (user) {
-      window.location.href = `/reservation/${spectacleId}`;
+      window.location.href = `/reservation-${spectacleId}.html`;
     } else {
       const returnUrl = encodeURIComponent(window.location.href);
       window.location.href = `/auth?return_url=${returnUrl}`;
     }
+  };
+
+  const handleDetails = (spectacleId: string) => {
+    window.location.href = `/spectacle-${spectacleId}.html`;
   };
 
   useEffect(() => {
@@ -46,6 +50,10 @@ export default function Spectacles() {
         if (authGateSection) authGateSection.style.display = 'none';
         if (filterSection) filterSection.style.display = 'block';
         if (spectaclesSection) spectaclesSection.style.display = 'block';
+      } else {
+        if (authGateSection) authGateSection.style.display = 'block';
+        if (filterSection) filterSection.style.display = 'none';
+        if (spectaclesSection) spectaclesSection.style.display = 'none';
       }
 
       // Professional login button
@@ -74,10 +82,52 @@ export default function Spectacles() {
           if (spectaclesSection) spectaclesSection.style.display = 'none';
         });
       }
+
+      // User dropdown functionality
+      const userDropdownBtn = document.getElementById('userDropdownBtn');
+      const userDropdownMenu = document.getElementById('userDropdownMenu');
+      const logoutBtn = document.getElementById('logoutBtn');
+
+      if (userDropdownBtn && userDropdownMenu) {
+        userDropdownBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          userDropdownMenu.classList.toggle('show');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', () => {
+          userDropdownMenu.classList.remove('show');
+        });
+
+        userDropdownMenu.addEventListener('click', (e) => {
+          e.stopPropagation();
+        });
+      }
+
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', async (e) => {
+          e.preventDefault();
+          try {
+            const { createClient } = await import('@supabase/supabase-js');
+            const supabase = createClient(
+              import.meta.env.VITE_SUPABASE_URL,
+              import.meta.env.VITE_SUPABASE_ANON_KEY
+            );
+            await supabase.auth.signOut();
+            // Force page reload to clear auth state
+            window.location.reload();
+          } catch (error) {
+            console.error('Logout error:', error);
+            // Fallback: redirect to auth page
+            window.location.href = '/auth';
+          }
+        });
+      }
     };
 
-    // Expose handleReservation to window object for inline event handlers
+    // Expose functions to window object for inline event handlers
     (window as any).handleReservation = handleReservation;
+    (window as any).handleDetails = handleDetails;
 
     setTimeout(initializeSpectacles, 100);
   }, [user]);
@@ -109,6 +159,7 @@ export default function Spectacles() {
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 60px;
           }
 
           .logo-section {
@@ -132,8 +183,9 @@ export default function Spectacles() {
             list-style: none;
             margin: 0;
             padding: 0;
-            gap: 40px;
+            gap: 20px;
             align-items: center;
+            width: 100%;
           }
 
           .nav-item {
@@ -200,6 +252,76 @@ export default function Spectacles() {
             cursor: pointer;
           }
 
+          /* User Dropdown Styles */
+          .user-dropdown {
+            position: relative;
+          }
+
+          .user-dropdown-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 25px;
+            transition: background-color 0.3s ease;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+          }
+
+          .user-dropdown-btn:hover {
+            background-color: rgba(126, 138, 1, 0.1);
+          }
+
+          .user-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 200px;
+            z-index: 1000;
+            display: none;
+            padding: 8px 0;
+          }
+
+          .user-dropdown-menu.show {
+            display: block;
+          }
+
+          .dropdown-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: #333;
+            transition: background-color 0.2s ease;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+            font-size: 14px;
+          }
+
+          .dropdown-item:hover {
+            background-color: #f8f9fa;
+            color: #333;
+          }
+
+          .dropdown-item i {
+            margin-right: 8px;
+            width: 16px;
+            color: #666;
+          }
+
+          .dropdown-divider {
+            margin: 8px 0;
+            border: none;
+            border-top: 1px solid #eee;
+          }
+
           @media (max-width: 768px) {
             .nav-menu {
               display: none;
@@ -234,17 +356,47 @@ export default function Spectacles() {
                 <a href="/spectacles" class="nav-link">SPECTACLES</a>
               </li>
               <li class="nav-item">
-                <a href="https://edjs.art/gallery.html" class="nav-link">GALERIE</a>
+                <a href="https://edjs.art/gallery" class="nav-link">GALERIE</a>
               </li>
               <li class="nav-item">
-                <a href="https://edjs.art/partners.html" class="nav-link">PARTENAIRES</a>
+                <a href="https://edjs.art/partners" class="nav-link">PARTENAIRES</a>
               </li>
+              ${user ? `
+              <!-- User Dropdown for authenticated users -->
+              <li class="nav-item user-dropdown" style="margin-left: auto;">
+                <button class="user-dropdown-btn" id="userDropdownBtn">
+                  <i class="fas fa-user-circle" style="color: #7e8a01; font-size: 24px; margin-right: 8px;"></i>
+                  <span style="color: #333; font-weight: 500;">Bonjour ${user.user_metadata?.full_name || user.email?.split('@')[0] || 'Utilisateur'}</span>
+                  <i class="fas fa-chevron-down" style="margin-left: 8px; font-size: 12px; color: #666;"></i>
+                </button>
+                <div class="user-dropdown-menu" id="userDropdownMenu">
+                  <a href="/spectacles" class="dropdown-item">
+                    <i class="fas fa-theater-masks"></i> Spectacles
+                  </a>
+                  <a href="/b2c" class="dropdown-item">
+                    <i class="fas fa-calendar-alt"></i> Réservations
+                  </a>
+                  <a href="/profile" class="dropdown-item">
+                    <i class="fas fa-user"></i> Profil
+                  </a>
+                  <a href="/help" class="dropdown-item">
+                    <i class="fas fa-question-circle"></i> Aide et support
+                  </a>
+                  <hr class="dropdown-divider">
+                  <button class="dropdown-item logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Déconnexion
+                  </button>
+                </div>
+              </li>
+              ` : `
+              <!-- Auth buttons for non-authenticated users -->
               <li class="nav-item">
                 <a href="/auth" class="auth-btn">Se connecter</a>
               </li>
               <li class="nav-item">
                 <a href="/auth?mode=register" class="auth-btn">S'inscrire</a>
               </li>
+              `}
             </nav>
 
             <!-- Auth Section -->
@@ -276,7 +428,7 @@ export default function Spectacles() {
             left: 0;
             right: 0;
             bottom: 0;
-            background-image: url('https://edjs.art/assets/img/rooms/room-video-bg.jpg');
+            background-image: url('https://edjs.art/assets/edjs img/bg-header-home-v2.webp');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -554,7 +706,7 @@ export default function Spectacles() {
 
           /* Filter Section */
           .filter-section {
-            padding: 60px 0 40px;
+            padding: 60px 0 0 0;
             background: white;
           }
 
@@ -704,6 +856,18 @@ export default function Spectacles() {
         </style>
 
 
+        <!-- Hero Section -->
+        <section class="spectacles-hero" style="display: ${user ? 'block' : 'none'};">
+          <div class="hero-background"></div>
+          <div class="hero-overlay"></div>
+          <div class="container">
+            <div class="hero-content">
+              <h1 class="hero-title">Nos Spectacles</h1>
+              <p class="hero-subtitle">Découvrez notre programmation complète d'arts de la scène</p>
+            </div>
+          </div>
+        </section>
+
         <!-- Authentication Gate Section -->
         <section class="auth-gate-section" id="authGateSection" style="display: ${user ? 'none' : 'block'};">
           <div class="container">
@@ -748,11 +912,11 @@ export default function Spectacles() {
         </section>
 
         <!-- Filter Section -->
-        <section class="filter-section" id="filterSection" style="display: ${user ? 'block' : 'none'}; background-image: url('https://edjs.art/assets/edjs img/bg-header-home-v2.webp'); background-size: cover; background-position: center; background-repeat: no-repeat; padding: 60px 0;">
+        <section class="filter-section" id="filterSection" style="display: ${user ? 'block' : 'none'}; background: #f8f9fa; padding: 60px 0 0 0;">
           <div class="container">
             <div class="text-center">
-              <h2 class="filter-title" style="color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.7);">Nos Spectacles</h2>
-              <p class="filter-subtitle" style="color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.7);">Découvrez notre programmation complète</p>
+              <h2 class="filter-title" style="color: #333; text-shadow: none;">Nos Spectacles</h2>
+              <p class="filter-subtitle" style="color: #666; text-shadow: none;">Découvrez notre programmation complète</p>
               
               <button class="back-btn" id="backBtn" style="display: ${user ? 'none' : 'inline-flex'};">
                 <i class="fas fa-arrow-left"></i> Retour
@@ -762,7 +926,7 @@ export default function Spectacles() {
           <!-- Breadcrumb End -->
 
           <!-- Authentication Gate Section -->
-          <section class="auth-gate-section" id="authGateSection">
+          <section class="auth-gate-section" id="authGateSection" style="display: ${user ? 'none' : 'block'};">
             <div class="container">
               <div class="auth-gate-wrapper">
                 <div class="auth-gate-header">
@@ -816,110 +980,120 @@ export default function Spectacles() {
             <div class="row g-4">
               <!-- Le Petit Prince -->
               <div class="col-lg-6 col-md-6 spectacle-item" data-category="primaire">
-                <div class="spectacle-card fade-in-up visible">
+                <div class="spectacle-card fade-in-up visible" style="background: url('https://edjs.art/assets/img/Asset%209@4x.png') center/cover; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden; width: 100%; height: 400px; display: flex; transition: all 0.4s ease; position: relative; margin: 20px 0;">
+                  <!-- Status Badge -->
                   <div style="position: absolute; top: 15px; right: 15px; z-index: 10;">
-                    <div class="spectacle-card__status" style="background: #BDCF00;">Disponible</div>
+                    <div class="spectacle-card__status" style="background: #BDCF00; color: white; padding: 6px 12px; border-radius: 15px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Disponible</div>
                   </div>
                   
-                  <div style="width: 50%; height: 100%; position: relative; overflow: hidden; background: url('https://edjs.art/assets/img/Asset 9@4x.png') center/cover, linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); display: flex; align-items: center; justify-content: center;">
-                    <img src="https://edjs.art/assets/img/affiche LPP VF .jpeg" alt="Le Petit Prince" style="width: 70%; height: 70%; object-fit: contain; padding: 10px;" />
-                    <img src="https://edjs.art/assets/img/spectacles elements/petit prince@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: 10px; width: 130px; height: 130px; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));" />
+                  <!-- Left Side: Affiche -->
+                  <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
+                    <img src="/assets/img/spectacles/le-petit-prince.png" alt="Le Petit Prince" style="width: 150%; height: 120%; object-fit: contain;" />
+                    <!-- Character Image -->
+                    <img src="/src/assets/spectacles elements/petit prince@4x.png" alt="Le Petit Prince Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
                   </div>
                   
-                  <div style="width: 50%; padding: 25px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                    <div style="width: 100%;">
-                      <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px; margin-top: 25px;">
-                        <div class="spectacle-card__date">Oct 2025</div>
+                  <!-- Right Side: Content -->
+                  <div style="width: 50%; padding: 25px 80px 25px 5px; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="width: 100%; margin-left: 30px;">
+                      <!-- Date Badge -->
+                      <div style="margin-bottom: 15px;">
+                        <div class="spectacle-card__date" style="color: #999; font-size: 12px; font-weight: 600; text-transform: uppercase;">Oct 2025</div>
                       </div>
                       
-                      <h3 class="spectacle-card__title">LE PETIT PRINCE</h3>
+                      <!-- Title -->
+                      <h3 class="spectacle-card__title" style="color: #000; font-size: 32px; font-weight: 800; margin-bottom: 15px; line-height: 1.2; font-family: 'Amatic SC', cursive; background: white; padding: 8px 15px; border-radius: 8px; display: inline-block;">LE PETIT PRINCE</h3>
                       
-                      <p class="spectacle-card__description">Un voyage poétique et philosophique à travers l'univers du Petit Prince, explorant les thèmes de l'amitié, de l'amour et de la sagesse.</p>
-                      
+                      <!-- Info badges -->
                       <div style="margin-bottom: 25px;">
-                        <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 8px 12px; border-radius: 12px; font-size: 12px; color: #666; font-weight: 600;">
+                        <div style="display: flex; justify-content: flex-start; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                             <i class="fas fa-clock" style="color: #BDCF00;"></i>
                             <span>50 minutes</span>
                           </div>
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 8px 12px; border-radius: 12px; font-size: 12px; color: #666; font-weight: 600;">
+                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                             <i class="fas fa-child" style="color: #BDCF00;"></i>
                             <span>7 ans et +</span>
                           </div>
                         </div>
-                        <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 8px 12px; border-radius: 12px; font-size: 12px; color: #666; font-weight: 600;">
+                        <div style="display: flex; justify-content: flex-start; gap: 10px; flex-wrap: wrap;">
+                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                             <i class="fas fa-users" style="color: #BDCF00;"></i>
                             <span>3 comédiens</span>
                           </div>
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 8px 12px; border-radius: 12px; font-size: 12px; color: #666; font-weight: 600;">
+                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                             <i class="fas fa-heart" style="color: #BDCF00;"></i>
                             <span>Émotionnel</span>
                           </div>
                         </div>
                       </div>
                       
-                      <div style="display: flex; gap: 12px; justify-content: center;">
-                        <button class="btn-reserve" onclick="window.handleReservation('le-petit-prince')">
-                          ${user ? 'Réserver maintenant' : 'Réserver'}
-                        </button>
-                        <button class="btn-details" onclick="window.location.href='/spectacle-le-petit-prince'">Détails</button>
+                      <!-- Buttons -->
+                      <div style="display: flex; gap: 10px; justify-content: flex-start;">
+                        <button class="btn-reserve" onclick="window.handleReservation('le-petit-prince')" style="background: #BDCF00; color: white; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 700; font-size: 12px; cursor: pointer; transition: all 0.3s ease;">Réserver</button>
+                        <button class="btn-details" onclick="window.handleDetails('le-petit-prince')" style="background: white; color: #2c3e50; border: 2px solid #2c3e50; padding: 10px 20px; border-radius: 12px; font-weight: 700; font-size: 12px; cursor: pointer; transition: all 0.3s ease;">Détails</button>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
               
-              <!-- Le Petit Prince (Arabic) -->
+              <!-- Le Petit Prince Arabic -->
               <div class="col-lg-6 col-md-6 spectacle-item" data-category="primaire">
-                <div class="spectacle-card fade-in-up visible">
+                <div class="spectacle-card fade-in-up visible" style="background: url('https://edjs.art/assets/img/Asset%209@4x.png') center/cover; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden; width: 100%; height: 400px; display: flex; transition: all 0.4s ease; position: relative; margin: 20px 0;">
+                  <!-- Status Badge -->
                   <div style="position: absolute; top: 15px; right: 15px; z-index: 10;">
-                    <div class="spectacle-card__status" style="background: #BDCF00;">Disponible</div>
+                    <div class="spectacle-card__status" style="background: #BDCF00; color: white; padding: 6px 12px; border-radius: 15px; font-size: 10px; font-weight: 700; text-transform: uppercase;">متاح</div>
                   </div>
                   
-                  <div style="width: 50%; height: 100%; position: relative; overflow: hidden; background: url('https://edjs.art/assets/img/Asset 9@4x.png') center/cover, linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); display: flex; align-items: center; justify-content: center;">
-                    <img src="https://edjs.art/assets/img/contrat TARA SUR LA LUNE.jpeg" alt="الأمير الصغير" style="width: 70%; height: 70%; object-fit: contain; padding: 10px;" />
-                    <img src="https://edjs.art/assets/img/spectacles elements/petit prince@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: 10px; width: 130px; height: 130px; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));" />
+                  <!-- Left Side: Affiche -->
+                  <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
+                    <img src="/src/assets/spectacles elements/petite prince.png" alt="الأمير الصغير" style="width: 150%; height: 120%; object-fit: contain;" />
+                    <!-- Character Image -->
+                    <img src="/src/assets/spectacles elements/petit prince@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
                   </div>
                   
-                  <div style="width: 50%; padding: 25px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                    <div style="width: 100%;">
-                      <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px; margin-top: 25px;">
-                        <div class="spectacle-card__date">Oct 2025</div>
+                  <!-- Right Side: Content -->
+                  <div style="width: 50%; padding: 25px 80px 25px 5px; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="width: 100%; margin-left: 30px;">
+                      <!-- Date Badge -->
+                      <div style="margin-bottom: 15px;">
+                        <div class="spectacle-card__date" style="color: #999; font-size: 12px; font-weight: 600; text-transform: uppercase;">Oct 2025</div>
                       </div>
                       
-                      <h3 class="spectacle-card__title">الأمير الصغير</h3>
+                      <!-- Title -->
+                      <h3 class="spectacle-card__title" style="color: #000; font-size: 32px; font-weight: 800; margin-bottom: 15px; line-height: 1.2; font-family: 'Amatic SC', cursive; background: white; padding: 8px 15px; border-radius: 8px; display: inline-block;">الأمير الصغير</h3>
                       
-                      <p class="spectacle-card__description">رحلة شاعرية وفلسفية عبر عالم الأمير الصغير، تستكشف موضوعات الصداقة والحب والحكمة.</p>
-                      
+                      <!-- Info badges -->
                       <div style="margin-bottom: 25px;">
-                        <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 8px 12px; border-radius: 12px; font-size: 12px; color: #666; font-weight: 600;">
+                        <div style="display: flex; justify-content: flex-start; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                             <i class="fas fa-clock" style="color: #BDCF00;"></i>
                             <span>50 دقيقة</span>
                           </div>
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 8px 12px; border-radius: 12px; font-size: 12px; color: #666; font-weight: 600;">
+                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                             <i class="fas fa-child" style="color: #BDCF00;"></i>
-                            <span>7 سنوات فما فوق</span>
+                            <span>7 سنوات وأكثر</span>
                           </div>
                         </div>
-                        <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 8px 12px; border-radius: 12px; font-size: 12px; color: #666; font-weight: 600;">
+                        <div style="display: flex; justify-content: flex-start; gap: 10px; flex-wrap: wrap;">
+                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                             <i class="fas fa-users" style="color: #BDCF00;"></i>
                             <span>3 ممثلين</span>
                           </div>
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 8px 12px; border-radius: 12px; font-size: 12px; color: #666; font-weight: 600;">
-                            <i class="fas fa-language" style="color: #BDCF00;"></i>
-                            <span>عربي</span>
+                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                            <i class="fas fa-heart" style="color: #BDCF00;"></i>
+                            <span>عاطفي</span>
                           </div>
                         </div>
                       </div>
                       
-                      <div style="display: flex; gap: 12px; justify-content: center;">
-                        <button class="btn-reserve" onclick="window.handleReservation('le-petit-prince-ar')">
-                          ${user ? 'احجز' : 'احجز'}
+                      <!-- Buttons -->
+                      <div style="display: flex; gap: 12px; justify-content: flex-start; margin-bottom: 20px;">
+                        <button class="btn-reserve" onclick="window.handleReservation('le-petit-prince-ar')" style="background: #BDCF00; color: white; padding: 12px 24px; border-radius: 8px; border: none; font-weight: 600; font-size: 14px; min-width: 120px;">
+                          احجز
                         </button>
-                        <button class="btn-details" onclick="window.location.href='/spectacle-le-petit-prince'">التفاصيل</button>
+                        <button class="btn-details" onclick="window.handleDetails('le-petit-prince-ar')" style="background: transparent; color: #BDCF00; padding: 12px 24px; border: 2px solid #BDCF00; border-radius: 8px; font-weight: 600; font-size: 14px; min-width: 120px;">التفاصيل</button>
                       </div>
                     </div>
                   </div>
@@ -928,54 +1102,60 @@ export default function Spectacles() {
 
               <!-- Tara sur la Lune -->
               <div class="col-lg-6 col-md-6 spectacle-item" data-category="primaire">
-                <div class="spectacle-card fade-in-up visible">
+                <div class="spectacle-card fade-in-up visible" style="background: url('https://edjs.art/assets/img/Asset%209@4x.png') center/cover; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden; width: 100%; height: 400px; display: flex; transition: all 0.4s ease; position: relative; margin: 20px 0;">
+                  <!-- Status Badge -->
                   <div style="position: absolute; top: 15px; right: 15px; z-index: 10;">
-                    <div class="spectacle-card__status" style="background: #6f42c1;">Disponible</div>
+                    <div class="spectacle-card__status" style="background: #6f42c1; color: white; padding: 6px 12px; border-radius: 15px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Disponible</div>
                   </div>
                   
-                  <div style="width: 50%; height: 100%; position: relative; overflow: hidden; background: url('https://edjs.art/assets/img/Asset 9@4x.png') center/cover, linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); display: flex; align-items: center; justify-content: center;">
-                    <img src="https://edjs.art/assets/img/spectacles/tara-sur-la-lune.png" alt="Tara sur la Lune Affiche" style="width: 70%; height: 70%; object-fit: contain; padding: 10px;" />
-                    <img src="https://edjs.art/assets/img/spectacles elements/tara@4x.png" alt="Tara Character" style="position: absolute; bottom: 10px; right: 10px; width: 130px; height: 130px; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));" />
+                  <!-- Left Side: Affiche -->
+                  <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
+                    <img src="/assets/img/spectacles/tara-sur-la-lune.png" alt="Tara sur la Lune" style="width: 150%; height: 120%; object-fit: contain;" />
+                    <!-- Character Image -->
+                    <img src="/src/assets/spectacles elements/tara@4x.png" alt="Tara Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
                   </div>
                   
-                  <div style="width: 50%; padding: 25px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                    <div style="width: 100%;">
-                      <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px; margin-top: 25px;">
-                        <div class="spectacle-card__date">Oct 2025</div>
+                  <!-- Right Side: Content -->
+                  <div style="width: 50%; padding: 25px 80px 25px 5px; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="width: 100%; margin-left: 30px;">
+                      <!-- Date Badge -->
+                      <div style="margin-bottom: 15px;">
+                        <div class="spectacle-card__date" style="color: #999; font-size: 12px; font-weight: 600; text-transform: uppercase;">Oct 2025</div>
                       </div>
                       
-                      <h3 class="spectacle-card__title">TARA SUR LA LUNE</h3>
+                      <!-- Title -->
+                      <h3 class="spectacle-card__title" style="color: #000; font-size: 32px; font-weight: 800; margin-bottom: 15px; line-height: 1.2; font-family: 'Amatic SC', cursive; background: white; padding: 8px 15px; border-radius: 8px; display: inline-block;">TARA SUR LA LUNE</h3>
                       
-                      <p class="spectacle-card__description">Une aventure spatiale extraordinaire qui emmène les enfants dans un voyage magique vers la lune, stimulant leur imagination et leur curiosité.</p>
-                      
+                      <!-- Info badges -->
                       <div style="margin-bottom: 25px;">
-                        <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 8px 12px; border-radius: 12px; font-size: 12px; color: #666; font-weight: 600;">
+                        <div style="display: flex; justify-content: flex-start; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                             <i class="fas fa-clock" style="color: #6f42c1;"></i>
                             <span>45 minutes</span>
                           </div>
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 8px 12px; border-radius: 12px; font-size: 12px; color: #666; font-weight: 600;">
+                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                             <i class="fas fa-child" style="color: #6f42c1;"></i>
                             <span>5 ans et +</span>
                           </div>
                         </div>
-                        <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 8px 12px; border-radius: 12px; font-size: 12px; color: #666; font-weight: 600;">
+                        <div style="display: flex; justify-content: flex-start; gap: 10px; flex-wrap: wrap;">
+                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                             <i class="fas fa-users" style="color: #6f42c1;"></i>
                             <span>4 comédiens</span>
                           </div>
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 8px 12px; border-radius: 12px; font-size: 12px; color: #666; font-weight: 600;">
+                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                             <i class="fas fa-star" style="color: #6f42c1;"></i>
                             <span>Interactif</span>
                           </div>
                         </div>
                       </div>
                       
-                      <div style="display: flex; gap: 12px; justify-content: center;">
-                        <button class="btn-reserve" onclick="window.handleReservation('tara-sur-la-lune')" style="background: #6f42c1;">
-                          ${user ? 'Réserver maintenant' : 'Réserver'}
+                      <!-- Buttons -->
+                      <div style="display: flex; gap: 12px; justify-content: flex-start; margin-bottom: 20px;">
+                        <button class="btn-reserve" onclick="window.handleReservation('tara-sur-la-lune')" style="background: #6f42c1; color: white; padding: 12px 24px; border-radius: 8px; border: none; font-weight: 600; font-size: 14px; min-width: 120px;">
+                          Réserver
                         </button>
-                        <button class="btn-details" onclick="window.location.href='/spectacle-tara-sur-la-lune'">Détails</button>
+                        <button class="btn-details" onclick="window.handleDetails('tara-sur-la-lune')" style="background: transparent; color: #6f42c1; padding: 12px 24px; border: 2px solid #6f42c1; border-radius: 8px; font-weight: 600; font-size: 14px; min-width: 120px;">Détails</button>
                       </div>
                     </div>
                   </div>
@@ -984,54 +1164,60 @@ export default function Spectacles() {
 
               <!-- Mirath Atfal -->
               <div class="col-lg-6 col-md-6 spectacle-item" data-category="primaire">
-                <div class="spectacle-card fade-in-up visible">
+                <div class="spectacle-card fade-in-up visible" style="background: url('https://edjs.art/assets/img/Asset%209@4x.png') center/cover; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden; width: 100%; height: 400px; display: flex; transition: all 0.4s ease; position: relative; margin: 20px 0;">
+                  <!-- Status Badge -->
                   <div style="position: absolute; top: 15px; right: 15px; z-index: 10;">
-                    <div class="spectacle-card__status" style="background: #dc3545;">Disponible</div>
+                    <div class="spectacle-card__status" style="background: #dc3545; color: white; padding: 6px 12px; border-radius: 15px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Disponible</div>
                   </div>
                   
-                  <div style="width: 50%; height: 100%; position: relative; overflow: hidden; background: url('https://edjs.art/assets/img/Asset 9@4x.png') center/cover, linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); display: flex; align-items: center; justify-content: center;">
-                    <img src="https://edjs.art/assets/img/Affiche Mirath Atfal portrait FR.jpg" alt="Mirath Atfal" style="width: 70%; height: 70%; object-fit: contain; padding: 10px;" />
-                    <img src="https://edjs.art/assets/img/spectacles elements/estevanico@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: 10px; width: 130px; height: 130px; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));" />
+                  <!-- Left Side: Affiche -->
+                  <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
+                    <img src="/assets/img/spectacles/mirat@4x.png" alt="Mirath Atfal" style="width: 150%; height: 120%; object-fit: contain;" />
+                    <!-- Character Image -->
+                    <img src="/src/assets/spectacles elements/estevanico@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
                   </div>
                   
-                  <div style="width: 50%; padding: 25px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                    <div style="width: 100%;">
-                      <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px; margin-top: 25px;">
-                        <div class="spectacle-card__date">Nov 2025</div>
+                  <!-- Right Side: Content -->
+                  <div style="width: 50%; padding: 25px 80px 25px 5px; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="width: 100%; margin-left: 30px;">
+                      <!-- Date Badge -->
+                      <div style="margin-bottom: 15px;">
+                        <div class="spectacle-card__date" style="color: #999; font-size: 12px; font-weight: 600; text-transform: uppercase;">Nov 2025</div>
                       </div>
                       
-                      <h3 class="spectacle-card__title">MIRATH ATFAL</h3>
+                      <!-- Title -->
+                      <h3 class="spectacle-card__title" style="color: #000; font-size: 32px; font-weight: 800; margin-bottom: 15px; line-height: 1.2; font-family: 'Amatic SC', cursive; background: white; padding: 8px 15px; border-radius: 8px; display: inline-block;">MIRATH ATFAL</h3>
                       
-                      <p class="spectacle-card__description">Une découverte culturelle et aventure historique passionnante qui plonge les enfants dans l'héritage arabe et les traditions ancestrales.</p>
-                      
+                      <!-- Info badges -->
                       <div style="margin-bottom: 25px;">
-                        <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 8px 12px; border-radius: 12px; font-size: 12px; color: #666; font-weight: 600;">
-                            <i class="fas fa-clock" style="color: #17a2b8;"></i>
+                        <div style="display: flex; justify-content: flex-start; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
+                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                            <i class="fas fa-clock" style="color: #dc3545;"></i>
                             <span>55 minutes</span>
                           </div>
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 8px 12px; border-radius: 12px; font-size: 12px; color: #666; font-weight: 600;">
-                            <i class="fas fa-child" style="color: #17a2b8;"></i>
+                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                            <i class="fas fa-child" style="color: #dc3545;"></i>
                             <span>8 ans et +</span>
                           </div>
                         </div>
-                        <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 8px 12px; border-radius: 12px; font-size: 12px; color: #666; font-weight: 600;">
-                            <i class="fas fa-users" style="color: #17a2b8;"></i>
+                        <div style="display: flex; justify-content: flex-start; gap: 10px; flex-wrap: wrap;">
+                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                            <i class="fas fa-users" style="color: #dc3545;"></i>
                             <span>5 comédiens</span>
                           </div>
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 8px 12px; border-radius: 12px; font-size: 12px; color: #666; font-weight: 600;">
-                            <i class="fas fa-globe" style="color: #17a2b8;"></i>
+                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                            <i class="fas fa-heart" style="color: #dc3545;"></i>
                             <span>Culturel</span>
                           </div>
                         </div>
                       </div>
                       
-                      <div style="display: flex; gap: 12px; justify-content: center;">
-                        <button class="btn-reserve" onclick="window.handleReservation('estevanico')" style="background: #17a2b8;">
-                          ${user ? 'Réserver maintenant' : 'Réserver'}
+                      <!-- Buttons -->
+                      <div style="display: flex; gap: 12px; justify-content: flex-start; margin-bottom: 20px;">
+                        <button class="btn-reserve" onclick="window.handleReservation('mirath-atfal')" style="background: #dc3545; color: white; padding: 12px 24px; border-radius: 8px; border: none; font-weight: 600; font-size: 14px; min-width: 120px;">
+                          Réserver
                         </button>
-                        <button class="btn-details" onclick="window.location.href='/spectacle-estevanico'">Détails</button>
+                        <button class="btn-details" onclick="window.handleDetails('estevanico')" style="background: transparent; color: #dc3545; padding: 12px 24px; border: 2px solid #dc3545; border-radius: 8px; font-weight: 600; font-size: 14px; min-width: 120px;">Détails</button>
                       </div>
                     </div>
                   </div>
@@ -1040,54 +1226,57 @@ export default function Spectacles() {
 
               <!-- Simple comme bonjour -->
               <div class="col-lg-6 col-md-6 spectacle-item" data-category="primaire">
-                <div class="spectacle-card fade-in-up visible">
+                <div class="spectacle-card fade-in-up visible" style="background: url('https://edjs.art/assets/img/Asset%209@4x.png') center/cover; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden; width: 100%; height: 400px; display: flex; transition: all 0.4s ease; position: relative; margin: 20px 0;">
+                  <!-- Status Badge -->
                   <div style="position: absolute; top: 15px; right: 15px; z-index: 10;">
-                    <div class="spectacle-card__status" style="background: #ffc107;">Disponible</div>
+                    <div class="spectacle-card__status" style="background: #ffc107; color: white; padding: 6px 12px; border-radius: 15px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Disponible</div>
                   </div>
                   
-                  <div style="width: 50%; height: 100%; position: relative; overflow: hidden; background: url('https://edjs.art/assets/img/Asset 9@4x.png') center/cover, linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); display: flex; align-items: center; justify-content: center;">
-                    <img src="https://edjs.art/assets/img/spectacles/simple.png" alt="Simple comme bonjour" style="width: 70%; height: 70%; object-fit: contain; padding: 10px;" />
-                    <img src="https://edjs.art/assets/img/spectacles elements/simple comme bonjour@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: 10px; width: 130px; height: 130px; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));" />
+                  <!-- Left Side: Affiche -->
+                  <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
+                    <img src="/assets/img/spectacles/simple-comme-bonjour.png" alt="Simple comme bonjour" style="width: 150%; height: 120%; object-fit: contain;" />
+                    <!-- Character Image -->
+                    <img src="https://edjs.art/assets/img/spectacles elements/simple comme bonjour@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
                   </div>
                   
-                  <div style="width: 50%; padding: 25px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                    <div style="width: 100%;">
-                      <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px; margin-top: 25px;">
-                        <div class="spectacle-card__date">Déc 2025</div>
+                  <!-- Right Side: Content -->
+                  <div style="width: 50%; padding: 25px 80px 25px 5px; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="width: 100%; margin-left: 30px;">
+                      <!-- Date Badge -->
+                      <div style="margin-bottom: 15px;">
+                        <div class="spectacle-card__date" style="color: #999; font-size: 12px; font-weight: 600; text-transform: uppercase;">Déc 2025</div>
                       </div>
                       
-                      <h3 class="spectacle-card__title">SIMPLE COMME BONJOUR</h3>
+                      <!-- Title -->
+                      <h3 class="spectacle-card__title" style="font-size: 24px; font-weight: 800; margin: 15px 0; line-height: 1.1; background: white; padding: 6px 12px; border-radius: 8px; display: inline-block; color: #333; white-space: nowrap;">SIMPLE COMME BONJOUR</h3>
                       
-                      <p class="spectacle-card__description">Un spectacle musical joyeux et interactif qui célèbre la simplicité de la vie et l'importance des petits bonheurs quotidiens.</p>
                       
-                      <div style="margin-bottom: 25px;">
-                        <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 8px 12px; border-radius: 12px; font-size: 12px; color: #666; font-weight: 600;">
-                            <i class="fas fa-clock" style="color: #ffc107;"></i>
-                            <span>60 minutes</span>
-                          </div>
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 8px 12px; border-radius: 12px; font-size: 12px; color: #666; font-weight: 600;">
-                            <i class="fas fa-child" style="color: #ffc107;"></i>
-                            <span>6 ans et +</span>
-                          </div>
+                      <!-- Info Badges -->
+                      <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                          <i class="fas fa-clock" style="color: #ffc107;"></i>
+                          <span>60 minutes</span>
                         </div>
-                        <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 8px 12px; border-radius: 12px; font-size: 12px; color: #666; font-weight: 600;">
-                            <i class="fas fa-users" style="color: #ffc107;"></i>
-                            <span>2 comédiens</span>
-                          </div>
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 8px 12px; border-radius: 12px; font-size: 12px; color: #666; font-weight: 600;">
-                            <i class="fas fa-music" style="color: #ffc107;"></i>
-                            <span>Musical</span>
-                          </div>
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                          <i class="fas fa-child" style="color: #ffc107;"></i>
+                          <span>6 ans et +</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                          <i class="fas fa-users" style="color: #ffc107;"></i>
+                          <span>3 comédiens</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                          <i class="fas fa-heart" style="color: #ffc107;"></i>
+                          <span>Musical</span>
                         </div>
                       </div>
                       
-                      <div style="display: flex; gap: 12px; justify-content: center;">
-                        <button class="btn-reserve" onclick="window.handleReservation('simple-comme-bonjour')" style="background: #ffc107;">
-                          ${user ? 'Réserver maintenant' : 'Réserver'}
+                      <!-- Buttons -->
+                      <div style="display: flex; gap: 12px; margin-top: 20px; justify-content: flex-start;">
+                        <button class="btn-reserve" onclick="window.handleReservation('simple-comme-bonjour')" style="background: #ffc107; color: white; padding: 12px 24px; border-radius: 8px; border: none; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">
+                          Réserver
                         </button>
-                        <button class="btn-details" onclick="window.location.href='/spectacle-simple-comme-bonjour'">Détails</button>
+                        <button class="btn-details" onclick="window.handleDetails('simple-comme-bonjour')" style="background: transparent; color: #333; padding: 12px 24px; border: 2px solid #333; border-radius: 8px; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">Détails</button>
                       </div>
                     </div>
                   </div>
@@ -1096,54 +1285,57 @@ export default function Spectacles() {
 
               <!-- Charlotte -->
               <div class="col-lg-6 col-md-6 spectacle-item" data-category="primaire">
-                <div class="spectacle-card fade-in-up visible">
+                <div class="spectacle-card fade-in-up visible" style="background: url('https://edjs.art/assets/img/Asset%209@4x.png') center/cover; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden; width: 100%; height: 400px; display: flex; transition: all 0.4s ease; position: relative; margin: 20px 0;">
+                  <!-- Status Badge -->
                   <div style="position: absolute; top: 15px; right: 15px; z-index: 10;">
-                    <div class="spectacle-card__status" style="background: #e91e63;">Disponible</div>
+                    <div class="spectacle-card__status" style="background: #e91e63; color: white; padding: 6px 12px; border-radius: 15px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Disponible</div>
                   </div>
                   
-                  <div style="width: 50%; height: 100%; position: relative; overflow: hidden; background: url('https://edjs.art/assets/img/Asset 9@4x.png') center/cover, linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); display: flex; align-items: center; justify-content: center;">
-                    <img src="https://edjs.art/assets/img/spectacles/charlotte.png" alt="Charlotte" style="width: 70%; height: 70%; object-fit: contain; padding: 10px;" />
-                    <img src="https://edjs.art/assets/img/spectacles elements/charlotte@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: 10px; width: 130px; height: 130px; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));" />
+                  <!-- Left Side: Affiche -->
+                  <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
+                    <img src="/assets/img/spectacles/charlotte.png" alt="Charlotte" style="width: 150%; height: 120%; object-fit: contain;" />
+                    <!-- Character Image -->
+                    <img src="https://edjs.art/assets/img/spectacles elements/charlotte@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
                   </div>
                   
-                  <div style="width: 50%; padding: 25px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                    <div style="width: 100%;">
-                      <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px; margin-top: 25px;">
-                        <div class="spectacle-card__date">Janvier 2026</div>
+                  <!-- Right Side: Content -->
+                  <div style="width: 50%; padding: 25px 80px 25px 5px; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="width: 100%; margin-left: 30px;">
+                      <!-- Date Badge -->
+                      <div style="margin-bottom: 15px;">
+                        <div class="spectacle-card__date" style="color: #999; font-size: 12px; font-weight: 600; text-transform: uppercase;">Janvier 2026</div>
                       </div>
                       
-                      <h3 class="spectacle-card__title">CHARLOTTE</h3>
+                      <!-- Title -->
+                      <h3 class="spectacle-card__title" style="font-size: 32px; font-weight: 800; margin: 15px 0; line-height: 1.2; background: white; padding: 8px 15px; border-radius: 8px; display: inline-block; color: #333;">CHARLOTTE</h3>
                       
-                      <p class="spectacle-card__description">Une histoire touchante de Charlotte découvrant l'amitié, l'empathie et la force des liens humains dans un monde plein de défis.</p>
                       
-                      <div style="margin-bottom: 25px;">
-                        <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 8px 12px; border-radius: 12px; font-size: 12px; color: #666; font-weight: 600;">
-                            <i class="fas fa-clock" style="color: #e91e63;"></i>
-                            <span>55 minutes</span>
-                          </div>
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 8px 12px; border-radius: 12px; font-size: 12px; color: #666; font-weight: 600;">
-                            <i class="fas fa-child" style="color: #e91e63;"></i>
-                            <span>8 ans et +</span>
-                          </div>
+                      <!-- Info Badges -->
+                      <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                          <i class="fas fa-clock" style="color: #e91e63;"></i>
+                          <span>55 minutes</span>
                         </div>
-                        <div style="display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 8px 12px; border-radius: 12px; font-size: 12px; color: #666; font-weight: 600;">
-                            <i class="fas fa-users" style="color: #e91e63;"></i>
-                            <span>3 comédiens</span>
-                          </div>
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 8px 12px; border-radius: 12px; font-size: 12px; color: #666; font-weight: 600;">
-                            <i class="fas fa-heart" style="color: #e91e63;"></i>
-                            <span>Émouvant</span>
-                          </div>
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                          <i class="fas fa-child" style="color: #e91e63;"></i>
+                          <span>8 ans et +</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                          <i class="fas fa-users" style="color: #e91e63;"></i>
+                          <span>3 comédiens</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                          <i class="fas fa-heart" style="color: #e91e63;"></i>
+                          <span>Émotionnel</span>
                         </div>
                       </div>
                       
-                      <div style="display: flex; gap: 12px; justify-content: center;">
-                        <button class="btn-reserve" onclick="window.handleReservation('charlotte')" style="background: #e91e63;">
-                          ${user ? 'Réserver maintenant' : 'Réserver'}
+                      <!-- Buttons -->
+                      <div style="display: flex; gap: 12px; margin-top: 20px; justify-content: flex-start;">
+                        <button class="btn-reserve" onclick="window.handleReservation('charlotte')" style="background: #e91e63; color: white; padding: 12px 24px; border-radius: 8px; border: none; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">
+                          Réserver
                         </button>
-                        <button class="btn-details" onclick="window.location.href='/spectacle-charlotte'">Détails</button>
+                        <button class="btn-details" onclick="window.handleDetails('charlotte')" style="background: transparent; color: #e91e63; padding: 12px 24px; border: 2px solid #e91e63; border-radius: 8px; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">Détails</button>
                       </div>
                     </div>
                   </div>
@@ -1152,50 +1344,57 @@ export default function Spectacles() {
 
               <!-- Estevanico -->
               <div class="col-lg-6 col-md-6 spectacle-item" data-category="primaire">
-                <div class="spectacle-card fade-in-up visible">
-                  <div style="position: absolute; top: 20px; right: 20px; z-index: 10;">
-                    <div class="spectacle-card__status" style="background: #17a2b8; padding: 8px 16px; border-radius: 20px; font-size: 12px;">Disponible</div>
+                <div class="spectacle-card fade-in-up visible" style="background: url('https://edjs.art/assets/img/Asset%209@4x.png') center/cover; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden; width: 100%; height: 400px; display: flex; transition: all 0.4s ease; position: relative; margin: 20px 0;">
+                  <!-- Status Badge -->
+                  <div style="position: absolute; top: 15px; right: 15px; z-index: 10;">
+                    <div class="spectacle-card__status" style="background: #17a2b8; color: white; padding: 6px 12px; border-radius: 15px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Disponible</div>
                   </div>
                   
-                  <div style="width: 50%; height: 100%; position: relative; overflow: hidden; background: url('https://edjs.art/assets/img/Asset 9@4x.png') center/cover, linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); display: flex; align-items: center; justify-content: center;">
-                    <img src="https://edjs.art/assets/img/spectacles/estavine.png" alt="Estevanico" style="width: 70%; height: 70%; object-fit: contain; padding: 10px;" />
-                    <img src="https://edjs.art/assets/img/spectacles elements/estevanico@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: 10px; width: 130px; height: 130px; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));" />
+                  <!-- Left Side: Affiche -->
+                  <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
+                    <img src="/assets/img/spectacles/estevanico.png" alt="Estevanico" style="width: 150%; height: 120%; object-fit: contain;" />
+                    <!-- Character Image -->
+                    <img src="https://edjs.art/assets/img/spectacles elements/estevanico@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
                   </div>
                   
-                  <div style="width: 50%; padding: 25px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                    <div style="width: 100%;">
-                      <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px; margin-top: 25px;">
-                        <div class="spectacle-card__date">Février 2026</div>
+                  <!-- Right Side: Content -->
+                  <div style="width: 50%; padding: 25px 80px 25px 5px; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="width: 100%; margin-left: 30px;">
+                      <!-- Date Badge -->
+                      <div style="margin-bottom: 15px;">
+                        <div class="spectacle-card__date" style="color: #999; font-size: 12px; font-weight: 600; text-transform: uppercase;">Février 2026</div>
                       </div>
                       
-                      <h3 class="spectacle-card__title" style="font-size: 28px; margin-bottom: 10px; line-height: 1.1;">ESTEVANICO</h3>
+                      <!-- Title -->
+                      <h3 class="spectacle-card__title" style="font-size: 32px; font-weight: 800; margin: 15px 0; line-height: 1.2; background: white; padding: 8px 15px; border-radius: 8px; display: inline-block; color: #333;">ESTEVANICO</h3>
                       
-                      <p class="spectacle-card__description" style="font-size: 12px; line-height: 1.4; margin-bottom: 15px; height: 34px; overflow: hidden;">Histoire fascinante épique d'Estevanico,<br>explorateur courageux intrépide et aventurier.</p>
                       
-                      <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center;">
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 12px; border-radius: 15px; font-size: 12px; color: #666; font-weight: 600;">
+                      <!-- Info Badges -->
+                      <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-clock" style="color: #17a2b8;"></i>
-                          <span>50 min</span>
+                          <span>50 minutes</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 12px; border-radius: 15px; font-size: 12px; color: #666; font-weight: 600;">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-child" style="color: #17a2b8;"></i>
-                          <span>10 ans+</span>
+                          <span>10 ans et +</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 12px; border-radius: 15px; font-size: 12px; color: #666; font-weight: 600;">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-users" style="color: #17a2b8;"></i>
                           <span>4 comédiens</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 12px; border-radius: 15px; font-size: 12px; color: #666; font-weight: 600;">
-                          <i class="fas fa-compass" style="color: #17a2b8;"></i>
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                          <i class="fas fa-heart" style="color: #17a2b8;"></i>
                           <span>Aventure</span>
                         </div>
                       </div>
                       
-                      <div style="display: flex; gap: 15px;">
-                        <button class="btn-reserve" onclick="window.handleReservation('estevanico')" style="flex: 1; background: #17a2b8; padding: 12px 20px; border-radius: 10px;">
-                          ${user ? 'Réserver maintenant' : 'Réserver'}
+                      <!-- Buttons -->
+                      <div style="display: flex; gap: 12px; margin-top: 20px; justify-content: flex-start;">
+                        <button class="btn-reserve" onclick="window.handleReservation('estevanico')" style="background: #17a2b8; color: white; padding: 12px 24px; border-radius: 8px; border: none; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">
+                          Réserver
                         </button>
-                        <button class="btn-details" onclick="window.location.href='/spectacle-estevanico'" style="padding: 12px 20px; border-radius: 10px;">Détails</button>
+                        <button class="btn-details" onclick="window.handleDetails('estevanico')" style="background: transparent; color: #17a2b8; padding: 12px 24px; border: 2px solid #17a2b8; border-radius: 8px; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">Détails</button>
                       </div>
                     </div>
                   </div>
@@ -1204,50 +1403,57 @@ export default function Spectacles() {
 
               <!-- L'enfant de l'arbre -->
               <div class="col-lg-6 col-md-6 spectacle-item" data-category="primaire">
-                <div class="spectacle-card fade-in-up visible">
-                  <div style="position: absolute; top: 20px; right: 20px; z-index: 10;">
-                    <div class="spectacle-card__status" style="background: #28a745; padding: 8px 16px; border-radius: 20px; font-size: 12px;">Disponible</div>
+                <div class="spectacle-card fade-in-up visible" style="background: url('https://edjs.art/assets/img/Asset%209@4x.png') center/cover; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden; width: 100%; height: 400px; display: flex; transition: all 0.4s ease; position: relative; margin: 20px 0;">
+                  <!-- Status Badge -->
+                  <div style="position: absolute; top: 15px; right: 15px; z-index: 10;">
+                    <div class="spectacle-card__status" style="background: #28a745; color: white; padding: 6px 12px; border-radius: 15px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Disponible</div>
                   </div>
                   
-                  <div style="width: 50%; height: 100%; position: relative; overflow: hidden; background: url('https://edjs.art/assets/img/Asset 9@4x.png') center/cover, linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); display: flex; align-items: center; justify-content: center;">
-                    <img src="https://edjs.art/assets/img/spectacles/enfant de l'arbre.png" alt="L'enfant de l'arbre" style="width: 70%; height: 70%; object-fit: contain; padding: 10px;" />
-                    <img src="https://edjs.art/assets/img/spectacles elements/larbre@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: 10px; width: 130px; height: 130px; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));" />
+                  <!-- Left Side: Affiche -->
+                  <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
+                    <img src="/assets/img/spectacles/enfant-de-larbre.png" alt="L'enfant de l'arbre" style="width: 150%; height: 120%; object-fit: contain;" />
+                    <!-- Character Image -->
+                    <img src="https://edjs.art/assets/img/spectacles elements/larbre@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
                   </div>
                   
-                  <div style="width: 50%; padding: 25px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                    <div style="width: 100%;">
-                      <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px; margin-top: 40px;">
-                        <div class="spectacle-card__date">Mars 2026</div>
+                  <!-- Right Side: Content -->
+                  <div style="width: 50%; padding: 25px 80px 25px 5px; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="width: 100%; margin-left: 30px;">
+                      <!-- Date Badge -->
+                      <div style="margin-bottom: 15px;">
+                        <div class="spectacle-card__date" style="color: #999; font-size: 12px; font-weight: 600; text-transform: uppercase;">Mars 2026</div>
                       </div>
                       
-                      <h3 class="spectacle-card__title" style="font-size: 28px; margin-bottom: 10px; line-height: 1.1;">L'ENFANT DE L'ARBRE</h3>
+                      <!-- Title -->
+                      <h3 class="spectacle-card__title" style="font-size: 32px; font-weight: 800; margin: 15px 0; line-height: 1.2; background: white; padding: 8px 15px; border-radius: 8px; display: inline-block; color: #333;">L'ENFANT DE L'ARBRE</h3>
                       
-                      <p class="spectacle-card__description" style="font-size: 12px; line-height: 1.4; margin-bottom: 15px; height: 34px; overflow: hidden;">Fable poétique sur la relation<br>entre l'enfant et la nature.</p>
                       
-                      <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center;">
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 12px; border-radius: 15px; font-size: 12px; color: #666; font-weight: 600;">
+                      <!-- Info Badges -->
+                      <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-clock" style="color: #28a745;"></i>
-                          <span>1h05 min</span>
+                          <span>65 minutes</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 12px; border-radius: 15px; font-size: 12px; color: #666; font-weight: 600;">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-child" style="color: #28a745;"></i>
-                          <span>10 ans+</span>
+                          <span>10 ans et +</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 12px; border-radius: 15px; font-size: 12px; color: #666; font-weight: 600;">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-users" style="color: #28a745;"></i>
                           <span>2 comédiens</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 12px; border-radius: 15px; font-size: 12px; color: #666; font-weight: 600;">
-                          <i class="fas fa-tree" style="color: #28a745;"></i>
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                          <i class="fas fa-heart" style="color: #28a745;"></i>
                           <span>Nature</span>
                         </div>
                       </div>
                       
-                      <div style="display: flex; gap: 15px;">
-                        <button class="btn-reserve" onclick="window.handleReservation('lenfant-de-larbre')" style="flex: 1; background: #28a745; padding: 12px 20px; border-radius: 10px;">
-                          ${user ? 'Réserver maintenant' : 'Réserver'}
+                      <!-- Buttons -->
+                      <div style="display: flex; gap: 12px; margin-top: 20px; justify-content: flex-start;">
+                        <button class="btn-reserve" onclick="window.handleReservation('lenfant-de-larbre')" style="background: #28a745; color: white; padding: 12px 24px; border-radius: 8px; border: none; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">
+                          Réserver
                         </button>
-                        <button class="btn-details" onclick="window.location.href='/spectacle-lenfant-de-larbre'" style="padding: 12px 20px; border-radius: 10px;">Détails</button>
+                        <button class="btn-details" onclick="window.handleDetails('lenfant-de-larbre')" style="background: transparent; color: #28a745; padding: 12px 24px; border: 2px solid #28a745; border-radius: 8px; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">Détails</button>
                       </div>
                     </div>
                   </div>
@@ -1256,50 +1462,57 @@ export default function Spectacles() {
 
               <!-- Antigone -->
               <div class="col-lg-6 col-md-6 spectacle-item" data-category="college">
-                <div class="spectacle-card fade-in-up visible">
-                  <div style="position: absolute; top: 20px; right: 20px; z-index: 10;">
-                    <div class="spectacle-card__status" style="background: #6f42c1; padding: 8px 16px; border-radius: 20px; font-size: 12px;">Disponible</div>
+                <div class="spectacle-card fade-in-up visible" style="background: url('https://edjs.art/assets/img/Asset%209@4x.png') center/cover; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden; width: 100%; height: 400px; display: flex; transition: all 0.4s ease; position: relative; margin: 20px 0;">
+                  <!-- Status Badge -->
+                  <div style="position: absolute; top: 15px; right: 15px; z-index: 10;">
+                    <div class="spectacle-card__status" style="background: #6f42c1; color: white; padding: 6px 12px; border-radius: 15px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Disponible</div>
                   </div>
                   
-                  <div style="width: 50%; height: 100%; position: relative; overflow: hidden; background: url('https://edjs.art/assets/img/Asset 9@4x.png') center/cover, linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); display: flex; align-items: center; justify-content: center;">
-                    <img src="https://edjs.art/assets/img/spectacles/antigone.png" alt="Antigone" style="width: 70%; height: 70%; object-fit: contain; padding: 10px;" />
-                    <img src="https://edjs.art/assets/img/PION DE CHESS.png" alt="Character" style="position: absolute; bottom: 10px; right: 10px; width: 130px; height: 130px; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));" />
+                  <!-- Left Side: Affiche -->
+                  <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
+                    <img src="/assets/img/spectacles/antigone.png" alt="Antigone" style="width: 150%; height: 120%; object-fit: contain;" />
+                    <!-- Character Image -->
+                    <img src="https://edjs.art/assets/img/PION DE CHESS.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
                   </div>
                   
-                  <div style="width: 50%; padding: 25px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                    <div style="width: 100%;">
-                      <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px; margin-top: 25px;">
-                        <div class="spectacle-card__date">Avril 2026</div>
+                  <!-- Right Side: Content -->
+                  <div style="width: 50%; padding: 25px 80px 25px 5px; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="width: 100%; margin-left: 30px;">
+                      <!-- Date Badge -->
+                      <div style="margin-bottom: 15px;">
+                        <div class="spectacle-card__date" style="color: #999; font-size: 12px; font-weight: 600; text-transform: uppercase;">Avril 2026</div>
                       </div>
                       
-                      <h3 class="spectacle-card__title" style="font-size: 28px; margin-bottom: 10px; line-height: 1.1;">ANTIGONE, SOPHOCLE</h3>
+                      <!-- Title -->
+                      <h3 class="spectacle-card__title" style="font-size: 32px; font-weight: 800; margin: 15px 0; line-height: 1.2; background: white; padding: 8px 15px; border-radius: 8px; display: inline-block; color: #333;">ANTIGONE, SOPHOCLE</h3>
                       
-                      <p class="spectacle-card__description" style="font-size: 12px; line-height: 1.4; margin-bottom: 15px; height: 34px; overflow: hidden;">Tragédie intemporelle de Sophocle<br>adaptée pour jeunes.</p>
                       
-                      <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center;">
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 12px; border-radius: 15px; font-size: 12px; color: #666; font-weight: 600;">
+                      <!-- Info Badges -->
+                      <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-clock" style="color: #6f42c1;"></i>
-                          <span>60 min</span>
+                          <span>60 minutes</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 12px; border-radius: 15px; font-size: 12px; color: #666; font-weight: 600;">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-child" style="color: #6f42c1;"></i>
-                          <span>12 ans+</span>
+                          <span>12 ans et +</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 12px; border-radius: 15px; font-size: 12px; color: #666; font-weight: 600;">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-users" style="color: #6f42c1;"></i>
                           <span>5 comédiens</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 12px; border-radius: 15px; font-size: 12px; color: #666; font-weight: 600;">
-                          <i class="fas fa-theater-masks" style="color: #6f42c1;"></i>
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                          <i class="fas fa-heart" style="color: #6f42c1;"></i>
                           <span>Tragédie</span>
                         </div>
                       </div>
                       
-                      <div style="display: flex; gap: 15px;">
-                        <button class="btn-reserve" onclick="window.handleReservation('antigone')" style="flex: 1; background: #6f42c1; padding: 12px 20px; border-radius: 10px;">
-                          ${user ? 'Réserver maintenant' : 'Réserver'}
+                      <!-- Buttons -->
+                      <div style="display: flex; gap: 12px; margin-top: 20px; justify-content: flex-start;">
+                        <button class="btn-reserve" onclick="window.handleReservation('antigone')" style="background: #6f42c1; color: white; padding: 12px 24px; border-radius: 8px; border: none; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">
+                          Réserver
                         </button>
-                        <button class="btn-details" onclick="window.location.href='/spectacle-antigone'" style="padding: 12px 20px; border-radius: 10px;">Détails</button>
+                        <button class="btn-details" onclick="window.handleDetails('antigone')" style="background: transparent; color: #6f42c1; padding: 12px 24px; border: 2px solid #6f42c1; border-radius: 8px; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">Détails</button>
                       </div>
                     </div>
                   </div>
@@ -1308,50 +1521,116 @@ export default function Spectacles() {
 
               <!-- Alice chez les merveilles -->
               <div class="col-lg-6 col-md-6 spectacle-item" data-category="primaire">
-                <div class="spectacle-card fade-in-up visible">
-                  <div style="position: absolute; top: 20px; right: 20px; z-index: 10;">
-                    <div class="spectacle-card__status" style="background: #e83e8c; padding: 8px 16px; border-radius: 20px; font-size: 12px;">Disponible</div>
+                <div class="spectacle-card fade-in-up visible" style="background: url('https://edjs.art/assets/img/Asset%209@4x.png') center/cover; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden; width: 100%; height: 400px; display: flex; transition: all 0.4s ease; position: relative; margin: 20px 0;">
+                  <!-- Status Badge -->
+                  <div style="position: absolute; top: 15px; right: 15px; z-index: 10;">
+                    <div class="spectacle-card__status" style="background: #e83e8c; color: white; padding: 6px 12px; border-radius: 15px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Disponible</div>
                   </div>
                   
-                  <div style="width: 50%; height: 100%; position: relative; overflow: hidden; background: url('https://edjs.art/assets/img/Asset 9@4x.png') center/cover, linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%); display: flex; align-items: center; justify-content: center;">
-                    <img src="https://edjs.art/assets/img/spectacles/alice chez le .png" alt="Alice chez les merveilles" style="width: 70%; height: 70%; object-fit: contain; padding: 10px;" />
-                    <img src="https://edjs.art/assets/img/spectacles elements/alice@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: 10px; width: 130px; height: 130px; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));" />
+                  <!-- Left Side: Affiche -->
+                  <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
+                    <img src="/assets/img/spectacles/alice.png" alt="Alice chez les merveilles" style="width: 150%; height: 120%; object-fit: contain;" />
+                    <!-- Character Image -->
+                    <img src="https://edjs.art/assets/img/spectacles elements/alice@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
                   </div>
                   
-                  <div style="width: 50%; padding: 25px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
-                    <div style="width: 100%;">
-                      <div style="display: flex; justify-content: center; align-items: center; margin-bottom: 20px; margin-top: 25px;">
-                        <div class="spectacle-card__date">Mai 2026</div>
+                  <!-- Right Side: Content -->
+                  <div style="width: 50%; padding: 25px 80px 25px 5px; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="width: 100%; margin-left: 30px;">
+                      <!-- Date Badge -->
+                      <div style="margin-bottom: 15px;">
+                        <div class="spectacle-card__date" style="color: #999; font-size: 12px; font-weight: 600; text-transform: uppercase;">Mai 2026</div>
                       </div>
                       
-                      <h3 class="spectacle-card__title" style="font-size: 28px; margin-bottom: 10px; line-height: 1.1;">ALICE CHEZ LES MERVEILLES</h3>
+                      <!-- Title -->
+                      <h3 class="spectacle-card__title" style="font-size: 32px; font-weight: 800; margin: 15px 0; line-height: 1.2; background: white; padding: 8px 15px; border-radius: 8px; display: inline-block; color: #333;">ALICE CHEZ LES MERVEILLES</h3>
                       
-                      <p class="spectacle-card__description" style="font-size: 12px; line-height: 1.4; margin-bottom: 15px; height: 34px; overflow: hidden;">Adaptation moderne du classique<br>de Carroll surprenante.</p>
                       
-                      <div style="display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; justify-content: center;">
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 12px; border-radius: 15px; font-size: 12px; color: #666; font-weight: 600;">
+                      <!-- Info Badges -->
+                      <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-clock" style="color: #e83e8c;"></i>
-                          <span>50 min</span>
+                          <span>50 minutes</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 12px; border-radius: 15px; font-size: 12px; color: #666; font-weight: 600;">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-child" style="color: #e83e8c;"></i>
-                          <span>5 ans+</span>
+                          <span>5 ans et +</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 12px; border-radius: 15px; font-size: 12px; color: #666; font-weight: 600;">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-users" style="color: #e83e8c;"></i>
                           <span>4 comédiens</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 12px; border-radius: 15px; font-size: 12px; color: #666; font-weight: 600;">
-                          <i class="fas fa-magic" style="color: #e83e8c;"></i>
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                          <i class="fas fa-heart" style="color: #e83e8c;"></i>
                           <span>Fantastique</span>
                         </div>
                       </div>
                       
-                      <div style="display: flex; gap: 15px;">
-                        <button class="btn-reserve" onclick="window.handleReservation('alice-chez-les-merveilles')" style="flex: 1; background: #e83e8c; padding: 12px 20px; border-radius: 10px;">
-                          ${user ? 'Réserver maintenant' : 'Réserver'}
+                      <!-- Buttons -->
+                      <div style="display: flex; gap: 12px; margin-top: 20px; justify-content: flex-start;">
+                        <button class="btn-reserve" onclick="window.handleReservation('alice-chez-les-merveilles')" style="background: #e83e8c; color: white; padding: 12px 24px; border-radius: 8px; border: none; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">
+                          Réserver
                         </button>
-                        <button class="btn-details" onclick="window.location.href='/spectacle-alice-chez-les-merveilles'" style="padding: 12px 20px; border-radius: 10px;">Détails</button>
+                        <button class="btn-details" onclick="window.handleDetails('alice-chez-les-merveilles')" style="background: transparent; color: #e83e8c; padding: 12px 24px; border: 2px solid #e83e8c; border-radius: 8px; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">Détails</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- L'EAU LA -->
+              <div class="col-lg-6 col-md-6 spectacle-item" data-category="primaire">
+                <div class="spectacle-card fade-in-up visible" style="background: url('https://edjs.art/assets/img/Asset%209@4x.png') center/cover; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden; width: 100%; height: 400px; display: flex; transition: all 0.4s ease; position: relative; margin: 20px 0;">
+                  <!-- Status Badge -->
+                  <div style="position: absolute; top: 15px; right: 15px; z-index: 10;">
+                    <div class="spectacle-card__status" style="background: #20c997; color: white; padding: 6px 12px; border-radius: 15px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Disponible</div>
+                  </div>
+                  
+                  <!-- Left Side: Affiche -->
+                  <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
+                    <img src="/assets/img/spectacles/leau-la.png" alt="L'EAU LA" style="width: 150%; height: 120%; object-fit: contain;" />
+                    <!-- Character Image -->
+                    <img src="/src/assets/spectacles elements/leau@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
+                  </div>
+                  
+                  <!-- Right Side: Content -->
+                  <div style="width: 50%; padding: 25px 80px 25px 5px; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="width: 100%; margin-left: 30px;">
+                      <!-- Date Badge -->
+                      <div style="margin-bottom: 15px;">
+                        <div class="spectacle-card__date" style="color: #999; font-size: 12px; font-weight: 600; text-transform: uppercase;">Juin 2026</div>
+                      </div>
+                      
+                      <!-- Title -->
+                      <h3 class="spectacle-card__title" style="font-size: 32px; font-weight: 800; margin: 15px 0; line-height: 1.2; background: white; padding: 8px 15px; border-radius: 8px; display: inline-block; color: #333;">L'EAU LA</h3>
+                      
+                      
+                      <!-- Info Badges -->
+                      <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                          <i class="fas fa-clock" style="color: #20c997;"></i>
+                          <span>45 minutes</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                          <i class="fas fa-child" style="color: #20c997;"></i>
+                          <span>6 ans et +</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                          <i class="fas fa-users" style="color: #20c997;"></i>
+                          <span>3 comédiens</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                          <i class="fas fa-heart" style="color: #20c997;"></i>
+                          <span>Écologique</span>
+                        </div>
+                      </div>
+                      
+                      <!-- Buttons -->
+                      <div style="display: flex; gap: 12px; margin-top: 20px; justify-content: flex-start;">
+                        <button class="btn-reserve" onclick="window.handleReservation('leau-la')" style="background: #20c997; color: white; padding: 12px 24px; border-radius: 8px; border: none; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">
+                          Réserver
+                        </button>
+                        <button class="btn-details" onclick="window.handleDetails('leau-la')" style="background: transparent; color: #20c997; padding: 12px 24px; border: 2px solid #20c997; border-radius: 8px; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">Détails</button>
                       </div>
                     </div>
                   </div>
@@ -1380,105 +1659,67 @@ export default function Spectacles() {
           console.log('handleReservation function set up:', typeof window.handleReservation);
         </script>
 
-        <!-- EDJS Footer -->
-        <div class="vs-footer bg-title">
-          <div class="vs-footer__top z-index-common space-extra-top space-extra-bottom">
-            <div class="container">
-              <div class="row gy-4 gx-5">
-                <div class="col-lg-4 col-md-6 wow animate__fadeInUp" data-wow-delay="0.25s">
-                  <div class="vs-footer__widget">
-                    <div class="vs-footer__logo text-center text-md-start mb-25">
-                      <a href="https://edjs.art/" class="vs-logo">
-                        <img src="https://edjs.art/assets/img/Asset%202@4x.png" alt="L'École du jeune spectateur" style="height: 80px; width: auto; max-width: none !important;">
-                      </a>
-                    </div>
-                    <p class="vs-footer__desc text-center text-md-start" style="color: white;">
-                      Chaque élève a l'opportunité de découvrir et d'explorer la richesse des arts de la scène à travers la danse, le théâtre et la musique, qui sont au cœur de notre programme.
-                    </p>
-                    <div class="icon-call justify-content-center justify-content-md-start pt-10 mb-10">
-                      <span class="icon-call__icon"><i class="fa-solid fa-phone-rotary"></i></span>
-                      <div class="icon-call__content">
-                        <span class="icon-call__title">support téléphonique</span>
-                        <a href="tel:+212522981085" class="icon-call__number">+212 5 22 98 10 85</a>
-                      </div>
-                    </div>
-                    <div class="social-style social-style--version2 w-100 justify-content-center justify-content-md-start pt-25">
-                      <span class="social-style__label">suivez-nous :</span>
-                      <a href="#"><i class="fab fa-facebook-f"></i></a>
-                      <a href="#"><i class="fab fa-linkedin-in"></i></a>
-                      <a href="#"><i class="fab fa-youtube"></i></a>
-                    </div>
+        <!-- Simple Footer -->
+        <footer style="background: #000; color: white; padding: 40px 0 0 0; margin: 0;">
+          <div class="container">
+            <div class="row">
+              <div class="col-md-6">
+                <div style="margin-bottom: 20px;">
+                  <img src="https://edjs.art/assets/img/Asset%202@4x.png" alt="L'École des jeunes spectateurs" style="height: 60px; width: auto; filter: brightness(0) invert(1);">
+                </div>
+                <p style="color: #ccc; font-size: 14px; margin-bottom: 15px;">
+                  L'École des jeunes spectateurs - Arts de la scène pour tous
+                </p>
+                <div style="color: #ccc; font-size: 14px;">
+                  <div style="margin-bottom: 5px;">
+                    <i class="fas fa-phone" style="margin-right: 8px; color: #BDCF00;"></i>
+                    +212 5 22 98 10 85
+                  </div>
+                  <div>
+                    <i class="fas fa-envelope" style="margin-right: 8px; color: #BDCF00;"></i>
+                    contact@edjs.art
                   </div>
                 </div>
-                <div class="col-lg-4 col-md-6 wow animate__fadeInUp" data-wow-delay="0.35s">
-                  <div class="vs-footer__widget">
-                    <h3 class="vs-footer__title" style="color: #cccccc;">Navigation</h3>
-                    <div class="vs-footer__menu">
-                      <ul class="vs-footer__menu--list">
-                        <li><a href="https://edjs.art/">Accueil</a></li>
-                        <li><a href="/spectacles">Spectacles</a></li>
-                        <li><a href="https://edjs.art/gallery.html">Galerie</a></li>
-                        <li><a href="https://edjs.art/partners.html">Partenaires</a></li>
-                        <li><a href="https://edjs.art/contact.html">Contact</a></li>
-                      </ul>
-                    </div>
+              </div>
+              <div class="col-md-6">
+                <div style="display: flex; justify-content: space-between; flex-wrap: wrap;">
+                  <div style="margin-bottom: 20px;">
+                    <h5 style="color: white; font-size: 16px; margin-bottom: 15px;">Navigation</h5>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                      <li style="margin-bottom: 8px;"><a href="/" style="color: #ccc; text-decoration: none; font-size: 14px;">Accueil</a></li>
+                      <li style="margin-bottom: 8px;"><a href="/spectacles" style="color: #ccc; text-decoration: none; font-size: 14px;">Spectacles</a></li>
+                      <li style="margin-bottom: 8px;"><a href="https://edjs.art/gallery.html" style="color: #ccc; text-decoration: none; font-size: 14px;">Galerie</a></li>
+                      <li style="margin-bottom: 8px;"><a href="https://edjs.art/contact.html" style="color: #ccc; text-decoration: none; font-size: 14px;">Contact</a></li>
+                    </ul>
                   </div>
-                </div>
-                <div class="col-lg-4 col-md-6 wow animate__fadeInUp" data-wow-delay="0.45s">
-                  <div class="vs-footer__widget">
-                    <h3 class="vs-footer__title" style="color: #cccccc;">Gallery</h3>
-                    <div class="sidebar-gallery" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
-                      <div class="gallery-thumb" style="aspect-ratio: 1; overflow: hidden;">
-                        <img src="https://edjs.art/assets/img/Les_Trois_Brigands_Web_026.jpg" alt="Gallery Image" style="width: 100%; height: 100%; object-fit: cover;">
-                        <a href="https://edjs.art/assets/img/Les_Trois_Brigands_Web_026.jpg" class="popup-image gal-btn"><i class="fal fa-plus" style="color: white;"></i></a>
-                      </div>
-                      <div class="gallery-thumb" style="aspect-ratio: 1; overflow: hidden;">
-                        <img src="https://edjs.art/assets/img/Casse-Noisette_Web_007.jpg" alt="Gallery Image" style="width: 100%; height: 100%; object-fit: cover;">
-                        <a href="https://edjs.art/assets/img/Casse-Noisette_Web_007.jpg" class="popup-image gal-btn"><i class="fal fa-plus" style="color: white;"></i></a>
-                      </div>
-                      <div class="gallery-thumb" style="aspect-ratio: 1; overflow: hidden;">
-                        <img src="https://edjs.art/assets/img/Le_Petit_Prince_Web_032.jpg" alt="Gallery Image" style="width: 100%; height: 100%; object-fit: cover;">
-                        <a href="https://edjs.art/assets/img/Le_Petit_Prince_Web_032.jpg" class="popup-image gal-btn"><i class="fal fa-plus" style="color: white;"></i></a>
-                      </div>
-                      <div class="gallery-thumb" style="aspect-ratio: 1; overflow: hidden;">
-                        <img src="https://edjs.art/assets/img/Gretel_Hansel_Web_023.jpg" alt="Gallery Image" style="width: 100%; height: 100%; object-fit: cover;">
-                        <a href="https://edjs.art/assets/img/Gretel_Hansel_Web_023.jpg" class="popup-image gal-btn"><i class="fal fa-plus" style="color: white;"></i></a>
-                      </div>
-                      <div class="gallery-thumb" style="aspect-ratio: 1; overflow: hidden;">
-                        <img src="https://edjs.art/assets/img/Dans_la_peau_de_Cyrano_Web_016.jpg" alt="Gallery Image" style="width: 100%; height: 100%; object-fit: cover;">
-                        <a href="https://edjs.art/assets/img/Dans_la_peau_de_Cyrano_Web_016.jpg" class="popup-image gal-btn"><i class="fal fa-plus" style="color: white;"></i></a>
-                      </div>
-                      <div class="gallery-thumb" style="aspect-ratio: 1; overflow: hidden;">
-                        <img src="https://edjs.art/assets/img/Tara_Sur_La_Lune_Web_012.jpg" alt="Gallery Image" style="width: 100%; height: 100%; object-fit: cover;">
-                        <a href="https://edjs.art/assets/img/Tara_Sur_La_Lune_Web_012.jpg" class="popup-image gal-btn"><i class="fal fa-plus" style="color: white;"></i></a>
-                      </div>
+                  <div style="margin-bottom: 20px;">
+                    <h5 style="color: white; font-size: 16px; margin-bottom: 15px;">Suivez-nous</h5>
+                    <div style="display: flex; gap: 10px;">
+                      <a href="#" style="color: #BDCF00; font-size: 18px;"><i class="fab fa-facebook-f"></i></a>
+                      <a href="#" style="color: #BDCF00; font-size: 18px;"><i class="fab fa-linkedin-in"></i></a>
+                      <a href="#" style="color: #BDCF00; font-size: 18px;"><i class="fab fa-youtube"></i></a>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div class="vs-footer__bottom bg-theme-color-1">
-            <div class="container">
-              <div class="row gy-3 gx-5 align-items-center justify-content-center justify-content-lg-between flex-column-reverse flex-lg-row">
-                <div class="col-md-auto">
-                  <p class="vs-footer__copyright mb-0" style="color: white;">
-                    Copyright © <span id="currentYear">2025</span>
-                    <a href="https://edjs.art/">L'École des jeunes spectateurs</a>. Tous droits réservés.
-                  </p>
-                </div>
-                <div class="col-md-auto">
-                  <ul class="vs-footer__bottom--menu">
-                    <li><a href="https://edjs.art/contact.html">Conditions Générales</a></li>
-                    <li><a href="https://edjs.art/contact.html">Politique de Confidentialité</a></li>
-                  </ul>
-                </div>
-              </div>
+            <hr style="border-color: #333; margin: 30px 0 0 0;">
+            <div style="text-align: center; color: #888; font-size: 12px; padding: 20px 0; margin: 0;">
+              © 2025 L'École des jeunes spectateurs. Tous droits réservés.
             </div>
           </div>
-        </div>
+        </footer>
 
         <style>
+          body {
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          
+          html, body {
+            height: 100%;
+            overflow-x: hidden;
+          }
           /* Footer Styles */
           .vs-footer {
             background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
@@ -1671,6 +1912,17 @@ export default function Spectacles() {
               gap: 15px;
               text-align: center;
             }
+          }
+          
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+          }
+          
+          #root {
+            margin: 0 !important;
+            padding: 0 !important;
           }
         </style>
       `

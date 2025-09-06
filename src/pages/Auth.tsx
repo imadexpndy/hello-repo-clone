@@ -103,7 +103,10 @@ const Auth = () => {
       }
       
       console.log('Auth useEffect - No return_url, proceeding with normal flow');
-      checkUserConsent();
+      // Add a small delay to ensure auth state is fully loaded
+      setTimeout(() => {
+        checkUserConsent();
+      }, 500);
     }
   }, [user]);
 
@@ -163,6 +166,8 @@ const Auth = () => {
       }
 
       const role = profile.admin_role || 'b2c_user';
+      console.log('Redirecting user with role:', role);
+      
       switch (role) {
         case 'admin_full':
         case 'super_admin':
@@ -179,11 +184,14 @@ const Auth = () => {
           navigate('/partner');
           break;
         case 'b2c_user':
+        default:
           navigate('/b2c');
           break;
-        default:
-          navigate('/');
       }
+    } else {
+      // If no profile found, default to b2c dashboard
+      console.log('No profile found, redirecting to b2c dashboard');
+      navigate('/b2c');
     }
   };
 
@@ -246,8 +254,8 @@ const handleLogin = async (e: React.FormEvent) => {
         return;
       }
       
-      // Force a full reload to ensure a clean authenticated state
-      window.location.href = '/';
+      // No return_url, proceed with normal user redirect
+      checkUserConsent();
     }
   } catch (error: any) {
     toast({

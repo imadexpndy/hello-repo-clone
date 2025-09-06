@@ -242,7 +242,8 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
           association_id: associationId,
           verification_status: verificationStatus,
           verification_documents: uploadedDocs.length > 0 ? uploadedDocs : null,
-          contact_person: userType === 'association' ? formData.contactPerson : null
+          contact_person: userType === 'association' ? formData.contactPerson : null,
+          admin_role: role // Add the admin_role field which is used by the auth system
         })
         .eq('user_id', authData.user.id);
 

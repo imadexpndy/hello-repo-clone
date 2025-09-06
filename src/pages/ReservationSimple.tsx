@@ -49,23 +49,47 @@ const spectacleNames: { [key: string]: string } = {
   'alice-chez-les-merveilles': 'Alice Chez Les Merveilles'
 };
 
+const spectacleAgeRanges: { [key: string]: { min: number, max: number, description: string } } = {
+  'le-petit-prince': { min: 7, max: 99, description: '7 ans et plus' },
+  'tara-sur-la-lune': { min: 5, max: 99, description: '5 ans et plus' },
+  'estevanico': { min: 8, max: 99, description: '8 ans et plus' },
+  'charlotte': { min: 6, max: 99, description: '6 ans et plus' },
+  'alice-chez-les-merveilles': { min: 5, max: 99, description: '5 ans et plus' }
+};
+
 export default function ReservationSimple() {
   const { spectacleId } = useParams<{ spectacleId: string }>();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const navigate = useNavigate();
   
-  const [currentStep, setCurrentStep] = useState(1);
+  // Skip profile selection if user is already logged in and has profile
+  const [currentStep, setCurrentStep] = useState(profile?.role ? 2 : 1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  // Determine profile type based on user role
+  const getProfileTypeFromRole = (role: string | undefined) => {
+    if (!role) return '';
+    if (['teacher_private', 'teacher_public', 'association'].includes(role)) return 'PRO';
+    if (role === 'b2c_user') return 'Particulier';
+    return '';
+  };
+
+  const getPublicTypeFromRole = (role: string | undefined) => {
+    if (role === 'teacher_private') return 'Écoles privées';
+    if (role === 'teacher_public') return 'Écoles publiques';
+    if (role === 'association') return 'Associations';
+    return '';
+  };
+
   const [reservationData, setReservationData] = useState<ReservationData>({
     spectacle: spectacleId || '',
     selectedSession: null,
-    profileType: '',
+    profileType: getProfileTypeFromRole(profile?.role),
     location: '',
-    publicType: '',
-    fullName: '',
+    publicType: getPublicTypeFromRole(profile?.role),
+    fullName: profile?.full_name || profile?.name || '',
     email: user?.email || '',
-    phone: '',
-    professionalEmail: '',
+    phone: profile?.phone || '',
+    professionalEmail: profile?.professional_email || '',
     establishmentName: '',
     numberOfChildren: 0,
     classLevel: '',
@@ -182,9 +206,14 @@ export default function ReservationSimple() {
             <div className="space-y-6">
               <div className="text-center">
                 <h2 className="text-2xl font-bold text-gray-800 mb-2">Réservation du spectacle</h2>
-                <h3 className="text-xl text-green-600 mb-6">
+                <h3 className="text-xl text-green-600 mb-2">
                   {spectacleNames[reservationData.spectacle] || reservationData.spectacle}
                 </h3>
+                {spectacleAgeRanges[reservationData.spectacle] && (
+                  <p className="text-sm text-gray-600 mb-6">
+                    Âge recommandé: {spectacleAgeRanges[reservationData.spectacle].description}
+                  </p>
+                )}
               </div>
 
               <div className="space-y-4">
@@ -273,9 +302,19 @@ export default function ReservationSimple() {
           {/* Step 2: Form */}
           {currentStep === 2 && (
             <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">
-                Formulaire d'inscription
-              </h2>
+              <div className="text-center mb-6">
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                  Formulaire d'inscription
+                </h2>
+                <h3 className="text-xl text-green-600 mb-2">
+                  {spectacleNames[reservationData.spectacle] || reservationData.spectacle}
+                </h3>
+                {spectacleAgeRanges[reservationData.spectacle] && (
+                  <p className="text-sm text-gray-600">
+                    Âge recommandé: {spectacleAgeRanges[reservationData.spectacle].description}
+                  </p>
+                )}
+              </div>
               
               {reservationData.profileType === 'PRO' ? (
                 <div className="space-y-4">
@@ -353,7 +392,7 @@ export default function ReservationSimple() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Nombre d'enfants *
+                        Nombre de participants *
                       </label>
                       <input
                         type="number"
@@ -366,13 +405,13 @@ export default function ReservationSimple() {
                     </div>
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Niveau des classes *
+                        Niveau d'étude *
                       </label>
                       <input
                         type="text"
                         value={reservationData.classLevel}
                         onChange={(e) => handleInputChange('classLevel', e.target.value)}
-                        placeholder="Ex: CP, CE1, CE2..."
+                        placeholder="Ex: CP, CE1, CE2, 6ème, 5ème..."
                         className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                         required
                       />
@@ -458,7 +497,7 @@ export default function ReservationSimple() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Nombre de tickets souhaités *
+                      Nombre de participants *
                     </label>
                     <input
                       type="number"
@@ -494,12 +533,12 @@ export default function ReservationSimple() {
                     <>
                       <div><strong>Public :</strong> {reservationData.publicType}</div>
                       <div><strong>Établissement :</strong> {reservationData.establishmentName}</div>
-                      <div><strong>Nombre d'enfants :</strong> {reservationData.numberOfChildren}</div>
-                      <div><strong>Niveau :</strong> {reservationData.classLevel}</div>
+                      <div><strong>Nombre de participants :</strong> {reservationData.numberOfChildren}</div>
+                      <div><strong>Niveau d'étude :</strong> {reservationData.classLevel}</div>
                     </>
                   )}
                   {reservationData.profileType === 'Particulier' && (
-                    <div><strong>Nombre de tickets :</strong> {reservationData.numberOfTickets}</div>
+                    <div><strong>Nombre de participants :</strong> {reservationData.numberOfTickets}</div>
                   )}
                   <div><strong>Contact :</strong> {reservationData.fullName} - {reservationData.email}</div>
                 </div>

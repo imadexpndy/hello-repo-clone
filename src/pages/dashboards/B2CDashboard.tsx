@@ -2,13 +2,14 @@ import React from 'react';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Theater, ShoppingCart, Ticket, User, Calendar, LogOut } from 'lucide-react';
+import { Theater, ShoppingCart, Ticket, User, Calendar } from 'lucide-react';
 import { QuickRoleSwitch } from '@/components/QuickRoleSwitch';
+import { UserDropdown } from '@/components/UserDropdown';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
 
 export default function B2CDashboard() {
-  const { profile, signOut } = useAuth();
+  const { profile } = useAuth();
   const navigate = useNavigate();
 
   return (
@@ -17,15 +18,12 @@ export default function B2CDashboard() {
         {/* Simple Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-primary">🎭 EDJS</h1>
+            <img src="/assets/img/logo.svg" alt="EDJS" className="h-8 w-auto" />
             <p className="text-muted-foreground">
               Bonjour {profile?.full_name || profile?.first_name || 'Visiteur'} !
             </p>
           </div>
-          <Button onClick={signOut} variant="outline" size="sm">
-            <LogOut className="h-4 w-4 mr-2" />
-            Déconnexion
-          </Button>
+          <UserDropdown />
         </div>
 
         {/* Main Action - Big and Prominent */}

@@ -49,6 +49,16 @@ export default function AdminRegistrations() {
 
   const fetchRegistrations = async () => {
     try {
+      // First, let's check all profiles to debug
+      const { data: allProfiles, error: allError } = await supabase
+        .from('profiles')
+        .select('id, email, full_name, verification_status, role')
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      console.log('All profiles (debug):', allProfiles);
+      console.log('All profiles error:', allError);
+
       const { data, error } = await supabase
         .from('profiles')
         .select(`
@@ -65,9 +75,16 @@ export default function AdminRegistrations() {
         .in('verification_status', ['pending', 'under_review'])
         .order('created_at', { ascending: false });
 
+      console.log('Pending registrations:', data);
+      console.log('Query error:', error);
+
       if (error) {
         console.error('Supabase error:', error);
-        // If no data exists yet, show empty state instead of error
+        toast({
+          title: "Erreur de base de données",
+          description: `Erreur: ${error.message}`,
+          variant: "destructive",
+        });
         setRegistrations([]);
       } else {
         setRegistrations(data || []);
@@ -76,7 +93,7 @@ export default function AdminRegistrations() {
       console.error('Error fetching registrations:', error);
       toast({
         title: "Erreur",
-        description: "Impossible de charger les demandes d'inscription",
+        description: `Impossible de charger les demandes: ${error.message}`,
         variant: "destructive",
       });
     } finally {
