@@ -1,14 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import GuestReservationModal from './GuestReservationModal';
 import { useAuth } from '@/hooks/useAuth';
+import { Button } from '@/components/ui/button';
+import { ArrowLeft, User, Building } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export default function Spectacles() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [guestModal, setGuestModal] = useState({
     isOpen: false,
     spectacleId: '',
     spectacleName: ''
   });
+
+  // Get user type from session storage
+  const userType = sessionStorage.getItem('userType');
+  const professionalType = sessionStorage.getItem('professionalType');
 
   const handleReservation = (spectacleId: string, spectacleName: string = '') => {
     console.log('handleReservation called with:', spectacleId);
@@ -32,7 +40,51 @@ export default function Spectacles() {
     window.location.href = `/spectacle/${spectacleId}`;
   };
 
+  const getUserTypeLabel = () => {
+    if (userType === 'particulier') {
+      return { label: 'Particulier', icon: User, description: 'Rabat - Casablanca' };
+    } else if (userType === 'professional' && professionalType) {
+      const typeLabels = {
+        'scolaire-privee': 'École Privée',
+        'scolaire-publique': 'École Publique', 
+        'association': 'Association'
+      };
+      return { 
+        label: typeLabels[professionalType] || 'Professionnel', 
+        icon: Building, 
+        description: 'Rabat - Casablanca'
+      };
+    }
+    return null;
+  };
+
+  const goBackToSelection = () => {
+    sessionStorage.removeItem('userType');
+    sessionStorage.removeItem('professionalType');
+    navigate('/user-type-selection');
+  };
+
   useEffect(() => {
+    // Check if user has made a type selection, if not redirect to selection page
+    if (!userType) {
+      navigate('/user-type-selection');
+      return;
+    }
+
+    // Show spectacles section immediately after component mounts
+    setTimeout(() => {
+      const spectaclesSection = document.getElementById('spectaclesSection');
+      const filterSection = document.getElementById('filterSection');
+      
+      if (spectaclesSection) {
+        spectaclesSection.style.display = 'block';
+        spectaclesSection.style.visibility = 'visible';
+      }
+      if (filterSection) {
+        filterSection.style.display = 'block';
+      }
+    }, 100);
+
     // Expose handleReservation to global window object for inline handlers
     (window as any).handleReservation = handleReservation;
     (window as any).handleDetails = handleDetails;
@@ -129,10 +181,7 @@ export default function Spectacles() {
     // Expose functions to window object for inline event handlers
     (window as any).handleReservation = handleReservation;
     (window as any).handleDetails = handleDetails;
-    
-    // Also expose them directly to window for immediate access
-    (window as any).handleReservation = handleReservation;
-    (window as any).handleDetails = handleDetails;
+    (window as any).goBackToSelection = goBackToSelection;
     
     // Expose hideAuthGate function to window for inline onclick
     (window as any).hideAuthGate = () => {
@@ -172,7 +221,9 @@ export default function Spectacles() {
         handleDetails: typeof (window as any).handleDetails
       });
     }, 500);
-  }, [user]);
+  }, [user, userType, navigate]);
+
+  const userTypeInfo = getUserTypeLabel();
 
   return (
     <>
@@ -917,6 +968,25 @@ export default function Spectacles() {
           </div>
         </section>
 
+        <!-- User Type Indicator -->
+        ${userTypeInfo ? `
+        <div style="background: rgba(189, 207, 0, 0.05); border-bottom: 1px solid rgba(189, 207, 0, 0.1); padding: 12px 0;">
+          <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <i class="fas fa-${userTypeInfo.label === 'Particulier' ? 'user' : 'building'}" style="color: #BDCF00; font-size: 18px;"></i>
+              <div>
+                <span style="font-weight: 600; color: #333; font-size: 16px;">${userTypeInfo.label}</span>
+                <span style="color: #666; margin-left: 8px; font-size: 14px;">• ${userTypeInfo.description}</span>
+              </div>
+            </div>
+            <button onclick="goBackToSelection()" style="background: transparent; border: 1px solid #ccc; color: #666; padding: 8px 16px; border-radius: 6px; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+              <i class="fas fa-arrow-left"></i>
+              Changer de profil
+            </button>
+          </div>
+        </div>
+        ` : ''}
+
 
         <!-- Filter Section -->
         <section class="filter-section" id="filterSection" style="display: block; background: #f8f9fa; padding: 60px 0 0 0;">
@@ -925,56 +995,9 @@ export default function Spectacles() {
         </section>  
 
           <!-- Authentication Gate Section -->
-          <section class="auth-gate-section" id="authGateSection" style="display: ${user ? 'none' : 'block'};">
-            <div class="container">
-              <div class="auth-gate-wrapper">
-                <div class="auth-gate-header">
-                  <h2 class="auth-gate-title">Je réserve mon spectacle</h2>
-                  <p class="auth-gate-subtitle">Choisissez votre profil et réservez en quelques clics !</p>
-                  <div class="auth-gate-divider"></div>
-                </div>
-
-                <div class="auth-gate-options">
-                  <div class="auth-option professional">
-                    <div class="option-icon">
-                      <i class="fas fa-building"></i>
-                    </div>
-                    <div class="option-content">
-                      <h3>Professionnel</h3>
-                      <p>Écoles privées, écoles publiques, associations</p>
-                      <a href="/auth" class="auth-btn" id="professionalLoginBtn">
-                        <span>Se connecter</span>
-                        <i class="fas fa-sign-in-alt"></i>
-                      </a>
-                    </div>
-                  </div>
-
-                  <div class="auth-option guest">
-                    <div class="option-icon">
-                      <i class="fas fa-eye"></i>
-                    </div>
-                    <div class="option-content">
-                      <h3>PARTICULIER</h3>
-                      <p>Parents, familles, amis, amoureux du théâtre</p>
-                      <a href="/auth" class="auth-btn login-btn" id="individualLoginBtn">
-                        <span>Se connecter</span>
-                        <i class="fas fa-users"></i>
-                      </a>
-                      <a href="#" class="guest-link" id="guestAccessBtn" style="color: #666; text-decoration: underline; font-size: 14px; margin-top: 10px; display: inline-block;" onclick="showSpectaclesAsGuest(); return false;">
-                        Continuer en tant qu'invité
-                      </a>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="auth-gate-footer">
-                </div>
-              </div>
-            </div>
-          </section>
 
           <!-- Spectacles Section -->
-        <section class="spectacles-grid" id="spectaclesSection">
+        <section class="spectacles-grid" id="spectaclesSection" style="display: block; padding: 60px 0;">
           <div class="container">
             <div class="row g-4">
               <!-- Le Petit Prince -->

@@ -10,6 +10,8 @@ import { UserRoleFixer } from '@/components/UserRoleFixer';
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Unauthorized from "./pages/Unauthorized";
+import UserTypeSelection from "./pages/UserTypeSelection";
+import ProfessionalTypeSelection from "./pages/ProfessionalTypeSelection";
 import AdminDashboard from "./pages/dashboards/AdminDashboard";
 import AdminSpectacles from "./pages/admin/AdminSpectacles";
 import AdminSessions from "./pages/admin/AdminSessions";
@@ -98,7 +100,9 @@ const App = () => {
           <UserRoleFixer />
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Auth />} />
+              <Route path="/" element={<UserTypeSelection />} />
+              <Route path="/user-type-selection" element={<UserTypeSelection />} />
+              <Route path="/professional-type-selection" element={<ProfessionalTypeSelection />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/auth-pero" element={<AuthPero />} />
               <Route path="/unauthorized" element={<Unauthorized />} />

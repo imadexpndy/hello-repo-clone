@@ -36,37 +36,57 @@ export const SESSIONS: Session[] = [
 export const getUserTypeSessions = (spectacleId: string, userType?: string, userCity?: string) => {
   let spectacleSessions = SESSIONS.filter(s => s.spectacleId === spectacleId);
   
-  // Always filter by user's city - strict city filtering
-  const cityKeywords = {
-    'rabat': ['RABAT'],
-    'casablanca': ['CASABLANCA'],
-    'sale': ['RABAT'], // Sale is close to Rabat
-    'temara': ['RABAT'], // Temara is close to Rabat
-    'mohammedia': ['CASABLANCA'], // Mohammedia is close to Casablanca
-  };
+  // Get user type from session storage if not provided
+  const sessionUserType = sessionStorage.getItem('userType');
+  const sessionProfessionalType = sessionStorage.getItem('professionalType');
   
-  const userCityLower = (userCity || 'rabat').toLowerCase();
-  const relevantKeywords = cityKeywords[userCityLower] || [userCityLower.toUpperCase()];
+  // Determine effective user type
+  let effectiveUserType = userType;
+  if (!effectiveUserType && sessionUserType) {
+    if (sessionUserType === 'professional' && sessionProfessionalType) {
+      effectiveUserType = sessionProfessionalType;
+    } else if (sessionUserType === 'particulier') {
+      effectiveUserType = 'particulier';
+    }
+  }
   
-  spectacleSessions = spectacleSessions.filter(session => 
-    relevantKeywords.some(keyword => session.location.includes(keyword))
-  );
+  // For professionals, show sessions from both cities (no city filtering)
+  if (effectiveUserType && ['scolaire-privee', 'scolaire-publique', 'association'].includes(effectiveUserType)) {
+    // Professional users see sessions from all cities
+    switch (effectiveUserType) {
+      case 'scolaire-privee':
+        return spectacleSessions.filter(s => s.audienceType === 'scolaire-privee');
+      case 'scolaire-publique':
+        return spectacleSessions.filter(s => s.audienceType === 'scolaire-publique');
+      case 'association':
+        return spectacleSessions.filter(s => s.audienceType === 'association');
+    }
+  }
   
-  if (!userType) {
-    // Guest users only see public sessions
+  // For particulier users, filter by city
+  if (userCity && (effectiveUserType === 'particulier' || !effectiveUserType)) {
+    const cityKeywords = {
+      'rabat': ['RABAT'],
+      'casablanca': ['CASABLANCA'],
+      'sale': ['RABAT'], // Sale is close to Rabat
+      'temara': ['RABAT'], // Temara is close to Rabat
+      'mohammedia': ['CASABLANCA'], // Mohammedia is close to Casablanca
+    };
+    
+    const userCityLower = userCity.toLowerCase();
+    const relevantKeywords = cityKeywords[userCityLower] || [userCityLower.toUpperCase()];
+    
+    spectacleSessions = spectacleSessions.filter(session => 
+      relevantKeywords.some(keyword => session.location.includes(keyword))
+    );
+  }
+  
+  // Filter by audience type
+  if (!effectiveUserType || effectiveUserType === 'particulier') {
+    // Particulier and guest users only see public sessions
     return spectacleSessions.filter(s => s.audienceType === 'tout-public');
   }
   
-  switch (userType) {
-    case 'scolaire-privee':
-      return spectacleSessions.filter(s => s.audienceType === 'scolaire-privee');
-    case 'scolaire-publique':
-      return spectacleSessions.filter(s => s.audienceType === 'scolaire-publique');
-    case 'association':
-      return spectacleSessions.filter(s => s.audienceType === 'association');
-    case 'particulier':
-      return spectacleSessions.filter(s => s.audienceType === 'tout-public');
-    default:
-      return spectacleSessions.filter(s => s.audienceType === 'tout-public');
-  }
+  // Default fallback
+  return spectacleSessions.filter(s => s.audienceType === 'tout-public');
 };
