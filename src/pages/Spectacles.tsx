@@ -1,26 +1,41 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import GuestReservationModal from './GuestReservationModal';
 import { useAuth } from '@/hooks/useAuth';
-
 
 export default function Spectacles() {
   const { user } = useAuth();
+  const [guestModal, setGuestModal] = useState({
+    isOpen: false,
+    spectacleId: '',
+    spectacleName: ''
+  });
 
-  const handleReservation = (spectacleId: string) => {
-    if (user) {
-      window.location.href = `/reservation-${spectacleId}.html`;
+  const handleReservation = (spectacleId: string, spectacleName: string = '') => {
+    console.log('handleReservation called with:', spectacleId);
+    // Check if user is authenticated first
+    if (!user) {
+      // Show guest reservation modal instead of redirecting
+      setGuestModal({
+        isOpen: true,
+        spectacleId,
+        spectacleName: spectacleName || spectacleId
+      });
     } else {
-      const returnUrl = encodeURIComponent(window.location.href);
-      window.location.href = `/auth?return_url=${returnUrl}`;
+      // Navigate to reservation page for authenticated users
+      window.location.href = `/reservation/${spectacleId}`;
     }
   };
 
   const handleDetails = (spectacleId: string) => {
-    window.location.href = `/spectacle-${spectacleId}.html`;
+    console.log('handleDetails called with:', spectacleId);
+    // Navigate to the spectacle details page
+    window.location.href = `/spectacle/${spectacleId}`;
   };
 
   useEffect(() => {
     // Expose handleReservation to global window object for inline handlers
     (window as any).handleReservation = handleReservation;
+    (window as any).handleDetails = handleDetails;
 
     // Load external stylesheets
     const loadStylesheet = (href: string) => {
@@ -36,103 +51,131 @@ export default function Spectacles() {
     loadStylesheet('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
     loadStylesheet('https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css');
 
-    // Initialize JavaScript functionality after DOM is ready
-    const initializeSpectacles = () => {
-      const professionalBtn = document.getElementById('professionalLoginBtn');
-      const individualBtn = document.getElementById('individualLoginBtn');
-      const backBtn = document.getElementById('backBtn');
+    // Global function for guest access
+    (window as any).showSpectaclesAsGuest = () => {
       const authGateSection = document.getElementById('authGateSection');
-      const filterSection = document.getElementById('filterSection');
       const spectaclesSection = document.getElementById('spectaclesSection');
-
-      // Show spectacles directly if user is authenticated
-      if (user) {
-        if (authGateSection) authGateSection.style.display = 'none';
-        if (filterSection) filterSection.style.display = 'block';
-        if (spectaclesSection) spectaclesSection.style.display = 'block';
-      } else {
-        if (authGateSection) authGateSection.style.display = 'block';
-        if (filterSection) filterSection.style.display = 'none';
-        if (spectaclesSection) spectaclesSection.style.display = 'none';
+      
+      if (authGateSection) {
+        authGateSection.style.display = 'none';
       }
-
-      // Professional login button
-      if (professionalBtn) {
-        professionalBtn.addEventListener('click', (e) => {
-          e.preventDefault();
-          const returnUrl = encodeURIComponent(window.location.href);
-          window.location.href = `/auth?return_url=${returnUrl}`;
-        });
+      if (spectaclesSection) {
+        spectaclesSection.style.display = 'block';
       }
+    };
 
-      // Individual login button
-      if (individualBtn) {
-        individualBtn.addEventListener('click', (e) => {
-          e.preventDefault();
-          const returnUrl = encodeURIComponent(window.location.href);
-          window.location.href = `/auth?return_url=${returnUrl}`;
-        });
-      }
+    // Initialize JavaScript functionality after DOM is ready
+    const initializeDropdown = () => {
+      // Wait a bit for DOM to be ready
+      setTimeout(() => {
+        // User dropdown functionality
+        const userDropdownBtn = document.getElementById('userDropdownBtn');
+        const userDropdownMenu = document.getElementById('userDropdownMenu');
+        const logoutBtn = document.getElementById('logoutBtn');
 
-      // Back button
-      if (backBtn) {
-        backBtn.addEventListener('click', () => {
-          if (authGateSection) authGateSection.style.display = 'block';
-          if (filterSection) filterSection.style.display = 'none';
-          if (spectaclesSection) spectaclesSection.style.display = 'none';
-        });
-      }
-
-      // User dropdown functionality
-      const userDropdownBtn = document.getElementById('userDropdownBtn');
-      const userDropdownMenu = document.getElementById('userDropdownMenu');
-      const logoutBtn = document.getElementById('logoutBtn');
-
-      if (userDropdownBtn && userDropdownMenu) {
-        userDropdownBtn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          userDropdownMenu.classList.toggle('show');
+        console.log('Dropdown elements found:', {
+          userDropdownBtn: !!userDropdownBtn,
+          userDropdownMenu: !!userDropdownMenu,
+          logoutBtn: !!logoutBtn
         });
 
-        // Close dropdown when clicking outside
-        document.addEventListener('click', () => {
-          userDropdownMenu.classList.remove('show');
-        });
+        if (userDropdownBtn && userDropdownMenu) {
+          // Remove any existing listeners first
+          userDropdownBtn.replaceWith(userDropdownBtn.cloneNode(true));
+          const newUserDropdownBtn = document.getElementById('userDropdownBtn');
+          
+          newUserDropdownBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Dropdown button clicked');
+            userDropdownMenu.classList.toggle('show');
+          });
 
-        userDropdownMenu.addEventListener('click', (e) => {
-          e.stopPropagation();
-        });
-      }
+          // Close dropdown when clicking outside
+          document.addEventListener('click', (e) => {
+            const target = e.target as HTMLElement;
+            if (!userDropdownMenu.contains(target) && !newUserDropdownBtn.contains(target)) {
+              userDropdownMenu.classList.remove('show');
+            }
+          });
 
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', async (e) => {
-          e.preventDefault();
-          try {
-            const { createClient } = await import('@supabase/supabase-js');
-            const supabase = createClient(
-              import.meta.env.VITE_SUPABASE_URL,
-              import.meta.env.VITE_SUPABASE_ANON_KEY
-            );
-            await supabase.auth.signOut();
-            // Force page reload to clear auth state
-            window.location.reload();
-          } catch (error) {
-            console.error('Logout error:', error);
-            // Fallback: redirect to auth page
-            window.location.href = '/auth';
-          }
-        });
-      }
+          userDropdownMenu.addEventListener('click', (e) => {
+            e.stopPropagation();
+          });
+        }
+
+        if (logoutBtn) {
+          logoutBtn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            try {
+              const { createClient } = await import('@supabase/supabase-js');
+              const supabase = createClient(
+                import.meta.env.VITE_SUPABASE_URL,
+                import.meta.env.VITE_SUPABASE_ANON_KEY
+              );
+              await supabase.auth.signOut();
+              // Force page reload to clear auth state
+              window.location.reload();
+            } catch (error) {
+              console.error('Logout error:', error);
+              // Fallback: redirect to auth page
+              window.location.href = '/auth';
+            }
+          });
+        }
+      }, 100);
     };
 
     // Expose functions to window object for inline event handlers
     (window as any).handleReservation = handleReservation;
     (window as any).handleDetails = handleDetails;
+    
+    // Also expose them directly to window for immediate access
+    (window as any).handleReservation = handleReservation;
+    (window as any).handleDetails = handleDetails;
+    
+    // Expose hideAuthGate function to window for inline onclick
+    (window as any).hideAuthGate = () => {
+      const authGateSection = document.getElementById('authGateSection');
+      const filterSection = document.getElementById('filterSection');
+      const spectaclesSection = document.getElementById('spectaclesSection');
+      
+      if (authGateSection) authGateSection.style.display = 'none';
+      if (filterSection) filterSection.style.display = 'block';
+      if (spectaclesSection) spectaclesSection.style.display = 'block';
+    };
 
-    setTimeout(initializeSpectacles, 100);
+    // Initialize dropdown and ensure functions are available
+    setTimeout(() => {
+      initializeDropdown();
+      
+      // Double-check function exposure after DOM is ready
+      (window as any).handleReservation = handleReservation;
+      (window as any).handleDetails = handleDetails;
+      
+      // Test both reservation and details buttons
+      const detailsButtons = document.querySelectorAll('.btn-details');
+      const reserveButtons = document.querySelectorAll('.btn-reserve');
+      console.log('Found details buttons:', detailsButtons.length);
+      console.log('Found reservation buttons:', reserveButtons.length);
+      
+      detailsButtons.forEach((btn, index) => {
+        console.log(`Details Button ${index}:`, btn.getAttribute('onclick'));
+      });
+      
+      reserveButtons.forEach((btn, index) => {
+        console.log(`Reserve Button ${index}:`, btn.getAttribute('onclick'));
+      });
+      
+      console.log('Functions exposed to window:', {
+        handleReservation: typeof (window as any).handleReservation,
+        handleDetails: typeof (window as any).handleDetails
+      });
+    }, 500);
   }, [user]);
 
   return (
+    <>
     <div dangerouslySetInnerHTML={{
       __html: `
         <!-- EDJS Header -->
@@ -171,6 +214,8 @@ export default function Spectacles() {
           .logo-section img {
             height: 80px;
             width: auto;
+            max-width: none;
+            object-fit: contain;
             transition: transform 0.3s ease;
           }
 
@@ -186,6 +231,7 @@ export default function Spectacles() {
             gap: 20px;
             align-items: center;
             width: 100%;
+            justify-content: center;
           }
 
           .nav-item {
@@ -235,6 +281,7 @@ export default function Spectacles() {
             overflow: hidden;
             background: #BDCF00;
             color: white;
+            white-space: nowrap;
           }
 
           .auth-btn:hover {
@@ -283,12 +330,17 @@ export default function Spectacles() {
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             min-width: 200px;
             z-index: 1000;
-            display: none;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
             padding: 8px 0;
           }
 
           .user-dropdown-menu.show {
-            display: block;
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
           }
 
           .dropdown-item {
@@ -322,6 +374,20 @@ export default function Spectacles() {
             border-top: 1px solid #eee;
           }
 
+          /* Guest Link Styles */
+          .guest-link {
+            color: #7e8a01;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+          }
+
+          .guest-link:hover {
+            color: #5a6201;
+            text-decoration: underline;
+          }
+
           @media (max-width: 768px) {
             .nav-menu {
               display: none;
@@ -334,6 +400,8 @@ export default function Spectacles() {
             }
             .logo-section img {
               height: 60px;
+              max-width: none;
+              object-fit: contain;
             }
           }
         </style>
@@ -361,15 +429,22 @@ export default function Spectacles() {
               <li class="nav-item">
                 <a href="https://edjs.art/partners" class="nav-link">PARTENAIRES</a>
               </li>
+            </nav>
+
+            <!-- Auth Section -->
+            <div class="auth-section" style="margin-left: auto;">
               ${user ? `
               <!-- User Dropdown for authenticated users -->
-              <li class="nav-item user-dropdown" style="margin-left: auto;">
+              <div class="user-dropdown">
                 <button class="user-dropdown-btn" id="userDropdownBtn">
                   <i class="fas fa-user-circle" style="color: #7e8a01; font-size: 24px; margin-right: 8px;"></i>
                   <span style="color: #333; font-weight: 500;">Bonjour ${user.user_metadata?.full_name || user.email?.split('@')[0] || 'Utilisateur'}</span>
                   <i class="fas fa-chevron-down" style="margin-left: 8px; font-size: 12px; color: #666;"></i>
                 </button>
                 <div class="user-dropdown-menu" id="userDropdownMenu">
+                  <a href="/dashboard" class="dropdown-item">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                  </a>
                   <a href="/spectacles" class="dropdown-item">
                     <i class="fas fa-theater-masks"></i> Spectacles
                   </a>
@@ -379,7 +454,7 @@ export default function Spectacles() {
                   <a href="/profile" class="dropdown-item">
                     <i class="fas fa-user"></i> Profil
                   </a>
-                  <a href="/help" class="dropdown-item">
+                  <a href="/partner/support" class="dropdown-item">
                     <i class="fas fa-question-circle"></i> Aide et support
                   </a>
                   <hr class="dropdown-divider">
@@ -387,25 +462,20 @@ export default function Spectacles() {
                     <i class="fas fa-sign-out-alt"></i> Déconnexion
                   </button>
                 </div>
-              </li>
+              </div>
               ` : `
               <!-- Auth buttons for non-authenticated users -->
-              <li class="nav-item">
+              <div class="auth-buttons" style="display: flex; gap: 15px;">
                 <a href="/auth" class="auth-btn">Se connecter</a>
-              </li>
-              <li class="nav-item">
                 <a href="/auth?mode=register" class="auth-btn">S'inscrire</a>
-              </li>
+              </div>
               `}
-            </nav>
-
-            <!-- Auth Section -->
-            <div class="auth-section">
-              <!-- Mobile Menu Toggle -->
-              <button class="mobile-toggle" id="mobileMenuToggle">
-                <i class="fas fa-bars"></i>
-              </button>
             </div>
+
+            <!-- Mobile Menu Toggle -->
+            <button class="mobile-toggle" id="mobileMenuToggle">
+              <i class="fas fa-bars"></i>
+            </button>
           </div>
         </header>
 
@@ -680,27 +750,6 @@ export default function Spectacles() {
             font-size: 1rem;
             color: #6c757d;
             margin-bottom: 25px;
-          }
-
-          .auth-btn {
-            background: #BDCF00;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 25px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1rem;
-            text-decoration: none;
-          }
-
-          .auth-btn:hover {
-            background: #a8b800;
-            transform: translateY(-2px);
             color: white;
           }
 
@@ -868,62 +917,12 @@ export default function Spectacles() {
           </div>
         </section>
 
-        <!-- Authentication Gate Section -->
-        <section class="auth-gate-section" id="authGateSection" style="display: ${user ? 'none' : 'block'};">
-          <div class="container">
-            <div class="auth-gate-wrapper">
-              <div class="auth-gate-header">
-                <h2 class="auth-gate-title">Je réserve mon spectacle</h2>
-                <p class="auth-gate-subtitle">Choisissez votre profil et réservez en quelques clics !</p>
-                <div class="auth-gate-divider"></div>
-              </div>
-
-              <div class="auth-gate-options">
-                <div class="auth-option professional">
-                  <div class="option-icon">
-                    <i class="fas fa-building"></i>
-                  </div>
-                  <div class="option-content">
-                    <h3>Professionnel</h3>
-                    <p>Écoles privées, écoles publiques, associations</p>
-                    <a href="#" class="auth-btn" id="professionalLoginBtn">
-                      <span>Se connecter</span>
-                      <i class="fas fa-sign-in-alt"></i>
-                    </a>
-                  </div>
-                </div>
-
-                <div class="auth-option guest">
-                  <div class="option-icon">
-                    <i class="fas fa-eye"></i>
-                  </div>
-                  <div class="option-content">
-                    <h3>PARTICULIER</h3>
-                    <p>Parents, familles, amis, amoureux du théâtre</p>
-                    <a href="#" class="auth-btn login-btn" id="individualLoginBtn">
-                      <span>Se connecter</span>
-                      <i class="fas fa-users"></i>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
 
         <!-- Filter Section -->
-        <section class="filter-section" id="filterSection" style="display: ${user ? 'block' : 'none'}; background: #f8f9fa; padding: 60px 0 0 0;">
+        <section class="filter-section" id="filterSection" style="display: block; background: #f8f9fa; padding: 60px 0 0 0;">
           <div class="container">
-            <div class="text-center">
-              <h2 class="filter-title" style="color: #333; text-shadow: none;">Nos Spectacles</h2>
-              <p class="filter-subtitle" style="color: #666; text-shadow: none;">Découvrez notre programmation complète</p>
-              
-              <button class="back-btn" id="backBtn" style="display: ${user ? 'none' : 'inline-flex'};">
-                <i class="fas fa-arrow-left"></i> Retour
-              </button>
-            </div>
           </div>
-          <!-- Breadcrumb End -->
+        </section>  
 
           <!-- Authentication Gate Section -->
           <section class="auth-gate-section" id="authGateSection" style="display: ${user ? 'none' : 'block'};">
@@ -961,7 +960,7 @@ export default function Spectacles() {
                         <span>Se connecter</span>
                         <i class="fas fa-users"></i>
                       </a>
-                      <a href="/auth-pero" class="guest-link" id="guestAccessBtn" style="color: #666; text-decoration: underline; font-size: 14px; margin-top: 10px; display: inline-block;">
+                      <a href="#" class="guest-link" id="guestAccessBtn" style="color: #666; text-decoration: underline; font-size: 14px; margin-top: 10px; display: inline-block;" onclick="showSpectaclesAsGuest(); return false;">
                         Continuer en tant qu'invité
                       </a>
                     </div>
@@ -1029,9 +1028,11 @@ export default function Spectacles() {
                       </div>
                       
                       <!-- Buttons -->
-                      <div style="display: flex; gap: 10px; justify-content: flex-start;">
-                        <button class="btn-reserve" onclick="window.handleReservation('le-petit-prince')" style="background: #BDCF00; color: white; border: none; padding: 10px 20px; border-radius: 12px; font-weight: 700; font-size: 12px; cursor: pointer; transition: all 0.3s ease;">Réserver</button>
-                        <button class="btn-details" onclick="window.handleDetails('le-petit-prince')" style="background: white; color: #2c3e50; border: 2px solid #2c3e50; padding: 10px 20px; border-radius: 12px; font-weight: 700; font-size: 12px; cursor: pointer; transition: all 0.3s ease;">Détails</button>
+                      <div style="display: flex; gap: 12px; justify-content: flex-start; margin-bottom: 20px;">
+                        <button class="btn-reserve" onclick="window.handleReservation('le-petit-prince')" style="background: #BDCF00; color: white; padding: 12px 24px; border-radius: 8px; border: none; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">
+                          Réserver
+                        </button>
+                        <button class="btn-details" onclick="window.handleDetails('le-petit-prince')" style="background: transparent; color: #BDCF00; padding: 12px 24px; border: 2px solid #BDCF00; border-radius: 8px; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">Détails</button>
                       </div>
                     </div>
                   </div>
@@ -1927,5 +1928,13 @@ export default function Spectacles() {
         </style>
       `
     }} />
+    
+    <GuestReservationModal
+      isOpen={guestModal.isOpen}
+      onClose={() => setGuestModal({isOpen: false, spectacleId: '', spectacleName: ''})}
+      spectacleId={guestModal.spectacleId}
+      spectacleName={guestModal.spectacleName}
+    />
+    </>
   );
 }

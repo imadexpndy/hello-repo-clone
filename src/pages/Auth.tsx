@@ -13,7 +13,7 @@ import { LogIn, UserPlus } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { cleanupAuthState } from '@/lib/authCleanup';
 const Auth = () => {
-  const [mode, setMode] = useState<'login' | 'register' | 'consent'>('login');
+  const [mode, setMode] = useState<'login' | 'register' | 'consent' | 'reset-password'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,6 +26,8 @@ const Auth = () => {
   const [adminFullName, setAdminFullName] = useState('Administrator');
   const [adminEmail, setAdminEmail] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   useEffect(() => {
     // Check URL parameters to set initial mode
@@ -54,6 +56,8 @@ const Auth = () => {
     
     if (modeParam === 'register') {
       setMode('register');
+    } else if (modeParam === 'reset-password') {
+      setMode('reset-password');
     } else if (modeParam === 'admin' || adminParam === 'true') {
       setMode('login');
       // Focus on admin login
@@ -476,7 +480,44 @@ const handleLogin = async (e: React.FormEvent) => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="password" className="text-sm font-medium text-foreground">Mot de passe</Label>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password" className="text-sm font-medium text-foreground">Mot de passe</Label>
+                    <button
+                      type="button"
+                      className="text-sm text-primary hover:text-primary/80 transition-colors"
+                      onClick={async () => {
+                        if (!email) {
+                          toast({
+                            title: "Email requis",
+                            description: "Veuillez entrer votre email d'abord",
+                            variant: "destructive",
+                          });
+                          return;
+                        }
+                        
+                        try {
+                          const { error } = await supabase.auth.resetPasswordForEmail(email, {
+                            redirectTo: `${window.location.origin}/auth?mode=reset-password`,
+                          });
+                          
+                          if (error) throw error;
+                          
+                          toast({
+                            title: "Email envoyé",
+                            description: "Vérifiez votre boîte mail pour réinitialiser votre mot de passe",
+                          });
+                        } catch (error: any) {
+                          toast({
+                            title: "Erreur",
+                            description: error.message || "Impossible d'envoyer l'email de réinitialisation",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                    >
+                      Mot de passe oublié ?
+                    </button>
+                  </div>
                   <Input
                     id="password"
                     type="password"
@@ -524,6 +565,116 @@ const handleLogin = async (e: React.FormEvent) => {
 
         {mode === 'register' && (
           <RegistrationForm onBack={() => setMode('login')} />
+        )}
+
+        {mode === 'reset-password' && (
+          <Card className="w-full max-w-md mx-auto bg-white/95 backdrop-blur-sm shadow-2xl border-0 overflow-hidden">
+            <CardHeader className="text-center pb-4 bg-gradient-to-br from-primary/10 to-primary-glow/10">
+              <CardTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
+                Nouveau mot de passe
+              </CardTitle>
+              <CardDescription className="text-muted-foreground mt-2">
+                Choisissez un nouveau mot de passe sécurisé
+              </CardDescription>
+              <div className="w-16 h-1 bg-gradient-to-r from-primary to-primary-glow mx-auto rounded-full mt-4" />
+            </CardHeader>
+            
+            <CardContent className="relative px-8 pb-8">
+              <form onSubmit={async (e) => {
+                e.preventDefault();
+                if (newPassword !== confirmPassword) {
+                  toast({
+                    title: "Erreur",
+                    description: "Les mots de passe ne correspondent pas",
+                    variant: "destructive",
+                  });
+                  return;
+                }
+                
+                if (newPassword.length < 6) {
+                  toast({
+                    title: "Erreur",
+                    description: "Le mot de passe doit contenir au moins 6 caractères",
+                    variant: "destructive",
+                  });
+                  return;
+                }
+                
+                setLoading(true);
+                try {
+                  const { error } = await supabase.auth.updateUser({
+                    password: newPassword
+                  });
+                  
+                  if (error) throw error;
+                  
+                  toast({
+                    title: "Mot de passe mis à jour",
+                    description: "Votre mot de passe a été changé avec succès",
+                  });
+                  
+                  setMode('login');
+                  setNewPassword('');
+                  setConfirmPassword('');
+                } catch (error: any) {
+                  toast({
+                    title: "Erreur",
+                    description: error.message || "Impossible de mettre à jour le mot de passe",
+                    variant: "destructive",
+                  });
+                } finally {
+                  setLoading(false);
+                }
+              }} className="space-y-6">
+                <div className="space-y-2">
+                  <Label htmlFor="new-password" className="text-sm font-medium text-foreground">Nouveau mot de passe</Label>
+                  <Input
+                    id="new-password"
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    required
+                    disabled={loading}
+                    className="h-12 bg-primary/5 border-2 border-primary/20 focus:border-primary/50 focus:bg-primary/8 transition-all duration-300 rounded-lg"
+                    placeholder="••••••••"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirm-password" className="text-sm font-medium text-foreground">Confirmer le mot de passe</Label>
+                  <Input
+                    id="confirm-password"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                    disabled={loading}
+                    className="h-12 bg-primary/5 border-2 border-primary/20 focus:border-primary/50 focus:bg-primary/8 transition-all duration-300 rounded-lg"
+                    placeholder="••••••••"
+                  />
+                </div>
+                <Button 
+                  type="submit" 
+                  variant="glow"
+                  size="xl"
+                  className="w-full mt-8" 
+                  disabled={loading}
+                >
+                  {loading ? 'Mise à jour...' : 'Mettre à jour le mot de passe'}
+                </Button>
+              </form>
+
+              <div className="mt-8 text-center">
+                <Button 
+                  type="button"
+                  variant="outline" 
+                  onClick={() => setMode('login')}
+                  className="w-full h-12 border-2 hover:border-primary/50 hover:bg-primary/5"
+                >
+                  Retour à la connexion
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         )}
       </div>
 

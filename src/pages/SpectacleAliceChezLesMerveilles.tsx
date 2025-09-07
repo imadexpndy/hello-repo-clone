@@ -57,12 +57,13 @@ export default function SpectacleAliceChezLesMerveilles() {
 
           .spectacle-hero {
             position: relative;
-            min-height: 60vh;
+            min-height: 70vh;
             display: flex;
             align-items: center;
             overflow: hidden;
             padding: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: url('https://edjs.art/assets/img/Asset 9@4x.png') center/cover, linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-size: cover, cover;
           }
 
           .hero-container {
@@ -85,7 +86,9 @@ export default function SpectacleAliceChezLesMerveilles() {
           .hero-right {
             flex: 1;
             position: relative;
-            background: url('https://edjs.art/assets/img/Asset 9@4x.png') center/cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
           }
 
           .vintage-tv-container {
@@ -94,6 +97,8 @@ export default function SpectacleAliceChezLesMerveilles() {
             align-items: center;
             height: 100%;
             padding: 2rem;
+            width: 100%;
+            max-width: 400px;
           }
 
           .tv-frame {

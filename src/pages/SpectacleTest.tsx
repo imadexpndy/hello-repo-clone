@@ -31,6 +31,7 @@ export default function SpectacleTest() {
             cursor: 'pointer',
             marginTop: '1rem'
           }}
+          className="spectacle-hero"
           onClick={() => alert('Button works!')}
         >
           Test Button

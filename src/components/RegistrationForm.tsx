@@ -291,7 +291,6 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
         >
           <CardContent className="p-6 md:p-8 text-center relative">
             {/* Decorative elements */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/10 to-transparent rounded-full transform translate-x-16 -translate-y-16" />
             
             <div className="relative z-10">
               <div className="w-16 h-16 md:w-20 md:h-20 mx-auto mb-4 md:mb-6 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center shadow-lg">
@@ -300,7 +299,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
               
               <h3 className="text-xl md:text-2xl font-bold mb-3 text-foreground">Particulier</h3>
               <p className="text-sm md:text-base text-muted-foreground leading-relaxed mb-4 md:mb-6">
-                Parents et familles souhaitant acheter des billets individuellement
+                Parents et familles souhaitant acheter des billets
               </p>
               
               <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-xl p-4 border border-primary/20">
@@ -324,7 +323,6 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
         >
           <CardContent className="p-6 md:p-8 text-center relative">
             {/* Decorative elements */}
-            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/10 to-transparent rounded-full transform translate-x-16 -translate-y-16" />
             
             <div className="relative z-10">
               <div className="w-16 h-16 md:w-20 md:h-20 mx-auto mb-4 md:mb-6 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center shadow-lg">
@@ -333,7 +331,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
               
               <h3 className="text-xl md:text-2xl font-bold mb-3 text-foreground">Professionnel</h3>
               <p className="text-sm md:text-base text-muted-foreground leading-relaxed mb-4 md:mb-6">
-                Écoles, associations, centres de loisirs et organisations
+                Écoles, associations et organisations
               </p>
               
               <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-xl p-4 border border-primary/20">
@@ -387,7 +385,6 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
         <h3 className="text-2xl font-semibold mb-3 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
           Dans quelle ville êtes-vous situé ?
         </h3>
-        <p className="text-muted-foreground text-lg">Sélectionnez votre ville pour voir les organisations disponibles</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
@@ -400,7 +397,6 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
           onClick={() => setFormData(prev => ({...prev, city: 'casablanca'}))}
         >
           <CardContent className="p-8 text-center relative">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/10 to-transparent rounded-full transform translate-x-16 -translate-y-16" />
             
             <div className="relative z-10">
               <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center shadow-lg">
@@ -408,9 +404,6 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
               </div>
               
               <h3 className="text-xl font-bold mb-3 text-foreground">Casablanca</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Centre économique du Maroc
-              </p>
               
               {formData.city === 'casablanca' && (
                 <div className="mt-4 animate-scale-in">
@@ -430,7 +423,6 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
           onClick={() => setFormData(prev => ({...prev, city: 'rabat'}))}
         >
           <CardContent className="p-8 text-center relative">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-primary/10 to-transparent rounded-full transform translate-x-16 -translate-y-16" />
             
             <div className="relative z-10">
               <div className="w-16 h-16 mx-auto mb-6 bg-gradient-to-br from-accent to-accent/80 rounded-2xl flex items-center justify-center shadow-lg">
@@ -438,9 +430,6 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
               </div>
               
               <h3 className="text-xl font-bold mb-3 text-foreground">Rabat</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                Capitale administrative du Maroc
-              </p>
               
               {formData.city === 'rabat' && (
                 <div className="mt-4 animate-scale-in">
@@ -485,12 +474,6 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
 
   const renderUserTypeSelection = () => (
     <div className="space-y-8">
-      <div className="text-center mb-8 animate-fade-in">
-        <h3 className="text-2xl font-semibold mb-3 bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
-          Précisez votre profil professionnel
-        </h3>
-        <p className="text-muted-foreground text-lg">Sélectionnez votre type d'organisation</p>
-      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
@@ -1046,7 +1029,6 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
             <div className="w-24 h-1 bg-gradient-to-r from-primary via-primary-glow to-primary mx-auto rounded-full shadow-glow" />
             <CardDescription className="text-sm md:text-base text-muted-foreground mt-4 max-w-2xl mx-auto leading-relaxed px-4">
               {step === 1 && "Commençons par identifier votre profil pour personnaliser votre expérience théâtrale"}
-              {step === 2 && userCategory === 'b2b' && "Sélectionnez votre ville pour voir les organisations disponibles"}
               {step === 3 && userCategory === 'b2b' && "Précisez votre type d'organisation pour des services adaptés à vos besoins"}
               {step === 4 && "Vos informations personnelles pour compléter votre profil"}
               {step === 5 && "Informations spécifiques à votre organisation pour la validation"}

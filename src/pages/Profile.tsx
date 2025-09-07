@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { DashboardLayout } from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowLeft, User } from 'lucide-react';
+import { User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export default function Profile() {
@@ -93,34 +94,18 @@ export default function Profile() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-      </div>
+      <DashboardLayout title="Mon Profil" subtitle="Chargement...">
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/8 via-primary/4 to-primary/12 p-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center mb-8">
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/b2c')}
-            className="mr-4"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Retour
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Mon Profil</h1>
-            <p className="text-muted-foreground">Gérez vos informations personnelles</p>
-          </div>
-        </div>
-        
-        <div className="max-w-2xl mx-auto">
-
-          <div className="space-y-6">
+    <DashboardLayout title="Mon Profil" subtitle="Gérez vos informations personnelles">
+      <div className="max-w-2xl mx-auto">
+        <div className="space-y-6">
             {/* Profile Info Card */}
             <Card>
               <CardHeader>
@@ -225,9 +210,8 @@ export default function Profile() {
                 </form>
               </CardContent>
             </Card>
-          </div>
         </div>
       </div>
-    </div>
+    </DashboardLayout>
   );
 }

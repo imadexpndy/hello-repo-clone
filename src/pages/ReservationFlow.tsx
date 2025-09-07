@@ -15,7 +15,7 @@ const ReservationFlow = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(2);
   const [userType, setUserType] = useState<string>('');
   const [isGuest, setIsGuest] = useState(false);
   const [selectedSession, setSelectedSession] = useState('');
@@ -30,6 +30,8 @@ const ReservationFlow = () => {
     organizationName: '',
     organizationType: '',
     participantCount: 1,
+    childrenCount: 0,
+    accompaniersCount: 0,
     specialRequests: ''
   });
 
@@ -49,7 +51,7 @@ const ReservationFlow = () => {
       return;
     }
 
-    // Pre-populate form data for logged-in users and skip to step 2
+    // Pre-populate form data for logged-in users and skip organization type selection
     if (user) {
       setFormData(prev => ({
         ...prev,
@@ -61,11 +63,35 @@ const ReservationFlow = () => {
         organizationType: user.user_metadata?.role || ''
       }));
       
-      // Set user type based on their role and skip to step 2
+      // Auto-detect user type from profile and skip directly to session selection (step 2)
       const role = user.user_metadata?.role;
       if (role) {
-        setUserType(role);
-        setStep(2);
+        // Map user roles to reservation types
+        let mappedUserType = '';
+        switch (role) {
+          case 'private_school':
+          case 'private_school_teacher':
+            mappedUserType = 'scolaire-privee';
+            break;
+          case 'public_school':
+          case 'public_school_teacher':
+            mappedUserType = 'scolaire-publique';
+            break;
+          case 'association':
+          case 'association_member':
+            mappedUserType = 'association';
+            break;
+          case 'b2c':
+          case 'b2c_user':
+          case 'individual':
+            mappedUserType = 'particulier';
+            break;
+          default:
+            mappedUserType = role;
+        }
+        
+        setUserType(mappedUserType);
+        setStep(2); // Skip organization type selection, go directly to session selection
       }
     }
   }, [user, spectacle, navigate]);
@@ -107,7 +133,10 @@ const ReservationFlow = () => {
       userTypeForSessions = '';
     }
     
-    return getUserTypeSessions(spectacleId, userTypeForSessions);
+    // Get user's city from profile - ensure we always pass a city for filtering
+    const userCity = user?.user_metadata?.city || user?.user_metadata?.location || 'rabat'; // Default to rabat if no city
+    
+    return getUserTypeSessions(spectacleId, userTypeForSessions, userCity);
   };
 
   if (!spectacle) {
@@ -144,7 +173,7 @@ const ReservationFlow = () => {
             
             {/* Progress indicator */}
             <div className="flex justify-center mt-6 space-x-2">
-              {[1, 2, 3, 4].map((stepNum) => (
+              {[2, 3, 4].map((stepNum) => (
                 <div
                   key={stepNum}
                   className={`w-3 h-3 rounded-full transition-all duration-300 ${
@@ -156,145 +185,7 @@ const ReservationFlow = () => {
           </CardHeader>
           
           <CardContent className="relative px-8 pb-8">
-            {/* Step 1: User Type Selection (if not logged in) */}
-            {step === 1 && !user && (
-              <div className="space-y-6">
-                <div className="text-center mb-6">
-                  <h3 className="text-xl font-semibold text-foreground mb-2">Choisissez votre profil</h3>
-                  <p className="text-muted-foreground">Comment souhaitez-vous réserver ?</p>
-                </div>
-                
-                <div className="grid gap-4">
-                  <div
-                    onClick={() => navigate('/auth')}
-                    className="p-6 border-2 border-primary/20 hover:border-primary/40 hover:bg-primary/5 rounded-lg cursor-pointer transition-all duration-300"
-                  >
-                    <div className="flex items-center space-x-4">
-                      <Building2 className="h-8 w-8 text-primary" />
-                      <div>
-                        <div className="font-semibold text-lg">Professionnel</div>
-                        <div className="text-sm text-muted-foreground">
-                          École, association - Connexion requise
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div
-                    onClick={() => navigate('/auth')}
-                    className="p-6 border-2 border-primary/20 hover:border-primary/40 hover:bg-primary/5 rounded-lg cursor-pointer transition-all duration-300"
-                  >
-                    <div className="flex items-center space-x-4">
-                      <UserCheck className="h-8 w-8 text-primary" />
-                      <div>
-                        <div className="font-semibold text-lg">Particulier avec compte</div>
-                        <div className="text-sm text-muted-foreground">
-                          Connexion pour accéder à votre historique
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  <div
-                    onClick={() => {
-                      setIsGuest(true);
-                      setStep(2);
-                    }}
-                    className="p-6 border-2 border-primary/20 hover:border-primary/40 hover:bg-primary/5 rounded-lg cursor-pointer transition-all duration-300"
-                  >
-                    <div className="flex items-center space-x-4">
-                      <User className="h-8 w-8 text-primary" />
-                      <div>
-                        <div className="font-semibold text-lg">Particulier invité</div>
-                        <div className="text-sm text-muted-foreground">
-                          Réservation rapide sans compte
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
 
-            {/* Step 1: User Type Selection (if logged in) */}
-            {step === 1 && user && (
-              <div className="space-y-6">
-                <div className="text-center mb-6">
-                  <h3 className="text-xl font-semibold text-foreground mb-2">Type de réservation</h3>
-                  <p className="text-muted-foreground">Sélectionnez le type de votre organisation</p>
-                </div>
-                
-                <div className="grid gap-4">
-                  <div
-                    onClick={() => {
-                      setUserType('scolaire-privee');
-                      setStep(2);
-                    }}
-                    className={`p-6 border-2 rounded-lg cursor-pointer transition-all duration-300 ${
-                      userType === 'scolaire-privee'
-                        ? 'border-primary bg-primary/10'
-                        : 'border-primary/20 hover:border-primary/40 hover:bg-primary/5'
-                    }`}
-                  >
-                    <div className="text-center">
-                      <div className="font-semibold text-lg">École Privée</div>
-                      <div className="text-sm text-muted-foreground">Sessions dédiées aux écoles privées</div>
-                    </div>
-                  </div>
-                  
-                  <div
-                    onClick={() => {
-                      setUserType('scolaire-publique');
-                      setStep(2);
-                    }}
-                    className={`p-6 border-2 rounded-lg cursor-pointer transition-all duration-300 ${
-                      userType === 'scolaire-publique'
-                        ? 'border-primary bg-primary/10'
-                        : 'border-primary/20 hover:border-primary/40 hover:bg-primary/5'
-                    }`}
-                  >
-                    <div className="text-center">
-                      <div className="font-semibold text-lg">École Publique</div>
-                      <div className="text-sm text-muted-foreground">Sessions dédiées aux écoles publiques</div>
-                    </div>
-                  </div>
-                  
-                  <div
-                    onClick={() => {
-                      setUserType('association');
-                      setStep(2);
-                    }}
-                    className={`p-6 border-2 rounded-lg cursor-pointer transition-all duration-300 ${
-                      userType === 'association'
-                        ? 'border-primary bg-primary/10'
-                        : 'border-primary/20 hover:border-primary/40 hover:bg-primary/5'
-                    }`}
-                  >
-                    <div className="text-center">
-                      <div className="font-semibold text-lg">Association</div>
-                      <div className="text-sm text-muted-foreground">Sessions dédiées aux associations</div>
-                    </div>
-                  </div>
-                  
-                  <div
-                    onClick={() => {
-                      setUserType('particulier');
-                      setStep(2);
-                    }}
-                    className={`p-6 border-2 rounded-lg cursor-pointer transition-all duration-300 ${
-                      userType === 'particulier'
-                        ? 'border-primary bg-primary/10'
-                        : 'border-primary/20 hover:border-primary/40 hover:bg-primary/5'
-                    }`}
-                  >
-                    <div className="text-center">
-                      <div className="font-semibold text-lg">Particulier</div>
-                      <div className="text-sm text-muted-foreground">Sessions tout public</div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
 
             {/* Step 2: Session Selection */}
             {step === 2 && (
@@ -451,17 +342,48 @@ const ReservationFlow = () => {
                     </>
                   )}
                   
-                  <div className="space-y-2">
-                    <Label htmlFor="participantCount">Nombre de participants</Label>
-                    <Input
-                      id="participantCount"
-                      type="number"
-                      min="1"
-                      value={formData.participantCount}
-                      onChange={(e) => handleInputChange('participantCount', parseInt(e.target.value) || 1)}
-                      className="h-12 bg-primary/5 border-2 border-primary/20 focus:border-primary/50"
-                    />
-                  </div>
+                  {(userType === 'scolaire-privee' || userType === 'scolaire-publique' || userType === 'association') ? (
+                    <>
+                      <div className="space-y-2">
+                        <Label htmlFor="childrenCount">Nombre d'enfants</Label>
+                        <Input
+                          id="childrenCount"
+                          type="number"
+                          min="1"
+                          value={formData.childrenCount || ''}
+                          onChange={(e) => handleInputChange('childrenCount', parseInt(e.target.value) || 0)}
+                          className="h-12 bg-primary/5 border-2 border-primary/20 focus:border-primary/50"
+                        />
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="accompaniersCount">Nombre d'accompagnateurs</Label>
+                        <Input
+                          id="accompaniersCount"
+                          type="number"
+                          min="0"
+                          value={formData.accompaniersCount || ''}
+                          onChange={(e) => handleInputChange('accompaniersCount', parseInt(e.target.value) || 0)}
+                          className="h-12 bg-primary/5 border-2 border-primary/20 focus:border-primary/50"
+                        />
+                        <p className="text-sm text-muted-foreground italic">
+                          Merci de ne pas dépasser 3 accompagnateurs par groupe de 30 enfants
+                        </p>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="space-y-2">
+                      <Label htmlFor="participantCount">Nombre de participants</Label>
+                      <Input
+                        id="participantCount"
+                        type="number"
+                        min="1"
+                        value={formData.participantCount}
+                        onChange={(e) => handleInputChange('participantCount', parseInt(e.target.value) || 1)}
+                        className="h-12 bg-primary/5 border-2 border-primary/20 focus:border-primary/50"
+                      />
+                    </div>
+                  )}
                 </div>
                 
                 <div className="flex space-x-4">

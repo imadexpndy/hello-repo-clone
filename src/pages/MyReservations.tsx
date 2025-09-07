@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { DashboardLayout } from '@/components/DashboardLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, Clock, MapPin, Users, Ticket, ArrowLeft } from 'lucide-react';
+import { Calendar, Clock, MapPin, Users, Ticket } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 interface Reservation {
@@ -97,35 +98,19 @@ const MyReservations = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/8 via-primary/4 to-primary/12">
-        <Card className="w-full max-w-md">
+      <DashboardLayout title="Mes Réservations" subtitle="Accès requis">
+        <Card className="w-full max-w-md mx-auto">
           <CardContent className="p-6 text-center">
             <p className="text-muted-foreground mb-4">Vous devez être connecté pour voir vos réservations.</p>
             <Button onClick={() => navigate('/auth')}>Se connecter</Button>
           </CardContent>
         </Card>
-      </div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/8 via-primary/4 to-primary/12 p-4">
-      <div className="max-w-4xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center mb-8">
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/b2c')}
-            className="mr-4"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Retour
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold text-foreground">Mes Réservations</h1>
-            <p className="text-muted-foreground">Gérez vos réservations de spectacles</p>
-          </div>
-        </div>
+    <DashboardLayout title="Mes Réservations" subtitle="Gérez vos réservations de spectacles">
 
         {loading ? (
           <div className="text-center py-12">
@@ -238,27 +223,26 @@ const MyReservations = () => {
           </div>
         )}
 
-        {/* Quick Actions */}
-        <div className="mt-8 text-center">
-          <Card className="bg-primary/5 border-primary/20">
-            <CardContent className="p-6">
-              <h3 className="font-semibold mb-4">Besoin d'aide ?</h3>
-              <div className="flex flex-wrap justify-center gap-4">
-                <Button variant="outline" size="sm">
-                  Contacter le support
-                </Button>
-                <Button variant="outline" size="sm">
-                  FAQ
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => navigate('/spectacles')}>
-                  Réserver un autre spectacle
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+      {/* Quick Actions */}
+      <div className="mt-8 text-center">
+        <Card className="bg-primary/5 border-primary/20">
+          <CardContent className="p-6">
+            <h3 className="font-semibold mb-4">Besoin d'aide ?</h3>
+            <div className="flex flex-wrap justify-center gap-4">
+              <Button variant="outline" size="sm">
+                Contacter le support
+              </Button>
+              <Button variant="outline" size="sm">
+                FAQ
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => navigate('/spectacles')}>
+                Réserver un autre spectacle
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
-    </div>
+    </DashboardLayout>
   );
 };
 

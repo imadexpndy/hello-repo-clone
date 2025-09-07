@@ -33,8 +33,24 @@ export const SESSIONS: Session[] = [
   // Add more sessions for other spectacles...
 ];
 
-export const getUserTypeSessions = (spectacleId: string, userType?: string) => {
-  const spectacleSessions = SESSIONS.filter(s => s.spectacleId === spectacleId);
+export const getUserTypeSessions = (spectacleId: string, userType?: string, userCity?: string) => {
+  let spectacleSessions = SESSIONS.filter(s => s.spectacleId === spectacleId);
+  
+  // Always filter by user's city - strict city filtering
+  const cityKeywords = {
+    'rabat': ['RABAT'],
+    'casablanca': ['CASABLANCA'],
+    'sale': ['RABAT'], // Sale is close to Rabat
+    'temara': ['RABAT'], // Temara is close to Rabat
+    'mohammedia': ['CASABLANCA'], // Mohammedia is close to Casablanca
+  };
+  
+  const userCityLower = (userCity || 'rabat').toLowerCase();
+  const relevantKeywords = cityKeywords[userCityLower] || [userCityLower.toUpperCase()];
+  
+  spectacleSessions = spectacleSessions.filter(session => 
+    relevantKeywords.some(keyword => session.location.includes(keyword))
+  );
   
   if (!userType) {
     // Guest users only see public sessions

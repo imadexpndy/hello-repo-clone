@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import SpectacleFooter from '@/components/SpectacleFooter';
 
 export default function SpectacleLePetitPrince() {
   const { user } = useAuth();
@@ -35,6 +36,7 @@ export default function SpectacleLePetitPrince() {
   }, [user]);
 
   return (
+    <>
     <div dangerouslySetInnerHTML={{
       __html: `
         <style>
@@ -57,12 +59,13 @@ export default function SpectacleLePetitPrince() {
 
           .spectacle-hero {
             position: relative;
-            min-height: 60vh;
+            min-height: 70vh;
             display: flex;
             align-items: center;
             overflow: hidden;
             padding: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: url('https://edjs.art/assets/img/Asset 9@4x.png') center/cover, linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-size: cover, cover;
           }
 
           .hero-container {
@@ -76,16 +79,19 @@ export default function SpectacleLePetitPrince() {
 
           .hero-left {
             flex: 1;
-            padding: 4rem 2rem;
+            padding: 4rem 2rem 4rem 6rem;
             display: flex;
             align-items: center;
             color: white;
+            margin-left: 5%;
           }
 
           .hero-right {
             flex: 1;
             position: relative;
-            background: url('https://edjs.art/assets/img/Asset 9@4x.png') center/cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
           }
 
           .vintage-tv-container {
@@ -94,6 +100,8 @@ export default function SpectacleLePetitPrince() {
             align-items: center;
             height: 100%;
             padding: 2rem;
+            width: 100%;
+            max-width: 400px;
           }
 
           .tv-frame {
@@ -710,7 +718,7 @@ export default function SpectacleLePetitPrince() {
             }
 
             // Review form submission
-            document.getElementById('reviewForm').addEventListener('submit', function(e) {
+            document.getElementById('reviewForm').addEventListener('submit', async function(e) {
               e.preventDefault();
               const name = document.getElementById('reviewName').value;
               const text = document.getElementById('reviewText').value;
@@ -720,14 +728,38 @@ export default function SpectacleLePetitPrince() {
                 return;
               }
               
-              alert('Merci pour votre avis ! Il sera publié après modération.');
-              this.reset();
-              selectedRating = 0;
-              updateStars(0);
+              // Submit review data
+              const reviewData = {
+                spectacleId: 'le-petit-prince',
+                spectacleName: 'Le Petit Prince',
+                name: name,
+                rating: selectedRating,
+                text: text,
+                date: new Date().toISOString(),
+                status: 'pending'
+              };
+              
+              try {
+                // Log review data for admin dashboard
+                console.log('Review submitted:', reviewData);
+                
+                // Here you would typically send to your backend
+                // await fetch('/api/reviews', { method: 'POST', body: JSON.stringify(reviewData) });
+                
+                alert('Merci pour votre avis ! Il sera publié après modération.');
+                this.reset();
+                selectedRating = 0;
+                updateStars(0);
+              } catch (error) {
+                console.error('Error submitting review:', error);
+                alert('Erreur lors de l\'envoi de votre avis. Veuillez réessayer.');
+              }
             });
           });
         </script>
       `
     }} />
+    <SpectacleFooter />
+    </>
   );
 }

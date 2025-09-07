@@ -37,6 +37,13 @@ import PublicSchoolBooking from "./pages/teacher/PublicSchoolBooking";
 import AssociationBooking from "./pages/association/AssociationBooking";
 import PartnerTicketAllocation from "./pages/partner/PartnerTicketAllocation";
 import B2CDashboard from "./pages/dashboards/B2CDashboard";
+import QuotesPage from "./pages/partner/QuotesPage";
+import InvoicesPage from "./pages/partner/InvoicesPage";
+import SupportPage from "./pages/partner/SupportPage";
+import NotificationsPage from "./pages/partner/NotificationsPage";
+import OffersPage from "./pages/partner/OffersPage";
+import MessagesPage from "./pages/partner/MessagesPage";
+import CalendarPage from "./pages/partner/CalendarPage";
 import B2CBooking from "./pages/b2c/B2CBooking";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
@@ -98,13 +105,25 @@ const App = () => {
               <Route path="/profile" element={<Profile />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
-              <Route path="/reservation/:spectacleId" element={<ReservationFlow />} />
+              <Route path="/reservation/:spectacleId" element={
+                <ProtectedRoute>
+                  <ReservationFlow />
+                </ProtectedRoute>
+              } />
               <Route path="/spectacles" element={<Spectacles />} />
-              <Route path="/spectacle/le-petit-prince" element={<SpectacleMinimal />} />
+              <Route path="/spectacle/le-petit-prince" element={<SpectacleLePetitPrince />} />
               <Route path="/spectacle/tara-sur-la-lune" element={<SpectacleTaraSurLaLune />} />
               <Route path="/spectacle/estevanico" element={<SpectacleEstevanico />} />
               <Route path="/spectacle/charlotte" element={<SpectacleCharlotte />} />
               <Route path="/spectacle/alice-chez-les-merveilles" element={<SpectacleAliceChezLesMerveilles />} />
+              <Route path="/spectacle/le-petit-prince-ar" element={<SpectacleLePetitPrince />} />
+              <Route path="/spectacle/mirath-atfal" element={<SpectacleEstevanico />} />
+              <Route path="/spectacle/simple-comme-bonjour" element={<SpectacleMinimal />} />
+              <Route path="/spectacle/lenfant-de-larbre" element={<SpectacleMinimal />} />
+              <Route path="/spectacle/antigone" element={<SpectacleMinimal />} />
+              <Route path="/spectacle/alice-aux-pays-des-merveilles" element={<SpectacleAliceChezLesMerveilles />} />
+              <Route path="/spectacle/casse-noisette" element={<SpectacleMinimal />} />
+              <Route path="/spectacle/leau-la" element={<SpectacleMinimal />} />
 
               {/* Protected Admin Routes */}
               <Route 
@@ -306,6 +325,58 @@ const App = () => {
                 } 
               />
               <Route 
+                path="/quotes" 
+                element={
+                  <ProtectedRoute allowedRoles={['partner', 'b2c_user', 'b2c', 'b2b']}>
+                    <QuotesPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/invoices" 
+                element={
+                  <ProtectedRoute allowedRoles={['partner', 'b2c_user', 'b2c', 'b2b']}>
+                    <InvoicesPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/support" 
+                element={<SupportPage />} 
+              />
+              <Route 
+                path="/partner/support" 
+                element={<SupportPage />} 
+              />
+              <Route 
+                path="/notifications" 
+                element={
+                  <ProtectedRoute requiredRole="partner">
+                    <NotificationsPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/offers" 
+                element={
+                  <ProtectedRoute requiredRole="partner">
+                    <OffersPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/messages" 
+                element={<MessagesPage />} 
+              />
+              <Route 
+                path="/calendar" 
+                element={
+                  <ProtectedRoute requiredRole="partner">
+                    <CalendarPage />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
                 path="/partner/allocate-tickets" 
                 element={
                   <ProtectedRoute requiredRole="partner">
@@ -328,7 +399,15 @@ const App = () => {
               <Route 
                 path="/b2c" 
                 element={
-                  <ProtectedRoute requiredRole="b2c_user">
+                  <ProtectedRoute allowedRoles={['b2c_user', 'b2c', 'partner', 'b2b']}>
+                    <B2CDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/dashboard" 
+                element={
+                  <ProtectedRoute allowedRoles={['b2c_user', 'b2c', 'partner', 'b2b']}>
                     <B2CDashboard />
                   </ProtectedRoute>
                 } 
@@ -336,7 +415,7 @@ const App = () => {
               <Route 
                 path="/b2c/booking" 
                 element={
-                  <ProtectedRoute requiredRole="b2c_user">
+                  <ProtectedRoute allowedRoles={['b2c_user', 'b2c', 'partner', 'b2b']}>
                     <B2CBooking />
                   </ProtectedRoute>
                 } 
@@ -398,11 +477,6 @@ const App = () => {
               
               {/* Spectacles Routes */}
               <Route path="/spectacles" element={<Spectacles />} />
-              <Route path="/spectacle-le-petit-prince" element={<SpectacleLePetitPrince />} />
-              <Route path="/spectacle-tara-sur-la-lune" element={<SpectacleTaraSurLaLune />} />
-              <Route path="/spectacle-estevanico" element={<SpectacleEstevanico />} />
-              <Route path="/spectacle-charlotte" element={<SpectacleCharlotte />} />
-              <Route path="/spectacle-alice-chez-les-merveilles" element={<SpectacleAliceChezLesMerveilles />} />
               
               {/* Catch-all route */}
               <Route path="*" element={<NotFound />} />
