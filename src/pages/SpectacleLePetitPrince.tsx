@@ -564,6 +564,7 @@ export default function SpectacleLePetitPrince() {
                     <i class="fas fa-calendar-alt"></i>
                     Séances Disponibles
                   </h3>
+                  <SessionsDisplay spectacleId="le-petit-prince" />
                 </div>
 
                 <!-- Booking Info Card -->
