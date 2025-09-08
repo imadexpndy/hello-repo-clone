@@ -374,7 +374,7 @@ export default function SpectacleTaraSurLaLune() {
                     <i class="fas fa-child"></i>${userTypeInfo.getAgeOrStudyText('5 ans et +', getStudyLevelForSpectacle('tara-sur-la-lune'))}
                   </span>
                   <span class="info-pill">
-                    <i class="fas fa-video"></i>Théâtre avec projection
+                    <i class="fas fa-theater-masks"></i>Théâtre avec projection
                   </span>
                 </div>
                 <div class="hero-buttons">
@@ -464,19 +464,9 @@ export default function SpectacleTaraSurLaLune() {
                   </div>
                 </div>
 
-                <!-- Educational Value Card -->
-                <div class="content-card">
-                  <h2 class="card-title">
-                    <i class="fas fa-graduation-cap"></i>
-                    Valeur pédagogique
-                  </h2>
-                  <p>Ce spectacle offre une excellente introduction à l'astronomie et aux sciences spatiales de manière ludique et accessible. Il encourage les enfants à s'intéresser aux sciences tout en développant leur imagination.</p>
-                  
-                  <p>Les enseignants peuvent utiliser cette représentation pour aborder des notions scientifiques comme le système solaire, les phases de la lune, et l'exploration spatiale, tout en travaillant sur des valeurs humaines essentielles comme l'amitié et la persévérance.</p>
-                </div>
 
-                <!-- Gallery Section -->
-                <div class="content-card">
+                <!-- Gallery Section - Disabled -->
+                <div class="content-card" style="display: none;">
                   <h2 class="card-title">
                     <i class="fas fa-images"></i>
                     Galerie Photos

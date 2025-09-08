@@ -119,6 +119,7 @@ const App = () => {
               <Route path="/spectacles" element={<Spectacles />} />
               <Route path="/spectacle/le-petit-prince" element={<SpectacleLePetitPrince />} />
               <Route path="/spectacle/le-petit-prince-ar" element={<SpectacleLePetitPrince />} />
+              <Route path="/spectacle/tara-sur-la-lune" element={<SpectacleTaraSurLaLune />} />
               <Route path="/spectacle/estevanico" element={<SpectacleEstevanico />} />
               <Route path="/spectacle/charlotte" element={<SpectacleCharlotte />} />
               <Route path="/spectacle/alice-chez-les-merveilles" element={<SpectacleAliceChezLesMerveilles />} />

@@ -375,7 +375,7 @@ export default function SpectacleLePetitPrince() {
                     <i class="fas fa-child"></i><span id="age-level-text">${userTypeInfo.getAgeOrStudyText('7 ans et +', getStudyLevelForSpectacle('le-petit-prince'))}</span>
                   </span>
                   <span class="info-pill">
-                    <i class="fas fa-palette"></i>Conte avec dessin sur sable
+                    <i class="fas fa-theater-masks"></i>Conte / Dessin sur Table
                   </span>
                 </div>
                 <div class="hero-buttons">
@@ -465,19 +465,9 @@ export default function SpectacleLePetitPrince() {
                   </div>
                 </div>
 
-                <!-- Educational Value Card -->
-                <div class="content-card">
-                  <h2 class="card-title">
-                    <i class="fas fa-graduation-cap"></i>
-                    Valeur pédagogique
-                  </h2>
-                  <p>Ce spectacle offre une réflexion profonde sur les valeurs humaines essentielles : l'amitié, l'amour, la responsabilité et la quête de sens. Il encourage les enfants à développer leur sensibilité et leur capacité d'émerveillement.</p>
-                  
-                  <p>Les enseignants peuvent utiliser cette représentation pour aborder des thèmes philosophiques adaptés aux enfants, tout en travaillant sur l'expression des émotions et la compréhension des relations humaines.</p>
-                </div>
 
-                <!-- Gallery Section -->
-                <div class="content-card">
+                <!-- Gallery Section - Disabled -->
+                <div class="content-card" style="display: none;">
                   <h2 class="card-title">
                     <i class="fas fa-images"></i>
                     Galerie Photos
@@ -577,7 +567,7 @@ export default function SpectacleLePetitPrince() {
                     <i class="fas fa-calendar-alt"></i>
                     Séances Disponibles
                   </h3>
-                  <SessionsDisplay spectacleId="le-petit-prince" />
+                  <div id="sessions-container"></div>
                 </div>
 
                 <!-- Booking Info Card -->
@@ -604,11 +594,11 @@ export default function SpectacleLePetitPrince() {
                   </div>
                   <div class="info-item">
                     <i class="fas fa-language"></i>
-                    <span>Langue : Français</span>
+                    <span id="language-text">Langue : Français</span>
                   </div>
                   <div class="info-item">
                     <i class="fas fa-heart"></i>
-                    <span>Genre : Conte philosophique</span>
+                    <span>Genre : Conte / Dessin sur Table</span>
                   </div>
                 </div>
 
@@ -626,13 +616,6 @@ export default function SpectacleLePetitPrince() {
                 </div>
 
                 <!-- Author Info Card -->
-                <div class="sidebar-card">
-                  <h3>
-                    <i class="fas fa-user"></i>
-                    À propos de l'auteur
-                  </h3>
-                  <p style="color: var(--text-light); font-size: 0.9rem; line-height: 1.6;">Antoine de Saint-Exupéry (1900-1944) était un écrivain et aviateur français. "Le Petit Prince", publié en 1943, est devenu l'un des livres les plus traduits au monde et continue d'émouvoir les lecteurs de tous âges.</p>
-                </div>
 
                 ${user && (user.user_metadata?.role === 'teacher_private' || user.user_metadata?.role === 'teacher_public' || user.user_metadata?.role === 'association') ? `
                 <!-- Pedagogical Resources Card - Only for Schools -->
@@ -759,6 +742,14 @@ export default function SpectacleLePetitPrince() {
     
     <script dangerouslySetInnerHTML={{
       __html: `
+        // Check if this is Arabic version and update language
+        if (window.location.pathname.includes('le-petit-prince-ar')) {
+          const languageText = document.getElementById('language-text');
+          if (languageText) {
+            languageText.textContent = 'Langue : Arabe';
+          }
+        }
+        
         // Check user type and update age/level display
         const userType = sessionStorage.getItem('userType');
         const professionalType = sessionStorage.getItem('professionalType');

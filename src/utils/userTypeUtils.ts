@@ -22,19 +22,21 @@ export const getUserTypeInfo = () => {
 };
 
 export const getStudyLevelForSpectacle = (spectacleId: string) => {
-  // Define study levels for each spectacle
-  const studyLevels: Record<string, string> = {
-    'le-petit-prince': 'CE2 - 6ème',
-    'tara-sur-la-lune': 'CP - CE2',
-    'estevanico': '4ème - Terminale',
-    'charlotte': 'CE1 - CM2',
-    'alice-chez-les-merveilles': 'CP - CE2',
-    'casse-noisette': 'Maternelle - CP',
-    'leau-la': 'CE2 - 5ème',
-    'lenfant-de-larbre': 'CE1 - 6ème',
-    'antigone': '3ème - Terminale',
-    'simple-comme-bonjour': 'Maternelle - CE1'
+  // Mapping of spectacle IDs to their study levels for professional users
+  const spectacleStudyLevels: Record<string, string> = {
+    'le-petit-prince': 'CM1, CM2, Collège, Lycée',
+  'le-petit-prince-ar': 'CM1, CM2, Collège, Lycée',
+    'tara-sur-la-lune': 'Maternelles, Primaires',
+    'estevanico': 'CE2, CM1, CM2, Collège',
+    'charlotte': 'Du GS au CE2',
+    'alice-chez-les-merveilles': 'MS, GS, CP',
+    'casse-noisette': 'CE1 - 5ème',
+    'antigone': 'Collège, Lycée',
+    'leau-la': 'CM1, CM2, Collège, Lycée',
+    'mirath-atfal': 'Primaire, Collège, Lycée',
+    'simple-comme-bonjour': 'Du GS au CE2',
+    'lenfant-de-larbre': 'CM2, Collège'
   };
   
-  return studyLevels[spectacleId] || 'Tous niveaux';
+  return spectacleStudyLevels[spectacleId] || 'Tous niveaux';
 };

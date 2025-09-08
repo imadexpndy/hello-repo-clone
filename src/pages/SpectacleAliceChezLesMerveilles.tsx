@@ -364,10 +364,13 @@ export default function SpectacleAliceChezLesMerveilles() {
                 <p class="hero-subtitle">Un voyage magique au pays des merveilles et des découvertes extraordinaires</p>
                 <div class="info-pills">
                   <span class="info-pill">
-                    <i class="fas fa-clock"></i>50 minutes
+                    <i class="fas fa-theater-masks"></i>Conte fantastiques
                   </span>
                   <span class="info-pill">
                     <i class="fas fa-users"></i>3 comédiens
+                  </span>
+                  <span class="info-pill">
+                    <i class="fas fa-clock"></i>50 minutes
                   </span>
                   <span class="info-pill">
                     <i class="fas fa-child"></i>${userTypeInfo.getAgeOrStudyText('5 ans et +', getStudyLevelForSpectacle('alice-chez-les-merveilles'))}
@@ -463,19 +466,9 @@ export default function SpectacleAliceChezLesMerveilles() {
                   </div>
                 </div>
 
-                <!-- Educational Value Card -->
-                <div class="content-card">
-                  <h2 class="card-title">
-                    <i class="fas fa-graduation-cap"></i>
-                    Valeur pédagogique
-                  </h2>
-                  <p>Ce spectacle stimule l'imagination et la créativité des enfants tout en abordant des thèmes importants comme la curiosité, le courage et la découverte de soi. Alice inspire les jeunes spectateurs à explorer leur propre monde intérieur.</p>
-                  
-                  <p>Les enseignants peuvent utiliser cette adaptation pour encourager la lecture, développer l'expression orale et aborder les notions de rêve, de réalité et d'identité.</p>
-                </div>
 
-                <!-- Gallery Section -->
-                <div class="content-card">
+                <!-- Gallery Section - Disabled -->
+                <div class="content-card" style="display: none;">
                   <h2 class="card-title">
                     <i class="fas fa-images"></i>
                     Galerie Photos

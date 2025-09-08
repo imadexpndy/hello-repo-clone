@@ -373,7 +373,7 @@ export default function SpectacleCharlotte() {
                     <i class="fas fa-child"></i>${userTypeInfo.getAgeOrStudyText('5 ans et +', getStudyLevelForSpectacle('charlotte'))}
                   </span>
                   <span class="info-pill">
-                    <i class="fas fa-music"></i>Théâtre musical
+                    <i class="fas fa-theater-masks"></i>Théâtre musical
                   </span>
                 </div>
                 <div class="hero-buttons">
@@ -463,19 +463,9 @@ export default function SpectacleCharlotte() {
                   </div>
                 </div>
 
-                <!-- Educational Value Card -->
-                <div class="content-card">
-                  <h2 class="card-title">
-                    <i class="fas fa-graduation-cap"></i>
-                    Valeur pédagogique
-                  </h2>
-                  <p>Ce spectacle aborde des thèmes universels comme l'amitié, la différence et l'acceptation de soi. Il encourage les enfants à développer leur empathie et leur compréhension des autres.</p>
-                  
-                  <p>Les enseignants peuvent utiliser cette représentation pour discuter des relations interpersonnelles, de la confiance en soi et de l'importance de l'entraide dans la communauté.</p>
-                </div>
 
-                <!-- Gallery Section -->
-                <div class="content-card">
+                <!-- Gallery Section - Disabled -->
+                <div class="content-card" style="display: none;">
                   <h2 class="card-title">
                     <i class="fas fa-images"></i>
                     Galerie Photos

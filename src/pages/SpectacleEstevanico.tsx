@@ -373,7 +373,7 @@ export default function SpectacleEstevanico() {
                     <i class="fas fa-child"></i>${userTypeInfo.getAgeOrStudyText('10 ans et +', getStudyLevelForSpectacle('estevanico'))}
                   </span>
                   <span class="info-pill">
-                    <i class="fas fa-music"></i>Théâtre musical
+                    <i class="fas fa-theater-masks"></i>Théâtre historique
                   </span>
                 </div>
                 <div class="hero-buttons">
@@ -463,19 +463,9 @@ export default function SpectacleEstevanico() {
                   </div>
                 </div>
 
-                <!-- Educational Value Card -->
-                <div class="content-card">
-                  <h2 class="card-title">
-                    <i class="fas fa-graduation-cap"></i>
-                    Valeur pédagogique
-                  </h2>
-                  <p>Ce spectacle offre une excellente introduction à l'histoire de l'exploration et aux échanges culturels. Il sensibilise les enfants à la diversité culturelle et à l'importance du respect mutuel entre les peuples.</p>
-                  
-                  <p>Les enseignants peuvent utiliser cette représentation pour aborder l'histoire des grandes découvertes, la géographie du monde et les valeurs de tolérance et d'ouverture d'esprit.</p>
-                </div>
 
-                <!-- Gallery Section -->
-                <div class="content-card">
+                <!-- Gallery Section - Disabled -->
+                <div class="content-card" style="display: none;">
                   <h2 class="card-title">
                     <i class="fas fa-images"></i>
                     Galerie Photos
@@ -652,13 +642,6 @@ export default function SpectacleEstevanico() {
                 </div>
 
                 <!-- Historical Facts Card -->
-                <div class="sidebar-card">
-                  <h3>
-                    <i class="fas fa-scroll"></i>
-                    Contexte historique
-                  </h3>
-                  <p style="color: var(--text-light); font-size: 0.9rem; line-height: 1.6;">Estevanico (vers 1500-1539) était un explorateur marocain qui a participé aux premières expéditions européennes en Amérique du Nord. Il est considéré comme l'un des premiers Africains à avoir exploré le territoire qui deviendra les États-Unis.</p>
-                </div>
 
                 ${user && (user.user_metadata?.role === 'teacher_private' || user.user_metadata?.role === 'teacher_public' || user.user_metadata?.role === 'association') ? `
                 <!-- Pedagogical Resources Card - Only for Schools -->

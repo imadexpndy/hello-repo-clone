@@ -1144,7 +1144,74 @@ export default function Spectacles() {
           </div>
         </div>
         ` : ''}
-
+        <style>
+          /* Responsive button styling for all spectacle cards */
+          @media (max-width: 768px) {
+            .spectacle-btn {
+              flex: none !important;
+              width: 100% !important;
+              margin-bottom: 8px !important;
+              max-width: none !important;
+            }
+            
+            .spectacle-card div[style*="display: flex; gap: 8px"] {
+              flex-direction: column !important;
+              gap: 8px !important;
+            }
+          }
+          
+          @media (max-width: 480px) {
+            .spectacle-btn {
+              font-size: 13px !important;
+              padding: 10px 12px !important;
+              min-height: 44px !important;
+            }
+          }
+        </style>
+        
+        <script>
+          // Update age/study level display based on user type
+          function updateAgeStudyDisplay() {
+            const userType = sessionStorage.getItem('userType');
+            const professionalType = sessionStorage.getItem('professionalType');
+            
+            if (userType === 'professional' && professionalType === 'scolaire-privee') {
+              // Update all age-level displays to show study levels
+              document.querySelectorAll('.age-level-display').forEach(element => {
+                const studyLevel = element.getAttribute('data-study-level');
+                const textSpan = element.querySelector('.age-level-text');
+                if (studyLevel && textSpan) {
+                  textSpan.textContent = studyLevel;
+                }
+              });
+            }
+          }
+          
+          // Run on page load
+          document.addEventListener('DOMContentLoaded', updateAgeStudyDisplay);
+          
+          // Listen for user type changes
+          window.addEventListener('userTypeChanged', updateAgeStudyDisplay);
+          
+          // Hide Le Petit Prince Arabic for private schools
+          function updateSpectacleVisibility() {
+            const userType = sessionStorage.getItem('userType');
+            const professionalType = sessionStorage.getItem('professionalType');
+            const arabicCard = document.getElementById('le-petit-prince-ar-card');
+            
+            if (userType === 'professional' && professionalType === 'scolaire-privee' && arabicCard) {
+              arabicCard.style.display = 'none';
+            } else if (arabicCard) {
+              arabicCard.style.display = 'block';
+            }
+          }
+          
+          // Run on page load
+          document.addEventListener('DOMContentLoaded', updateSpectacleVisibility);
+          
+          // Listen for user type changes
+          window.addEventListener('userTypeChanged', updateSpectacleVisibility);
+        </script>
 
         <!-- Filter Section -->
         <section class="filter-section" id="filterSection" style="display: block; background: #f8f9fa; padding: 60px 0 0 0;">
@@ -1189,11 +1256,11 @@ export default function Spectacles() {
                         <div style="display: flex; justify-content: flex-start; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                             <i class="fas fa-clock" style="color: #BDCF00;"></i>
-                            <span>60 minutes</span>
+                            <span>60 mins</span>
                           </div>
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="7 ans et +" data-study-level="CM1, CM2, Collège, Lycée">
                             <i class="fas fa-child" style="color: #BDCF00;"></i>
-                            <span>7 ans et +</span>
+                            <span class="age-level-text">7 ans et +</span>
                           </div>
                         </div>
                         <div style="display: flex; justify-content: flex-start; gap: 10px; flex-wrap: wrap;">
@@ -1202,18 +1269,18 @@ export default function Spectacles() {
                             <span>2 comédiens</span>
                           </div>
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                            <i class="fas fa-heart" style="color: #BDCF00;"></i>
-                            <span>Émotionnel</span>
+                            <i class="fas fa-palette" style="color: #BDCF00;"></i>
+                            <span>Conte / Dessin sur Table</span>
                           </div>
                         </div>
                       </div>
                       
                       <!-- Buttons -->
                       <div style="display: flex; gap: 8px; justify-content: flex-start; margin-bottom: 20px; flex-wrap: wrap;">
-                        <button class="btn-reserve" onclick="window.handleReservation('le-petit-prince')" style="background: #BDCF00; color: white; padding: 10px 16px; border-radius: 8px; border: none; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">
+                        <button class="btn-reserve spectacle-btn" onclick="window.handleReservation('le-petit-prince')" style="background: #BDCF00; color: white; padding: 10px 16px; border-radius: 8px; border: none; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">
                           Réserver
                         </button>
-                        <button class="btn-details" onclick="window.handleDetails('le-petit-prince')" style="background: transparent; color: #BDCF00; padding: 10px 16px; border: 2px solid #BDCF00; border-radius: 8px; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">Détails</button>
+                        <button class="btn-details spectacle-btn" onclick="window.handleDetails('le-petit-prince')" style="background: transparent; color: #BDCF00; padding: 10px 16px; border: 2px solid #BDCF00; border-radius: 8px; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">Détails</button>
                       </div>
                     </div>
                   </div>
@@ -1221,7 +1288,7 @@ export default function Spectacles() {
               </div>
               
               <!-- Le Petit Prince Arabic -->
-              <div class="col-lg-6 col-md-6 spectacle-item" data-category="primaire">
+              <div class="col-lg-6 col-md-6 spectacle-item" data-category="primaire" id="le-petit-prince-ar-card">
                 <div class="spectacle-card fade-in-up visible" style="background: url('https://edjs.art/assets/img/Asset%209@4x.png') center/cover; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden; width: 100%; height: 400px; display: flex; transition: all 0.4s ease; position: relative; margin: 20px 0;">
                   <!-- Status Badge -->
                   <div style="position: absolute; top: 15px; right: 15px; z-index: 10;">
@@ -1232,7 +1299,7 @@ export default function Spectacles() {
                   <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
                     <img src="/src/assets/spectacles%20elements/petite%20prince.png" alt="الأمير الصغير" style="width: 150%; height: 120%; object-fit: contain;" />
                     <!-- Character Image -->
-                    <img src="/src/assets/spectacles%20elements/petit%20prince@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
+                    <img src="/src/assets/spectacles%20elements/petit%20prince@4x.png" alt="Le Petit Prince Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
                   </div>
                   
                   <!-- Right Side: Content -->
@@ -1253,9 +1320,9 @@ export default function Spectacles() {
                             <i class="fas fa-clock" style="color: #BDCF00;"></i>
                             <span>50 دقيقة</span>
                           </div>
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="7 سنوات وأكثر" data-study-level="CM1, CM2, Collège, Lycée">
                             <i class="fas fa-child" style="color: #BDCF00;"></i>
-                            <span>7 سنوات وأكثر</span>
+                            <span class="age-level-text">7 سنوات وأكثر</span>
                           </div>
                         </div>
                         <div style="display: flex; justify-content: flex-start; gap: 10px; flex-wrap: wrap;">
@@ -1313,21 +1380,21 @@ export default function Spectacles() {
                         <div style="display: flex; justify-content: flex-start; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                             <i class="fas fa-clock" style="color: #6f42c1;"></i>
-                            <span>45 minutes</span>
+                            <span>55 mins</span>
                           </div>
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                            <i class="fas fa-child" style="color: #6f42c1;"></i>
-                            <span>5 ans et +</span>
+                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="5 ans et +" data-study-level="Maternelles, Primaires">
+                            <i class="fas fa-child" style="color: #BDCF00;"></i>
+                            <span class="age-level-text">5 ans et +</span>
                           </div>
                         </div>
                         <div style="display: flex; justify-content: flex-start; gap: 10px; flex-wrap: wrap;">
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                             <i class="fas fa-users" style="color: #6f42c1;"></i>
-                            <span>4 comédiens</span>
+                            <span>1 comédien</span>
                           </div>
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                            <i class="fas fa-star" style="color: #6f42c1;"></i>
-                            <span>Interactif</span>
+                            <i class="fas fa-video" style="color: #6f42c1;"></i>
+                            <span>Théâtre avec projection</span>
                           </div>
                         </div>
                       </div>
@@ -1354,7 +1421,7 @@ export default function Spectacles() {
                   
                   <!-- Left Side: Affiche -->
                   <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
-                    <img src="/assets/img/spectacles/mirat@4x.png" alt="Mirath Atfal" style="width: 150%; height: 120%; object-fit: contain;" />
+                    <img src="/src/assets/spectacles elements/edjs miraat@4x.png" alt="Mirath Atfal" style="width: 150%; height: 120%; object-fit: contain;" />
                     <!-- Character Image -->
                     <img src="/src/assets/spectacles%20elements/estevanico@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
                   </div>
@@ -1375,21 +1442,21 @@ export default function Spectacles() {
                         <div style="display: flex; justify-content: flex-start; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                             <i class="fas fa-clock" style="color: #dc3545;"></i>
-                            <span>55 minutes</span>
+                            <span>60 mins</span>
                           </div>
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="5 ans et +" data-study-level="Maternelles, Primaires">
                             <i class="fas fa-child" style="color: #dc3545;"></i>
-                            <span>8 ans et +</span>
+                            <span class="age-level-text">5 ans et +</span>
                           </div>
                         </div>
                         <div style="display: flex; justify-content: flex-start; gap: 10px; flex-wrap: wrap;">
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                             <i class="fas fa-users" style="color: #dc3545;"></i>
-                            <span>5 comédiens</span>
+                            <span>4 comédiens</span>
                           </div>
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                            <i class="fas fa-heart" style="color: #dc3545;"></i>
-                            <span>Culturel</span>
+                            <i class="fas fa-music" style="color: #dc3545;"></i>
+                            <span>Concert interactif</span>
                           </div>
                         </div>
                       </div>
@@ -1439,9 +1506,9 @@ export default function Spectacles() {
                           <i class="fas fa-clock" style="color: #ffc107;"></i>
                           <span>60 minutes</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="6 ans et +" data-study-level="Maternelles, Primaires, Collège">
                           <i class="fas fa-child" style="color: #ffc107;"></i>
-                          <span>6 ans et +</span>
+                          <span class="age-level-text">6 ans et +</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-users" style="color: #ffc107;"></i>
@@ -1496,19 +1563,19 @@ export default function Spectacles() {
                       <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-clock" style="color: #e91e63;"></i>
-                          <span>55 minutes</span>
+                          <span>50 mins</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="5 ans et +" data-study-level="Maternelles, Primaires">
                           <i class="fas fa-child" style="color: #e91e63;"></i>
-                          <span>8 ans et +</span>
+                          <span class="age-level-text">5 ans et +</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-users" style="color: #e91e63;"></i>
-                          <span>3 comédiens</span>
+                          <span>2 comédiens</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                          <i class="fas fa-heart" style="color: #e91e63;"></i>
-                          <span>Émotionnel</span>
+                          <i class="fas fa-music" style="color: #e91e63;"></i>
+                          <span>Théâtre musical</span>
                         </div>
                       </div>
                       
@@ -1555,7 +1622,7 @@ export default function Spectacles() {
                       <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-clock" style="color: #17a2b8;"></i>
-                          <span>60 minutes</span>
+                          <span>70 mins</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-child" style="color: #17a2b8;"></i>
@@ -1566,8 +1633,8 @@ export default function Spectacles() {
                           <span>3 comédiens</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                          <i class="fas fa-heart" style="color: #17a2b8;"></i>
-                          <span>Aventure</span>
+                          <i class="fas fa-music" style="color: #17a2b8;"></i>
+                          <span>Théâtre musical</span>
                         </div>
                       </div>
                       
@@ -1614,7 +1681,7 @@ export default function Spectacles() {
                       <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-clock" style="color: #28a745;"></i>
-                          <span>65 minutes</span>
+                          <span>65 mins</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-child" style="color: #28a745;"></i>
@@ -1622,11 +1689,11 @@ export default function Spectacles() {
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-users" style="color: #28a745;"></i>
-                          <span>2 comédiens</span>
+                          <span>4 comédiens</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                          <i class="fas fa-heart" style="color: #28a745;"></i>
-                          <span>Nature</span>
+                          <i class="fas fa-theater-masks" style="color: #28a745;"></i>
+                          <span>Théâtre</span>
                         </div>
                       </div>
                       
@@ -1734,9 +1801,9 @@ export default function Spectacles() {
                           <i class="fas fa-clock" style="color: #e83e8c;"></i>
                           <span>50 minutes</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="5 ans et +" data-study-level="Maternelles, Primaires">
                           <i class="fas fa-child" style="color: #e83e8c;"></i>
-                          <span>5 ans et +</span>
+                          <span class="age-level-text">5 ans et +</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-users" style="color: #e83e8c;"></i>
@@ -1793,9 +1860,9 @@ export default function Spectacles() {
                           <i class="fas fa-clock" style="color: #20c997;"></i>
                           <span>45 minutes</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="6 ans et +" data-study-level="Maternelles, Primaires, Collège">
                           <i class="fas fa-child" style="color: #20c997;"></i>
-                          <span>6 ans et +</span>
+                          <span class="age-level-text">6 ans et +</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-users" style="color: #20c997;"></i>
