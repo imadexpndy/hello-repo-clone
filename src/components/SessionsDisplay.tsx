@@ -3,7 +3,7 @@ import { getUserTypeSessions, Session } from '@/data/sessions';
 
 interface SessionsDisplayProps {
   spectacleId: string;
-  onReservation: () => void;
+  onReservation?: () => void;
 }
 
 interface GroupedSessions {
@@ -166,7 +166,7 @@ const SessionsDisplay: React.FC<SessionsDisplayProps> = ({ spectacleId, onReserv
         </div>
         <button 
           className="showtime-btn" 
-          onClick={onReservation}
+          onClick={onReservation || (() => (window as any).handleReservation?.())}
           style={{
             background: 'var(--primary-color)',
             color: 'white',

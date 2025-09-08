@@ -2,10 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import SpectacleFooter from '@/components/SpectacleFooter';
 import VideoPopup from '@/components/VideoPopup';
+import SessionsDisplay from '@/components/SessionsDisplay';
+import { getUserTypeInfo, getStudyLevelForSpectacle } from '@/utils/userTypeUtils';
 
 export default function SpectacleEstevanico() {
   const { user } = useAuth();
   const [isVideoOpen, setIsVideoOpen] = useState(false);
+  const [userTypeInfo, setUserTypeInfo] = useState(getUserTypeInfo());
 
   useEffect(() => {
     // Load external stylesheets
@@ -37,6 +40,17 @@ export default function SpectacleEstevanico() {
     (window as any).handleReservation = handleReservation;
     // Expose video popup handler
     (window as any).openVideoPopup = () => setIsVideoOpen(true);
+    
+    // Listen for user type changes
+    const handleUserTypeChange = () => {
+      setUserTypeInfo(getUserTypeInfo());
+    };
+    
+    window.addEventListener('userTypeChanged', handleUserTypeChange);
+    
+    return () => {
+      window.removeEventListener('userTypeChanged', handleUserTypeChange);
+    };
   }, [user]);
 
   return (
@@ -356,7 +370,7 @@ export default function SpectacleEstevanico() {
                     <i class="fas fa-users"></i>3 comédiens
                   </span>
                   <span class="info-pill">
-                    <i class="fas fa-child"></i>10 ans et +
+                    <i class="fas fa-child"></i>${userTypeInfo.getAgeOrStudyText('10 ans et +', getStudyLevelForSpectacle('estevanico'))}
                   </span>
                   <span class="info-pill">
                     <i class="fas fa-music"></i>Théâtre musical
@@ -561,6 +575,7 @@ export default function SpectacleEstevanico() {
                     <i class="fas fa-calendar-alt"></i>
                     Séances Disponibles
                   </h3>
+                  <SessionsDisplay spectacleId="estevanico" />
                   <div class="showtime-item" style="background: var(--bg-light); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem; border-left: 4px solid var(--primary-color);">
                     <div class="showtime-date" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.25rem; font-family: 'Raleway', sans-serif;">10 au 14 Février 2026</div>
                     <div class="showtime-time" style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.75rem; font-family: 'Raleway', sans-serif;">Rabat - Représentations</div>
@@ -607,7 +622,7 @@ export default function SpectacleEstevanico() {
                   </div>
                   <div class="info-item">
                     <i class="fas fa-child"></i>
-                    <span>Âge recommandé : 10 ans et +</span>
+                    <span>${userTypeInfo.showStudyLevel ? 'Niveau scolaire : ' + getStudyLevelForSpectacle('estevanico') : 'Âge recommandé : 10 ans et +'}</span>
                   </div>
                   <div class="info-item">
                     <i class="fas fa-calendar"></i>

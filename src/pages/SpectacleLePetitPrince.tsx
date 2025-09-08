@@ -3,10 +3,12 @@ import { useAuth } from '@/hooks/useAuth';
 import SpectacleFooter from '@/components/SpectacleFooter';
 import VideoPopup from '@/components/VideoPopup';
 import SessionsDisplay from '@/components/SessionsDisplay';
+import { getUserTypeInfo, getStudyLevelForSpectacle } from '@/utils/userTypeUtils';
 
 export default function SpectacleLePetitPrince() {
   const { user } = useAuth();
   const [isVideoOpen, setIsVideoOpen] = useState(false);
+  const [userTypeInfo, setUserTypeInfo] = useState(getUserTypeInfo());
 
   useEffect(() => {
     // Load external stylesheets
@@ -38,6 +40,17 @@ export default function SpectacleLePetitPrince() {
     (window as any).handleReservation = handleReservation;
     // Expose video popup handler
     (window as any).openVideoPopup = () => setIsVideoOpen(true);
+    
+    // Listen for user type changes
+    const handleUserTypeChange = () => {
+      setUserTypeInfo(getUserTypeInfo());
+    };
+    
+    window.addEventListener('userTypeChanged', handleUserTypeChange);
+    
+    return () => {
+      window.removeEventListener('userTypeChanged', handleUserTypeChange);
+    };
   }, [user]);
 
   return (
@@ -359,7 +372,7 @@ export default function SpectacleLePetitPrince() {
                     <i class="fas fa-users"></i>2 comédiens
                   </span>
                   <span class="info-pill" id="age-level-pill">
-                    <i class="fas fa-child"></i><span id="age-level-text">7 ans et +</span>
+                    <i class="fas fa-child"></i><span id="age-level-text">${userTypeInfo.getAgeOrStudyText('7 ans et +', getStudyLevelForSpectacle('le-petit-prince'))}</span>
                   </span>
                   <span class="info-pill">
                     <i class="fas fa-palette"></i>Conte avec dessin sur sable
@@ -583,7 +596,7 @@ export default function SpectacleLePetitPrince() {
                   </div>
                   <div class="info-item" id="sidebar-age-level">
                     <i class="fas fa-child"></i>
-                    <span id="sidebar-age-level-text">Âge recommandé : 7 ans et +</span>
+                    <span id="sidebar-age-level-text">${userTypeInfo.showStudyLevel ? 'Niveau scolaire : ' + getStudyLevelForSpectacle('le-petit-prince') : 'Âge recommandé : 7 ans et +'}</span>
                   </div>
                   <div class="info-item">
                     <i class="fas fa-calendar"></i>

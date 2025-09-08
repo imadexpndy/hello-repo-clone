@@ -3,10 +3,12 @@ import { useAuth } from '@/hooks/useAuth';
 import SpectacleFooter from '@/components/SpectacleFooter';
 import VideoPopup from '@/components/VideoPopup';
 import SessionsDisplay from '@/components/SessionsDisplay';
+import { getUserTypeInfo, getStudyLevelForSpectacle } from '@/utils/userTypeUtils';
 
 export default function SpectacleTaraSurLaLune() {
   const { user } = useAuth();
   const [isVideoOpen, setIsVideoOpen] = useState(false);
+  const [userTypeInfo, setUserTypeInfo] = useState(getUserTypeInfo());
 
   useEffect(() => {
     // Load external stylesheets
@@ -38,6 +40,17 @@ export default function SpectacleTaraSurLaLune() {
     (window as any).handleReservation = handleReservation;
     // Expose video popup handler
     (window as any).openVideoPopup = () => setIsVideoOpen(true);
+    
+    // Listen for user type changes
+    const handleUserTypeChange = () => {
+      setUserTypeInfo(getUserTypeInfo());
+    };
+    
+    window.addEventListener('userTypeChanged', handleUserTypeChange);
+    
+    return () => {
+      window.removeEventListener('userTypeChanged', handleUserTypeChange);
+    };
   }, [user]);
 
   return (
@@ -358,7 +371,7 @@ export default function SpectacleTaraSurLaLune() {
                     <i class="fas fa-users"></i>1 comédien
                   </span>
                   <span class="info-pill">
-                    <i class="fas fa-child"></i>5 ans et +
+                    <i class="fas fa-child"></i>${userTypeInfo.getAgeOrStudyText('5 ans et +', getStudyLevelForSpectacle('tara-sur-la-lune'))}
                   </span>
                   <span class="info-pill">
                     <i class="fas fa-video"></i>Théâtre avec projection
@@ -569,6 +582,7 @@ export default function SpectacleTaraSurLaLune() {
                     <i class="fas fa-calendar-alt"></i>
                     Séances Disponibles
                   </h3>
+                  <SessionsDisplay spectacleId="tara-sur-la-lune" />
                   <div class="showtime-item" style="background: var(--bg-light); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem; border-left: 4px solid var(--primary-color);">
                     <div class="showtime-date" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.25rem; font-family: 'Raleway', sans-serif;">12 au 16 Novembre 2025</div>
                     <div class="showtime-time" style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.75rem; font-family: 'Raleway', sans-serif;">Rabat - Représentations</div>
@@ -615,7 +629,7 @@ export default function SpectacleTaraSurLaLune() {
                   </div>
                   <div class="info-item">
                     <i class="fas fa-child"></i>
-                    <span>Âge recommandé : 5 ans et +</span>
+                    <span>${userTypeInfo.showStudyLevel ? 'Niveau scolaire : ' + getStudyLevelForSpectacle('tara-sur-la-lune') : 'Âge recommandé : 5 ans et +'}</span>
                   </div>
                   <div class="info-item">
                     <i class="fas fa-calendar"></i>
