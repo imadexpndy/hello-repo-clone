@@ -230,7 +230,7 @@ const ReservationFlow = () => {
                 
                 <div className="flex space-x-4">
                   <Button 
-                    onClick={() => setStep(1)}
+                    onClick={() => navigate(-1)}
                     variant="outline"
                     size="xl"
                     className="flex-1"
