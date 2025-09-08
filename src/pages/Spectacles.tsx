@@ -1203,36 +1203,44 @@ export default function Spectacles() {
             }
           }
           
-          // Run on page load
-          document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, calling updateAgeStudyDisplay');
-            updateAgeStudyDisplay();
-          });
-          
-          // Also run after a short delay to ensure everything is loaded
-          setTimeout(updateAgeStudyDisplay, 500);
-          
-          // Listen for user type changes
-          window.addEventListener('userTypeChanged', updateAgeStudyDisplay);
-          
-          // Hide Le Petit Prince Arabic for private schools
+          // Update spectacle visibility for private schools
           function updateSpectacleVisibility() {
             const userType = sessionStorage.getItem('userType');
             const professionalType = sessionStorage.getItem('professionalType');
             const arabicCard = document.getElementById('le-petit-prince-ar-card');
             
+            console.log('updateSpectacleVisibility - userType:', userType, 'professionalType:', professionalType);
+            
             if (userType === 'professional' && professionalType === 'scolaire-privee' && arabicCard) {
+              console.log('Hiding Arabic card for private schools');
               arabicCard.style.display = 'none';
             } else if (arabicCard) {
+              console.log('Showing Arabic card');
               arabicCard.style.display = 'block';
             }
           }
           
+          // Combined update function
+          function updateDisplayForUserType() {
+            updateAgeStudyDisplay();
+            updateSpectacleVisibility();
+          }
+          
           // Run on page load
-          document.addEventListener('DOMContentLoaded', updateSpectacleVisibility);
+          document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, calling updateDisplayForUserType');
+            updateDisplayForUserType();
+          });
+          
+          // Also run after delays to ensure everything is loaded
+          setTimeout(updateDisplayForUserType, 500);
+          setTimeout(updateDisplayForUserType, 1000);
+          setTimeout(updateDisplayForUserType, 2000);
           
           // Listen for user type changes
-          window.addEventListener('userTypeChanged', updateSpectacleVisibility);
+          window.addEventListener('userTypeChanged', updateDisplayForUserType);
+          window.addEventListener('storage', updateDisplayForUserType);
+          
         </script>
 
         <!-- Filter Section -->
@@ -1360,11 +1368,11 @@ export default function Spectacles() {
                       </div>
                       
                       <!-- Buttons -->
-                      <div style="display: flex; gap: 12px; justify-content: flex-start; margin-bottom: 20px;">
-                        <button class="btn-reserve" onclick="window.handleReservation('le-petit-prince-ar')" style="background: #BDCF00; color: white; padding: 12px 24px; border-radius: 8px; border: none; font-weight: 600; font-size: 14px; min-width: 120px;">
+                      <div style="display: flex; gap: 8px; justify-content: flex-start; margin-bottom: 20px; flex-wrap: wrap;">
+                        <button class="btn-reserve spectacle-btn" onclick="window.handleReservation('le-petit-prince-ar')" style="background: #BDCF00; color: white; padding: 10px 16px; border-radius: 8px; border: none; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">
                           احجز
                         </button>
-                        <button class="btn-details" onclick="window.handleDetails('le-petit-prince-ar')" style="background: transparent; color: #BDCF00; padding: 12px 24px; border: 2px solid #BDCF00; border-radius: 8px; font-weight: 600; font-size: 14px; min-width: 120px;">التفاصيل</button>
+                        <button class="btn-details spectacle-btn" onclick="window.handleDetails('le-petit-prince-ar')" style="background: transparent; color: #BDCF00; padding: 10px 16px; border: 2px solid #BDCF00; border-radius: 8px; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">التفاصيل</button>
                       </div>
                     </div>
                   </div>
@@ -1422,11 +1430,11 @@ export default function Spectacles() {
                       </div>
                       
                       <!-- Buttons -->
-                      <div style="display: flex; gap: 12px; justify-content: flex-start; margin-bottom: 20px;">
-                        <button class="btn-reserve" onclick="window.handleReservation('tara-sur-la-lune')" style="background: #6f42c1; color: white; padding: 12px 24px; border-radius: 8px; border: none; font-weight: 600; font-size: 14px; min-width: 120px;">
+                      <div style="display: flex; gap: 8px; justify-content: flex-start; margin-bottom: 20px; flex-wrap: wrap;">
+                        <button class="btn-reserve spectacle-btn" onclick="window.handleReservation('tara-sur-la-lune')" style="background: #6f42c1; color: white; padding: 10px 16px; border-radius: 8px; border: none; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">
                           Réserver
                         </button>
-                        <button class="btn-details" onclick="window.handleDetails('tara-sur-la-lune')" style="background: transparent; color: #6f42c1; padding: 12px 24px; border: 2px solid #6f42c1; border-radius: 8px; font-weight: 600; font-size: 14px; min-width: 120px;">Détails</button>
+                        <button class="btn-details spectacle-btn" onclick="window.handleDetails('tara-sur-la-lune')" style="background: transparent; color: #6f42c1; padding: 10px 16px; border: 2px solid #6f42c1; border-radius: 8px; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">Détails</button>
                       </div>
                     </div>
                   </div>
@@ -1484,11 +1492,11 @@ export default function Spectacles() {
                       </div>
                       
                       <!-- Buttons -->
-                      <div style="display: flex; gap: 12px; justify-content: flex-start; margin-bottom: 20px;">
-                        <button class="btn-reserve" onclick="window.handleReservation('mirath-atfal')" style="background: #dc3545; color: white; padding: 12px 24px; border-radius: 8px; border: none; font-weight: 600; font-size: 14px; min-width: 120px;">
+                      <div style="display: flex; gap: 8px; justify-content: flex-start; margin-bottom: 20px; flex-wrap: wrap;">
+                        <button class="btn-reserve spectacle-btn" onclick="window.handleReservation('mirath-atfal')" style="background: #dc3545; color: white; padding: 10px 16px; border-radius: 8px; border: none; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">
                           Réserver
                         </button>
-                        <button class="btn-details" onclick="window.handleDetails('estevanico')" style="background: transparent; color: #dc3545; padding: 12px 24px; border: 2px solid #dc3545; border-radius: 8px; font-weight: 600; font-size: 14px; min-width: 120px;">Détails</button>
+                        <button class="btn-details spectacle-btn" onclick="window.handleDetails('mirath-atfal')" style="background: transparent; color: #dc3545; padding: 10px 16px; border: 2px solid #dc3545; border-radius: 8px; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">Détails</button>
                       </div>
                     </div>
                   </div>
@@ -1543,11 +1551,11 @@ export default function Spectacles() {
                       </div>
                       
                       <!-- Buttons -->
-                      <div style="display: flex; gap: 12px; margin-top: 20px; justify-content: flex-start;">
-                        <button class="btn-reserve" onclick="window.handleReservation('simple-comme-bonjour')" style="background: #ffc107; color: white; padding: 12px 24px; border-radius: 8px; border: none; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">
+                      <div style="display: flex; gap: 8px; justify-content: flex-start; margin-bottom: 20px; flex-wrap: wrap;">
+                        <button class="btn-reserve spectacle-btn" onclick="window.handleReservation('simple-comme-bonjour')" style="background: #ffc107; color: white; padding: 10px 16px; border-radius: 8px; border: none; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">
                           Réserver
                         </button>
-                        <button class="btn-details" onclick="window.handleDetails('simple-comme-bonjour')" style="background: transparent; color: #333; padding: 12px 24px; border: 2px solid #333; border-radius: 8px; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">Détails</button>
+                        <button class="btn-details spectacle-btn" onclick="window.handleDetails('simple-comme-bonjour')" style="background: transparent; color: #ffc107; padding: 10px 16px; border: 2px solid #ffc107; border-radius: 8px; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">Détails</button>
                       </div>
                     </div>
                   </div>
@@ -1602,11 +1610,11 @@ export default function Spectacles() {
                       </div>
                       
                       <!-- Buttons -->
-                      <div style="display: flex; gap: 12px; margin-top: 20px; justify-content: flex-start;">
-                        <button class="btn-reserve" onclick="window.handleReservation('charlotte')" style="background: #e91e63; color: white; padding: 12px 24px; border-radius: 8px; border: none; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">
+                      <div style="display: flex; gap: 8px; justify-content: flex-start; margin-bottom: 20px; flex-wrap: wrap;">
+                        <button class="btn-reserve spectacle-btn" onclick="window.handleReservation('charlotte')" style="background: #e91e63; color: white; padding: 10px 16px; border-radius: 8px; border: none; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">
                           Réserver
                         </button>
-                        <button class="btn-details" onclick="window.handleDetails('charlotte')" style="background: transparent; color: #e91e63; padding: 12px 24px; border: 2px solid #e91e63; border-radius: 8px; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">Détails</button>
+                        <button class="btn-details spectacle-btn" onclick="window.handleDetails('charlotte')" style="background: transparent; color: #e91e63; padding: 10px 16px; border: 2px solid #e91e63; border-radius: 8px; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">Détails</button>
                       </div>
                     </div>
                   </div>
@@ -1646,9 +1654,9 @@ export default function Spectacles() {
                           <i class="fas fa-clock" style="color: #17a2b8;"></i>
                           <span>70 mins</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="10 ans et +" data-study-level="Collège, Lycée">
                           <i class="fas fa-child" style="color: #17a2b8;"></i>
-                          <span>10 ans et +</span>
+                          <span class="age-level-text">10 ans et +</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-users" style="color: #17a2b8;"></i>
@@ -1661,11 +1669,11 @@ export default function Spectacles() {
                       </div>
                       
                       <!-- Buttons -->
-                      <div style="display: flex; gap: 12px; margin-top: 20px; justify-content: flex-start;">
-                        <button class="btn-reserve" onclick="window.handleReservation('estevanico')" style="background: #17a2b8; color: white; padding: 12px 24px; border-radius: 8px; border: none; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">
+                      <div style="display: flex; gap: 8px; justify-content: flex-start; margin-bottom: 20px; flex-wrap: wrap;">
+                        <button class="btn-reserve spectacle-btn" onclick="window.handleReservation('estevanico')" style="background: #17a2b8; color: white; padding: 10px 16px; border-radius: 8px; border: none; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">
                           Réserver
                         </button>
-                        <button class="btn-details" onclick="window.handleDetails('estevanico')" style="background: transparent; color: #17a2b8; padding: 12px 24px; border: 2px solid #17a2b8; border-radius: 8px; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">Détails</button>
+                        <button class="btn-details spectacle-btn" onclick="window.handleDetails('estevanico')" style="background: transparent; color: #17a2b8; padding: 10px 16px; border: 2px solid #17a2b8; border-radius: 8px; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">Détails</button>
                       </div>
                     </div>
                   </div>
@@ -1705,9 +1713,9 @@ export default function Spectacles() {
                           <i class="fas fa-clock" style="color: #28a745;"></i>
                           <span>65 mins</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="10 ans et +" data-study-level="Collège, Lycée">
                           <i class="fas fa-child" style="color: #28a745;"></i>
-                          <span>10 ans et +</span>
+                          <span class="age-level-text">10 ans et +</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-users" style="color: #28a745;"></i>
@@ -1720,11 +1728,11 @@ export default function Spectacles() {
                       </div>
                       
                       <!-- Buttons -->
-                      <div style="display: flex; gap: 12px; margin-top: 20px; justify-content: flex-start;">
-                        <button class="btn-reserve" onclick="window.handleReservation('lenfant-de-larbre')" style="background: #28a745; color: white; padding: 12px 24px; border-radius: 8px; border: none; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">
+                      <div style="display: flex; gap: 8px; justify-content: flex-start; margin-bottom: 20px; flex-wrap: wrap;">
+                        <button class="btn-reserve spectacle-btn" onclick="window.handleReservation('lenfant-de-larbre')" style="background: #28a745; color: white; padding: 10px 16px; border-radius: 8px; border: none; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">
                           Réserver
                         </button>
-                        <button class="btn-details" onclick="window.handleDetails('lenfant-de-larbre')" style="background: transparent; color: #28a745; padding: 12px 24px; border: 2px solid #28a745; border-radius: 8px; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">Détails</button>
+                        <button class="btn-details spectacle-btn" onclick="window.handleDetails('lenfant-de-larbre')" style="background: transparent; color: #28a745; padding: 10px 16px; border: 2px solid #28a745; border-radius: 8px; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">Détails</button>
                       </div>
                     </div>
                   </div>
@@ -1764,9 +1772,9 @@ export default function Spectacles() {
                           <i class="fas fa-clock" style="color: #6f42c1;"></i>
                           <span>60 minutes</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="12 ans et +" data-study-level="Collège, Lycée">
                           <i class="fas fa-child" style="color: #6f42c1;"></i>
-                          <span>12 ans et +</span>
+                          <span class="age-level-text">12 ans et +</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-users" style="color: #6f42c1;"></i>
@@ -1779,11 +1787,11 @@ export default function Spectacles() {
                       </div>
                       
                       <!-- Buttons -->
-                      <div style="display: flex; gap: 12px; margin-top: 20px; justify-content: flex-start;">
-                        <button class="btn-reserve" onclick="window.handleReservation('antigone')" style="background: #6f42c1; color: white; padding: 12px 24px; border-radius: 8px; border: none; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">
+                      <div style="display: flex; gap: 8px; justify-content: flex-start; margin-bottom: 20px; flex-wrap: wrap;">
+                        <button class="btn-reserve spectacle-btn" onclick="window.handleReservation('antigone')" style="background: #6f42c1; color: white; padding: 10px 16px; border-radius: 8px; border: none; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">
                           Réserver
                         </button>
-                        <button class="btn-details" onclick="window.handleDetails('antigone')" style="background: transparent; color: #6f42c1; padding: 12px 24px; border: 2px solid #6f42c1; border-radius: 8px; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">Détails</button>
+                        <button class="btn-details spectacle-btn" onclick="window.handleDetails('antigone')" style="background: transparent; color: #6f42c1; padding: 10px 16px; border: 2px solid #6f42c1; border-radius: 8px; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">Détails</button>
                       </div>
                     </div>
                   </div>
@@ -1838,11 +1846,11 @@ export default function Spectacles() {
                       </div>
                       
                       <!-- Buttons -->
-                      <div style="display: flex; gap: 12px; margin-top: 20px; justify-content: flex-start;">
-                        <button class="btn-reserve" onclick="window.handleReservation('alice-chez-les-merveilles')" style="background: #e83e8c; color: white; padding: 12px 24px; border-radius: 8px; border: none; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">
+                      <div style="display: flex; gap: 8px; justify-content: flex-start; margin-bottom: 20px; flex-wrap: wrap;">
+                        <button class="btn-reserve spectacle-btn" onclick="window.handleReservation('alice-chez-les-merveilles')" style="background: #e83e8c; color: white; padding: 10px 16px; border-radius: 8px; border: none; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">
                           Réserver
                         </button>
-                        <button class="btn-details" onclick="window.handleDetails('alice-chez-les-merveilles')" style="background: transparent; color: #e83e8c; padding: 12px 24px; border: 2px solid #e83e8c; border-radius: 8px; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">Détails</button>
+                        <button class="btn-details spectacle-btn" onclick="window.handleDetails('alice-chez-les-merveilles')" style="background: transparent; color: #e83e8c; padding: 10px 16px; border: 2px solid #e83e8c; border-radius: 8px; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">Détails</button>
                       </div>
                     </div>
                   </div>
@@ -1897,11 +1905,11 @@ export default function Spectacles() {
                       </div>
                       
                       <!-- Buttons -->
-                      <div style="display: flex; gap: 12px; margin-top: 20px; justify-content: flex-start;">
-                        <button class="btn-reserve" onclick="window.handleReservation('leau-la')" style="background: #20c997; color: white; padding: 12px 24px; border-radius: 8px; border: none; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">
+                      <div style="display: flex; gap: 8px; justify-content: flex-start; margin-bottom: 20px; flex-wrap: wrap;">
+                        <button class="btn-reserve spectacle-btn" onclick="window.handleReservation('leau-la')" style="background: #20c997; color: white; padding: 10px 16px; border-radius: 8px; border: none; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">
                           Réserver
                         </button>
-                        <button class="btn-details" onclick="window.handleDetails('leau-la')" style="background: transparent; color: #20c997; padding: 12px 24px; border: 2px solid #20c997; border-radius: 8px; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">Détails</button>
+                        <button class="btn-details spectacle-btn" onclick="window.handleDetails('leau-la')" style="background: transparent; color: #20c997; padding: 10px 16px; border: 2px solid #20c997; border-radius: 8px; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">Détails</button>
                       </div>
                     </div>
                   </div>
