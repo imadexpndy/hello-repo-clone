@@ -25,6 +25,12 @@ interface RegistrationFormProps {
 }
 
 export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) => {
+  // Helper function to get return URL parameter
+  const getReturnUrlParam = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const returnUrl = urlParams.get('return_url');
+    return returnUrl ? `?return_url=${encodeURIComponent(returnUrl)}` : '';
+  };
   const [step, setStep] = useState(1);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [userCategory, setUserCategory] = useState<'b2c' | 'b2b' | ''>('');
@@ -153,7 +159,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
     setLoading(true);
 
     try {
-      // Check if email already exists first
+      // Check if email already exists in profiles table
       const { data: existingUsers, error: checkError } = await supabase
         .from('profiles')
         .select('email')
@@ -164,19 +170,20 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
       } else if (existingUsers && existingUsers.length > 0) {
         toast({
           title: "Email déjà utilisé",
-          description: "Cet email est déjà utilisé. Veuillez utiliser un autre email.",
+          description: "Cet email est déjà enregistré. Connectez-vous ou utilisez 'Mot de passe oublié'.",
           variant: "destructive"
         });
         setLoading(false);
         return;
       }
 
+
       // 1. Create auth user
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/`,
+          emailRedirectTo: `${window.location.origin}/auth${getReturnUrlParam()}`,
           data: {
             full_name: formData.fullName,
             phone: formData.phone
@@ -192,10 +199,10 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
 
       if (authError) {
         // Handle duplicate email error
-        if (authError.message.includes('already registered') || authError.message.includes('User already registered')) {
+        if (authError.message.includes('already registered') || authError.message.includes('User already registered') || authError.message.includes('already been registered')) {
           toast({
             title: "Email déjà utilisé",
-            description: "Cet email est déjà utilisé. Veuillez utiliser un autre email.",
+            description: "Cet email est déjà enregistré. Connectez-vous ou utilisez 'Mot de passe oublié'.",
             variant: "destructive"
           });
           setLoading(false);

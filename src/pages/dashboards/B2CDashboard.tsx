@@ -23,7 +23,7 @@ export default function B2CDashboard() {
               <Ticket className="h-8 w-8 text-primary" />
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Mes réservations</p>
-                <p className="text-2xl font-bold text-gray-900">3</p>
+                <p className="text-2xl font-bold text-gray-900">0</p>
               </div>
             </div>
           </CardContent>
@@ -35,7 +35,7 @@ export default function B2CDashboard() {
               <Calendar className="h-8 w-8 text-blue-600" />
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Prochaines séances</p>
-                <p className="text-2xl font-bold text-gray-900">2</p>
+                <p className="text-2xl font-bold text-gray-900">0</p>
               </div>
             </div>
           </CardContent>
@@ -47,7 +47,7 @@ export default function B2CDashboard() {
               <MessageSquare className="h-8 w-8 text-green-600" />
               <div className="ml-4">
                 <p className="text-sm font-medium text-gray-600">Messages</p>
-                <p className="text-2xl font-bold text-gray-900">1</p>
+                <p className="text-2xl font-bold text-gray-900">0</p>
               </div>
             </div>
           </CardContent>
@@ -79,21 +79,10 @@ export default function B2CDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div>
-                  <p className="font-medium">Le Petit Prince</p>
-                  <p className="text-sm text-gray-600">15 Mars 2024 - 14h00</p>
-                </div>
-                <span className="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Confirmé</span>
-              </div>
-              <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div>
-                  <p className="font-medium">Charlotte</p>
-                  <p className="text-sm text-gray-600">22 Mars 2024 - 10h30</p>
-                </div>
-                <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">En attente</span>
-              </div>
+            <div className="text-center py-8 text-gray-500">
+              <Calendar className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+              <p>Aucune réservation pour le moment</p>
+              <p className="text-sm">Découvrez nos spectacles pour commencer</p>
             </div>
           </CardContent>
         </Card>
@@ -106,17 +95,10 @@ export default function B2CDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-4">
-              <div className="p-3 bg-gray-50 rounded-lg">
-                <p className="font-medium text-sm">Confirmation de réservation</p>
-                <p className="text-xs text-gray-600 mt-1">Votre réservation pour "Le Petit Prince" est confirmée</p>
-                <p className="text-xs text-gray-500 mt-2">Il y a 2 heures</p>
-              </div>
-              <div className="p-3 bg-gray-50 rounded-lg">
-                <p className="font-medium text-sm">Rappel de séance</p>
-                <p className="text-xs text-gray-600 mt-1">N'oubliez pas votre séance de demain à 14h</p>
-                <p className="text-xs text-gray-500 mt-2">Hier</p>
-              </div>
+            <div className="text-center py-8 text-gray-500">
+              <MessageSquare className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+              <p>Aucun message pour le moment</p>
+              <p className="text-sm">Les notifications apparaîtront ici</p>
             </div>
           </CardContent>
         </Card>
