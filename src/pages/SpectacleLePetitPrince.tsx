@@ -352,10 +352,10 @@ export default function SpectacleLePetitPrince() {
                 <p class="hero-subtitle">Un voyage poétique à travers les étoiles et les rencontres extraordinaires</p>
                 <div class="info-pills">
                   <span class="info-pill">
-                    <i class="fas fa-clock"></i>50 minutes
+                    <i class="fas fa-clock"></i>60 minutes
                   </span>
                   <span class="info-pill">
-                    <i class="fas fa-users"></i>3 comédiens
+                    <i class="fas fa-users"></i>2 comédiens
                   </span>
                   <span class="info-pill">
                     <i class="fas fa-child"></i>7 ans et +
@@ -597,11 +597,11 @@ export default function SpectacleLePetitPrince() {
                   </h3>
                   <div class="info-item">
                     <i class="fas fa-clock"></i>
-                    <span>Durée : 50 minutes</span>
+                    <span>Durée : 60 minutes</span>
                   </div>
                   <div class="info-item">
                     <i class="fas fa-users"></i>
-                    <span>Distribution : 3 comédiens</span>
+                    <span>Distribution : 2 comédiens</span>
                   </div>
                   <div class="info-item">
                     <i class="fas fa-child"></i>

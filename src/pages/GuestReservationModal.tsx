@@ -10,13 +10,15 @@ interface GuestReservationModalProps {
   onClose: () => void;
   spectacleId: string;
   spectacleName: string;
+  userType?: string;
 }
 
 export default function GuestReservationModal({ 
   isOpen, 
   onClose, 
   spectacleId, 
-  spectacleName 
+  spectacleName,
+  userType 
 }: GuestReservationModalProps) {
   const [step, setStep] = useState<'options' | 'guest-form'>('options');
   const [guestForm, setGuestForm] = useState({
@@ -32,6 +34,10 @@ export default function GuestReservationModal({
   });
 
   if (!isOpen) return null;
+
+  // Check if guest reservation should be available based on user type
+  const isParticulier = userType === 'particulier' || !userType;
+  const isProfessional = userType === 'professional';
 
   const handleLogin = () => {
     window.location.href = `/auth?return_url=${encodeURIComponent(`/reservation/${spectacleId}`)}`;
@@ -83,7 +89,7 @@ export default function GuestReservationModal({
               <p className="text-gray-600">Choisissez l'option qui vous convient le mieux</p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className={`grid ${isParticulier ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-4`}>
               {/* Login Option */}
               <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={handleLogin}>
                 <CardContent className="p-4">
@@ -101,20 +107,22 @@ export default function GuestReservationModal({
               </Card>
 
               {/* Guest Reservation Option - Only for Particuliers */}
-              <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={handleGuestReservation}>
-                <CardContent className="p-4">
-                  <div className="text-center space-y-3">
-                    <div className="bg-green-100 p-3 rounded-full mx-auto w-fit">
-                      <User className="h-6 w-6 text-green-600" />
+              {isParticulier && (
+                <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={handleGuestReservation}>
+                  <CardContent className="p-4">
+                    <div className="text-center space-y-3">
+                      <div className="bg-green-100 p-3 rounded-full mx-auto w-fit">
+                        <User className="h-6 w-6 text-green-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-semibold text-lg">Réserver en tant qu'invité</h4>
+                        <p className="text-gray-600 text-sm">Particulier uniquement - Paiement par carte</p>
+                      </div>
+                      <Button variant="outline" className="w-full">Continuer</Button>
                     </div>
-                    <div>
-                      <h4 className="font-semibold text-lg">Réserver en tant qu'invité</h4>
-                      <p className="text-gray-600 text-sm">Particulier uniquement - Paiement par carte</p>
-                    </div>
-                    <Button variant="outline" className="w-full">Continuer</Button>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              )}
 
               {/* Create Account Option */}
               <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={handleSignup}>
@@ -132,6 +140,26 @@ export default function GuestReservationModal({
                 </CardContent>
               </Card>
             </div>
+
+            {/* Professional User Notice */}
+            {isProfessional && (
+              <Card className="bg-amber-50 border-amber-200">
+                <CardContent className="p-4">
+                  <div className="flex items-start space-x-3">
+                    <div className="bg-amber-100 p-2 rounded-full">
+                      <Shield className="h-5 w-5 text-amber-600" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-amber-800 mb-1">Réservation professionnelle</h4>
+                      <p className="text-amber-700 text-sm">
+                        Les réservations pour les écoles et associations nécessitent un compte pour la gestion administrative et la facturation. 
+                        Veuillez vous connecter ou créer un compte professionnel.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Benefits of Creating Account */}
             <Card className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200">

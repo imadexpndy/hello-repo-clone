@@ -22,16 +22,17 @@ export default function Spectacles() {
     console.log('handleReservation called with:', spectacleId);
     // Check if user is authenticated first
     if (!user) {
-      // Show guest reservation modal instead of redirecting
+      // Show guest reservation modal with user type context
       setGuestModal({
         isOpen: true,
         spectacleId,
-        spectacleName: spectacleName || spectacleId
+        spectacleName
       });
-    } else {
-      // Navigate to reservation page for authenticated users
-      window.location.href = `/reservation/${spectacleId}`;
+      return;
     }
+    
+    // If user is authenticated, redirect to reservation page
+    navigate(`/reservation/${spectacleId}`);
   };
 
   const handleDetails = (spectacleId: string) => {
@@ -991,18 +992,29 @@ export default function Spectacles() {
             }
             .spectacle-card > div:last-child { 
               width: 100% !important; 
-              padding: 20px !important;
+              padding: 15px 5px !important;
             }
             .spectacle-card > div:last-child > div {
               margin-left: 0 !important;
               text-align: center !important;
               padding-right: 0 !important;
+              width: 100% !important;
             }
             .spectacle-card__title {
               font-size: 24px !important;
             }
             .spectacle-card > div:last-child > div > div:last-child {
               justify-content: center !important;
+              width: 100% !important;
+              max-width: 100% !important;
+            }
+            .btn-reserve, .btn-details {
+              padding: 8px 10px !important;
+              font-size: 11px !important;
+              min-width: 70px !important;
+              flex: 1 !important;
+              max-width: 100px !important;
+              white-space: nowrap !important;
             }
           }
 
@@ -1042,19 +1054,21 @@ export default function Spectacles() {
               margin-bottom: 10px !important;
             }
             .btn-reserve, .btn-details {
-              padding: 8px 12px !important;
-              font-size: 11px !important;
-              min-width: 80px !important;
+              padding: 6px 8px !important;
+              font-size: 10px !important;
+              min-width: 60px !important;
               flex: 1 !important;
-              max-width: 120px !important;
+              max-width: 90px !important;
+              white-space: nowrap !important;
             }
             /* Fix button container overflow */
             .spectacle-card > div:last-child > div > div:last-child {
               flex-wrap: wrap !important;
-              gap: 6px !important;
+              gap: 4px !important;
               justify-content: center !important;
               width: 100% !important;
               margin-bottom: 10px !important;
+              overflow: hidden !important;
             }
             /* Ensure info badges wrap properly */
             .spectacle-card > div:last-child > div > div:nth-child(3) {
@@ -1090,9 +1104,11 @@ export default function Spectacles() {
               padding: 4px 8px !important;
             }
             .btn-reserve, .btn-details {
-              padding: 6px 10px !important;
-              font-size: 10px !important;
-              min-width: 70px !important;
+              padding: 4px 6px !important;
+              font-size: 9px !important;
+              min-width: 50px !important;
+              max-width: 70px !important;
+              white-space: nowrap !important;
             }
           }
         </style>
@@ -2099,6 +2115,7 @@ export default function Spectacles() {
       onClose={() => setGuestModal({isOpen: false, spectacleId: '', spectacleName: ''})}
       spectacleId={guestModal.spectacleId}
       spectacleName={guestModal.spectacleName}
+      userType={userType}
     />
     </>
   );
