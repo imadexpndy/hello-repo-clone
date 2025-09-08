@@ -1299,8 +1299,8 @@ export default function Spectacles() {
                             <span>2 comédiens</span>
                           </div>
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                            <i class="fas fa-palette" style="color: #BDCF00;"></i>
-                            <span>Conte / Dessin sur Table</span>
+                            <i class="fas fa-theater-masks" style="color: #BDCF00;"></i>
+                            <span>Conte / Dessin sur Sable</span>
                           </div>
                         </div>
                       </div>
@@ -1361,7 +1361,7 @@ export default function Spectacles() {
                             <span>3 ممثلين</span>
                           </div>
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                            <i class="fas fa-heart" style="color: #BDCF00;"></i>
+                            <i class="fas fa-theater-masks" style="color: #BDCF00;"></i>
                             <span>عاطفي</span>
                           </div>
                         </div>
@@ -1409,7 +1409,7 @@ export default function Spectacles() {
                       <div style="margin-bottom: 25px;">
                         <div style="display: flex; justify-content: flex-start; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                            <i class="fas fa-clock" style="color: #6f42c1;"></i>
+                            <i class="fas fa-theater-masks" style="color: #6f42c1;"></i>
                             <span>55 mins</span>
                           </div>
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="5 ans et +" data-study-level="Maternelles, Primaires">
@@ -1419,11 +1419,11 @@ export default function Spectacles() {
                         </div>
                         <div style="display: flex; justify-content: flex-start; gap: 10px; flex-wrap: wrap;">
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                            <i class="fas fa-users" style="color: #6f42c1;"></i>
+                            <i class="fas fa-theater-masks" style="color: #6f42c1;"></i>
                             <span>1 comédien</span>
                           </div>
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                            <i class="fas fa-video" style="color: #6f42c1;"></i>
+                            <i class="fas fa-theater-masks" style="color: #6f42c1;"></i>
                             <span>Théâtre avec projection</span>
                           </div>
                         </div>
@@ -1471,7 +1471,7 @@ export default function Spectacles() {
                       <div style="margin-bottom: 25px;">
                         <div style="display: flex; justify-content: flex-start; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                            <i class="fas fa-clock" style="color: #dc3545;"></i>
+                            <i class="fas fa-theater-masks" style="color: #dc3545;"></i>
                             <span>60 mins</span>
                           </div>
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="5 ans et +" data-study-level="Maternelles, Primaires">
@@ -1481,11 +1481,11 @@ export default function Spectacles() {
                         </div>
                         <div style="display: flex; justify-content: flex-start; gap: 10px; flex-wrap: wrap;">
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                            <i class="fas fa-users" style="color: #dc3545;"></i>
+                            <i class="fas fa-theater-masks" style="color: #dc3545;"></i>
                             <span>4 comédiens</span>
                           </div>
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                            <i class="fas fa-music" style="color: #dc3545;"></i>
+                            <i class="fas fa-theater-masks" style="color: #dc3545;"></i>
                             <span>Concert interactif</span>
                           </div>
                         </div>
@@ -1533,7 +1533,7 @@ export default function Spectacles() {
                       <!-- Info Badges -->
                       <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                          <i class="fas fa-clock" style="color: #ffc107;"></i>
+                          <i class="fas fa-theater-masks" style="color: #ffc107;"></i>
                           <span>60 minutes</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="6 ans et +" data-study-level="Maternelles, Primaires, Collège">
@@ -1592,7 +1592,7 @@ export default function Spectacles() {
                       <!-- Info Badges -->
                       <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                          <i class="fas fa-clock" style="color: #e91e63;"></i>
+                          <i class="fas fa-theater-masks" style="color: #e91e63;"></i>
                           <span>50 mins</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="5 ans et +" data-study-level="Maternelles, Primaires">
@@ -1651,7 +1651,7 @@ export default function Spectacles() {
                       <!-- Info Badges -->
                       <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                          <i class="fas fa-clock" style="color: #17a2b8;"></i>
+                          <i class="fas fa-theater-masks" style="color: #17a2b8;"></i>
                           <span>70 mins</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="10 ans et +" data-study-level="Collège, Lycée">
@@ -1710,7 +1710,7 @@ export default function Spectacles() {
                       <!-- Info Badges -->
                       <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                          <i class="fas fa-clock" style="color: #28a745;"></i>
+                          <i class="fas fa-theater-masks" style="color: #28a745;"></i>
                           <span>65 mins</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="10 ans et +" data-study-level="Collège, Lycée">
@@ -1769,7 +1769,7 @@ export default function Spectacles() {
                       <!-- Info Badges -->
                       <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                          <i class="fas fa-clock" style="color: #6f42c1;"></i>
+                          <i class="fas fa-theater-masks" style="color: #6f42c1;"></i>
                           <span>60 minutes</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="12 ans et +" data-study-level="Collège, Lycée">
@@ -1828,7 +1828,7 @@ export default function Spectacles() {
                       <!-- Info Badges -->
                       <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                          <i class="fas fa-clock" style="color: #e83e8c;"></i>
+                          <i class="fas fa-theater-masks" style="color: #e83e8c;"></i>
                           <span>50 minutes</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="5 ans et +" data-study-level="Maternelles, Primaires">
@@ -1887,7 +1887,7 @@ export default function Spectacles() {
                       <!-- Info Badges -->
                       <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                          <i class="fas fa-clock" style="color: #20c997;"></i>
+                          <i class="fas fa-theater-masks" style="color: #20c997;"></i>
                           <span>45 minutes</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="6 ans et +" data-study-level="Maternelles, Primaires, Collège">
@@ -1899,7 +1899,7 @@ export default function Spectacles() {
                           <span>3 comédiens</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                          <i class="fas fa-heart" style="color: #20c997;"></i>
+                          <i class="fas fa-theater-masks" style="color: #20c997;"></i>
                           <span>Écologique</span>
                         </div>
                       </div>
