@@ -350,16 +350,16 @@ export default function SpectacleEstevanico() {
                 <p class="hero-subtitle">L'explorateur du Nouveau Monde et ses aventures extraordinaires</p>
                 <div class="info-pills">
                   <span class="info-pill">
-                    <i class="fas fa-clock"></i>60 minutes
+                    <i class="fas fa-clock"></i>70 minutes
                   </span>
                   <span class="info-pill">
-                    <i class="fas fa-users"></i>4 comédiens
+                    <i class="fas fa-users"></i>3 comédiens
                   </span>
                   <span class="info-pill">
-                    <i class="fas fa-child"></i>8 ans et +
+                    <i class="fas fa-child"></i>10 ans et +
                   </span>
                   <span class="info-pill">
-                    <i class="fas fa-globe"></i>Aventure
+                    <i class="fas fa-music"></i>Théâtre musical
                   </span>
                 </div>
                 <div class="hero-buttons">
@@ -595,15 +595,19 @@ export default function SpectacleEstevanico() {
                   </h3>
                   <div class="info-item">
                     <i class="fas fa-clock"></i>
-                    <span>Durée : 60 minutes</span>
+                    <span>Durée : 70 minutes</span>
                   </div>
                   <div class="info-item">
                     <i class="fas fa-users"></i>
-                    <span>Distribution : 4 comédiens</span>
+                    <span>Distribution : 3 comédiens</span>
+                  </div>
+                  <div class="info-item">
+                    <i class="fas fa-theater-masks"></i>
+                    <span>Genre : Théâtre musical</span>
                   </div>
                   <div class="info-item">
                     <i class="fas fa-child"></i>
-                    <span>Âge recommandé : 8 ans et +</span>
+                    <span>Âge recommandé : 10 ans et +</span>
                   </div>
                   <div class="info-item">
                     <i class="fas fa-calendar"></i>

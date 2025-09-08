@@ -353,13 +353,13 @@ export default function SpectacleAliceChezLesMerveilles() {
                     <i class="fas fa-clock"></i>50 minutes
                   </span>
                   <span class="info-pill">
-                    <i class="fas fa-users"></i>4 comédiens
+                    <i class="fas fa-users"></i>3 comédiens
                   </span>
                   <span class="info-pill">
                     <i class="fas fa-child"></i>5 ans et +
                   </span>
                   <span class="info-pill">
-                    <i class="fas fa-magic"></i>Merveilleux
+                    <i class="fas fa-theater-masks"></i>Théâtre
                   </span>
                 </div>
                 <div class="hero-buttons">
@@ -597,7 +597,11 @@ export default function SpectacleAliceChezLesMerveilles() {
                   </div>
                   <div class="info-item">
                     <i class="fas fa-users"></i>
-                    <span>Distribution : 4 comédiens</span>
+                    <span>Distribution : 3 comédiens</span>
+                  </div>
+                  <div class="info-item">
+                    <i class="fas fa-theater-masks"></i>
+                    <span>Genre : Théâtre</span>
                   </div>
                   <div class="info-item">
                     <i class="fas fa-child"></i>

@@ -351,16 +351,16 @@ export default function SpectacleTaraSurLaLune() {
                 <p class="hero-subtitle">Une aventure extraordinaire dans l'espace avec Tara et ses amis</p>
                 <div class="info-pills">
                   <span class="info-pill">
-                    <i class="fas fa-clock"></i>45 minutes
+                    <i class="fas fa-clock"></i>55 minutes
                   </span>
                   <span class="info-pill">
-                    <i class="fas fa-users"></i>4 comédiens
+                    <i class="fas fa-users"></i>1 comédien
                   </span>
                   <span class="info-pill">
                     <i class="fas fa-child"></i>5 ans et +
                   </span>
                   <span class="info-pill">
-                    <i class="fas fa-star"></i>Aventure
+                    <i class="fas fa-video"></i>Théâtre avec projection
                   </span>
                 </div>
                 <div class="hero-buttons">
@@ -602,11 +602,15 @@ export default function SpectacleTaraSurLaLune() {
                   </h3>
                   <div class="info-item">
                     <i class="fas fa-clock"></i>
-                    <span>Durée : 45 minutes</span>
+                    <span>Durée : 55 minutes</span>
                   </div>
                   <div class="info-item">
                     <i class="fas fa-users"></i>
-                    <span>Distribution : 4 comédiens</span>
+                    <span>Distribution : 1 comédien</span>
+                  </div>
+                  <div class="info-item">
+                    <i class="fas fa-theater-masks"></i>
+                    <span>Genre : Théâtre avec projection</span>
                   </div>
                   <div class="info-item">
                     <i class="fas fa-child"></i>

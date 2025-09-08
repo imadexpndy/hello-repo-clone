@@ -1170,7 +1170,7 @@ export default function Spectacles() {
                   <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
                     <img src="/assets/img/spectacles/le-petit-prince.png" alt="Le Petit Prince" style="width: 150%; height: 120%; object-fit: contain;" />
                     <!-- Character Image -->
-                    <img src="/src/assets/spectacles elements/petit prince@4x.png" alt="Le Petit Prince Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
+                    <img src="/src/assets/spectacles%20elements/petit%20prince@4x.png" alt="Le Petit Prince Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
                   </div>
                   
                   <!-- Right Side: Content -->
@@ -1230,9 +1230,9 @@ export default function Spectacles() {
                   
                   <!-- Left Side: Affiche -->
                   <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
-                    <img src="/src/assets/spectacles elements/petite prince.png" alt="الأمير الصغير" style="width: 150%; height: 120%; object-fit: contain;" />
+                    <img src="/src/assets/spectacles%20elements/petite%20prince.png" alt="الأمير الصغير" style="width: 150%; height: 120%; object-fit: contain;" />
                     <!-- Character Image -->
-                    <img src="/src/assets/spectacles elements/petit prince@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
+                    <img src="/src/assets/spectacles%20elements/petit%20prince@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
                   </div>
                   
                   <!-- Right Side: Content -->
@@ -1294,7 +1294,7 @@ export default function Spectacles() {
                   <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
                     <img src="/assets/img/spectacles/tara-sur-la-lune.png" alt="Tara sur la Lune" style="width: 150%; height: 120%; object-fit: contain;" />
                     <!-- Character Image -->
-                    <img src="/src/assets/spectacles elements/tara@4x.png" alt="Tara Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
+                    <img src="/src/assets/spectacles%20elements/tara@4x.png" alt="Tara Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
                   </div>
                   
                   <!-- Right Side: Content -->
@@ -1356,7 +1356,7 @@ export default function Spectacles() {
                   <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
                     <img src="/assets/img/spectacles/mirat@4x.png" alt="Mirath Atfal" style="width: 150%; height: 120%; object-fit: contain;" />
                     <!-- Character Image -->
-                    <img src="/src/assets/spectacles elements/estevanico@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
+                    <img src="/src/assets/spectacles%20elements/estevanico@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
                   </div>
                   
                   <!-- Right Side: Content -->
@@ -1418,7 +1418,7 @@ export default function Spectacles() {
                   <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
                     <img src="/assets/img/spectacles/simple-comme-bonjour.png" alt="Simple comme bonjour" style="width: 150%; height: 120%; object-fit: contain;" />
                     <!-- Character Image -->
-                    <img src="https://edjs.art/assets/img/spectacles elements/simple comme bonjour@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
+                    <img src="/src/assets/spectacles%20elements/simple%20comme%20bonjour@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
                   </div>
                   
                   <!-- Right Side: Content -->
@@ -1477,7 +1477,7 @@ export default function Spectacles() {
                   <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
                     <img src="/assets/img/spectacles/charlotte.png" alt="Charlotte" style="width: 150%; height: 120%; object-fit: contain;" />
                     <!-- Character Image -->
-                    <img src="https://edjs.art/assets/img/spectacles elements/charlotte@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
+                    <img src="/src/assets/spectacles%20elements/charlotte@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
                   </div>
                   
                   <!-- Right Side: Content -->
@@ -1536,7 +1536,7 @@ export default function Spectacles() {
                   <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
                     <img src="/assets/img/spectacles/estevanico.png" alt="Estevanico" style="width: 150%; height: 120%; object-fit: contain;" />
                     <!-- Character Image -->
-                    <img src="https://edjs.art/assets/img/spectacles elements/estevanico@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
+                    <img src="/src/assets/spectacles%20elements/estevanico@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
                   </div>
                   
                   <!-- Right Side: Content -->
@@ -1595,7 +1595,7 @@ export default function Spectacles() {
                   <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
                     <img src="/assets/img/spectacles/enfant-de-larbre.png" alt="L'enfant de l'arbre" style="width: 150%; height: 120%; object-fit: contain;" />
                     <!-- Character Image -->
-                    <img src="https://edjs.art/assets/img/spectacles elements/larbre@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
+                    <img src="/src/assets/spectacles%20elements/larbre@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
                   </div>
                   
                   <!-- Right Side: Content -->
@@ -1713,7 +1713,7 @@ export default function Spectacles() {
                   <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
                     <img src="/assets/img/spectacles/alice.png" alt="Alice chez les merveilles" style="width: 150%; height: 120%; object-fit: contain;" />
                     <!-- Character Image -->
-                    <img src="https://edjs.art/assets/img/spectacles elements/alice@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
+                    <img src="/src/assets/spectacles%20elements/alice@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
                   </div>
                   
                   <!-- Right Side: Content -->
@@ -1772,7 +1772,7 @@ export default function Spectacles() {
                   <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
                     <img src="/assets/img/spectacles/leau-la.png" alt="L'EAU LA" style="width: 150%; height: 120%; object-fit: contain;" />
                     <!-- Character Image -->
-                    <img src="/src/assets/spectacles elements/leau@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
+                    <img src="/src/assets/spectacles%20elements/leau@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
                   </div>
                   
                   <!-- Right Side: Content -->

@@ -350,16 +350,16 @@ export default function SpectacleCharlotte() {
                 <p class="hero-subtitle">Une histoire touchante d'amitié, de courage et de découverte de soi</p>
                 <div class="info-pills">
                   <span class="info-pill">
-                    <i class="fas fa-clock"></i>45 minutes
+                    <i class="fas fa-clock"></i>50 minutes
                   </span>
                   <span class="info-pill">
-                    <i class="fas fa-users"></i>3 comédiens
+                    <i class="fas fa-users"></i>2 comédiens
                   </span>
                   <span class="info-pill">
-                    <i class="fas fa-child"></i>6 ans et +
+                    <i class="fas fa-child"></i>5 ans et +
                   </span>
                   <span class="info-pill">
-                    <i class="fas fa-heart"></i>Émouvant
+                    <i class="fas fa-music"></i>Théâtre musical
                   </span>
                 </div>
                 <div class="hero-buttons">
@@ -595,15 +595,19 @@ export default function SpectacleCharlotte() {
                   </h3>
                   <div class="info-item">
                     <i class="fas fa-clock"></i>
-                    <span>Durée : 45 minutes</span>
+                    <span>Durée : 50 minutes</span>
                   </div>
                   <div class="info-item">
                     <i class="fas fa-users"></i>
-                    <span>Distribution : 3 comédiens</span>
+                    <span>Distribution : 2 comédiens</span>
+                  </div>
+                  <div class="info-item">
+                    <i class="fas fa-theater-masks"></i>
+                    <span>Genre : Théâtre musical</span>
                   </div>
                   <div class="info-item">
                     <i class="fas fa-child"></i>
-                    <span>Âge recommandé : 6 ans et +</span>
+                    <span>Âge recommandé : 5 ans et +</span>
                   </div>
                   <div class="info-item">
                     <i class="fas fa-calendar"></i>

@@ -357,11 +357,11 @@ export default function SpectacleLePetitPrince() {
                   <span class="info-pill">
                     <i class="fas fa-users"></i>2 comédiens
                   </span>
-                  <span class="info-pill">
-                    <i class="fas fa-child"></i>7 ans et +
+                  <span class="info-pill" id="age-level-pill">
+                    <i class="fas fa-child"></i><span id="age-level-text">7 ans et +</span>
                   </span>
                   <span class="info-pill">
-                    <i class="fas fa-heart"></i>Émotionnel
+                    <i class="fas fa-palette"></i>Conte avec dessin sur sable
                   </span>
                 </div>
                 <div class="hero-buttons">
@@ -603,9 +603,9 @@ export default function SpectacleLePetitPrince() {
                     <i class="fas fa-users"></i>
                     <span>Distribution : 2 comédiens</span>
                   </div>
-                  <div class="info-item">
+                  <div class="info-item" id="sidebar-age-level">
                     <i class="fas fa-child"></i>
-                    <span>Âge recommandé : 7 ans et +</span>
+                    <span id="sidebar-age-level-text">Âge recommandé : 7 ans et +</span>
                   </div>
                   <div class="info-item">
                     <i class="fas fa-calendar"></i>
@@ -765,6 +765,28 @@ export default function SpectacleLePetitPrince() {
       videoId="iARC1DejKHo" 
     />
     <SpectacleFooter />
+    
+    <script dangerouslySetInnerHTML={{
+      __html: `
+        // Check user type and update age/level display
+        const userType = sessionStorage.getItem('userType');
+        const professionalType = sessionStorage.getItem('professionalType');
+        
+        if (userType === 'professional' && professionalType === 'scolaire-privee') {
+          // Update hero section age pill
+          const ageLevelText = document.getElementById('age-level-text');
+          if (ageLevelText) {
+            ageLevelText.textContent = 'CM1, CM2, Collège, Lycée';
+          }
+          
+          // Update sidebar age info
+          const sidebarAgeText = document.getElementById('sidebar-age-level-text');
+          if (sidebarAgeText) {
+            sidebarAgeText.textContent = 'Niveaux : CM1, CM2, Collège, Lycée';
+          }
+        }
+      `
+    }} />
     </>
   );
 }
