@@ -137,17 +137,52 @@ const Auth = () => {
     const returnUrl = urlParams.get('return_url');
     
     if (returnUrl) {
+      // Get user profile to determine user type
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('admin_role, professional_type')
+        .eq('user_id', user?.id)
+        .single();
+      
       // User came from EDJS website - redirect back with login confirmation
       const decodedReturnUrl = decodeURIComponent(returnUrl);
       const separator = decodedReturnUrl.includes('?') ? '&' : '?';
-      const redirectUrl = `${decodedReturnUrl}${separator}logged_in=true&user_email=${encodeURIComponent(user?.email || '')}&user_name=${encodeURIComponent(user?.user_metadata?.full_name || user?.email || '')}`;
+      
+      // Determine user type and professional type for EDJS
+      let userType = 'particulier';
+      let professionalType = '';
+      
+      if (profile) {
+        switch (profile.admin_role) {
+          case 'teacher_private':
+            userType = 'professional';
+            professionalType = 'scolaire-privee';
+            break;
+          case 'teacher_public':
+            userType = 'professional';
+            professionalType = 'scolaire-publique';
+            break;
+          case 'association':
+            userType = 'professional';
+            professionalType = 'association';
+            break;
+          case 'b2c_user':
+          default:
+            userType = 'particulier';
+            break;
+        }
+      }
+      
+      const redirectUrl = `${decodedReturnUrl}${separator}logged_in=true&user_email=${encodeURIComponent(user?.email || '')}&user_name=${encodeURIComponent(user?.user_metadata?.full_name || user?.email || '')}&user_type=${encodeURIComponent(userType)}&professional_type=${encodeURIComponent(professionalType)}`;
+      
+      console.log('Redirecting back to EDJS with auth confirmation:', redirectUrl);
+      console.log('User type:', userType, 'Professional type:', professionalType);
       
       toast({
         title: "Connexion réussie",
         description: "Redirection vers EDJS...",
       });
       
-      // Redirect back to EDJS with login parameters
       setTimeout(() => {
         window.location.href = redirectUrl;
       }, 1000);

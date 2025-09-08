@@ -96,51 +96,35 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
       );
     }
 
-    if (userRole === 'teacher_private') {
-      return (
-        <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
-          <div className="flex items-center space-x-2 p-4 border rounded-lg hover:bg-accent">
-            <RadioGroupItem value="bank_transfer" id="bank_transfer" />
-            <Label htmlFor="bank_transfer" className="flex items-center gap-2 cursor-pointer">
-              <Building2 className="h-4 w-4" />
-              Virement bancaire
-            </Label>
-          </div>
-          <div className="flex items-center space-x-2 p-4 border rounded-lg hover:bg-accent">
-            <RadioGroupItem value="check" id="check" />
-            <Label htmlFor="check" className="flex items-center gap-2 cursor-pointer">
-              <FileText className="h-4 w-4" />
-              Chèque
-            </Label>
-          </div>
-        </RadioGroup>
-      );
-    }
-
-    return null;
+    // All other user types (teacher_private, teacher_public, association) use bank transfer
+    return (
+      <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
+        <div className="flex items-center space-x-2 p-4 border rounded-lg hover:bg-accent">
+          <RadioGroupItem value="bank_transfer" id="bank_transfer" />
+          <Label htmlFor="bank_transfer" className="flex items-center gap-2 cursor-pointer">
+            <Building2 className="h-4 w-4" />
+            Virement bancaire
+          </Label>
+        </div>
+      </RadioGroup>
+    );
   };
 
   const renderPaymentInfo = () => {
-    if (userRole === 'teacher_private' && paymentMethod) {
+    if (userRole !== 'b2c_user' && paymentMethod === 'bank_transfer') {
       return (
         <Alert>
           <AlertDescription>
-            {paymentMethod === 'bank_transfer' && (
-              <div>
-                <h4 className="font-semibold mb-2">Informations de virement</h4>
-                <p>IBAN: FR76 1234 5678 9012 3456 7890 123</p>
-                <p>BIC: ABCDEFGH</p>
-                <p>Référence: {bookingId.slice(0, 8)}</p>
-              </div>
-            )}
-            {paymentMethod === 'check' && (
-              <div>
-                <h4 className="font-semibold mb-2">Paiement par chèque</h4>
-                <p>Chèque à l'ordre de: [Nom de l'organisation]</p>
-                <p>Référence à indiquer: {bookingId.slice(0, 8)}</p>
-                <p>Adresse d'envoi: [Adresse à définir]</p>
-              </div>
-            )}
+            <div>
+              <h4 className="font-semibold mb-2">Informations de virement</h4>
+              <p><strong>Bénéficiaire:</strong> École du Jeune Spectateur</p>
+              <p><strong>IBAN:</strong> MA64 011 780 0000001234567890</p>
+              <p><strong>RIB:</strong> 011 780 0000001234567890 23</p>
+              <p><strong>Référence:</strong> EDJS-{bookingId.slice(0, 8)}</p>
+              <p className="text-sm text-muted-foreground mt-2">
+                Veuillez indiquer la référence lors du virement pour faciliter l'identification de votre paiement.
+              </p>
+            </div>
           </AlertDescription>
         </Alert>
       );
@@ -176,9 +160,9 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
           className="w-full"
         >
           {processing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {userRole === 'teacher_private' 
-            ? 'Confirmer la commande'
-            : 'Procéder au paiement'
+          {userRole === 'b2c_user' 
+            ? 'Procéder au paiement'
+            : 'Confirmer la commande'
           }
         </Button>
       </CardContent>
