@@ -144,23 +144,38 @@ export default function ReservationSimple() {
     setIsSubmitting(true);
     
     try {
-      // Prepare email data
-      const emailData = {
-        to: 'inscription@edjs.ma',
-        subject: 'Nouvelle réservation - ' + (spectacleNames[reservationData.spectacle] || reservationData.spectacle),
-        spectacle: spectacleNames[reservationData.spectacle] || reservationData.spectacle,
-        ...reservationData,
-        timestamp: new Date().toISOString(),
-        userEmail: user?.email
-      };
+      if (reservationData.profileType === 'Particulier') {
+        // Redirect to payment for particuliers
+        const paymentData = {
+          spectacle: spectacleNames[reservationData.spectacle] || reservationData.spectacle,
+          ...reservationData,
+          timestamp: new Date().toISOString(),
+          userEmail: user?.email
+        };
+        
+        // Store reservation data for payment page
+        sessionStorage.setItem('reservationPaymentData', JSON.stringify(paymentData));
+        
+        // Redirect to payment
+        window.location.href = `/payment?type=particulier&spectacle=${reservationData.spectacle}&participants=${reservationData.numberOfTickets}`;
+      } else {
+        // Send email for professionals (existing flow)
+        const emailData = {
+          to: 'inscription@edjs.ma',
+          subject: 'Nouvelle réservation - ' + (spectacleNames[reservationData.spectacle] || reservationData.spectacle),
+          spectacle: spectacleNames[reservationData.spectacle] || reservationData.spectacle,
+          ...reservationData,
+          timestamp: new Date().toISOString(),
+          userEmail: user?.email
+        };
 
-      // Send email (this would need to be implemented with your backend)
-      console.log('Sending reservation data:', emailData);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      setCurrentStep(4);
+        console.log('Sending reservation data:', emailData);
+        
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        setCurrentStep(4);
+      }
     } catch (error) {
       console.error('Error submitting reservation:', error);
       alert('Une erreur est survenue lors de l\'envoi de votre réservation. Veuillez réessayer.');
@@ -513,11 +528,11 @@ export default function ReservationSimple() {
             </div>
           )}
 
-          {/* Step 3: Confirmation */}
+          {/* Step 3: Payment */}
           {currentStep === 3 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">
-                Paiement & Confirmation
+                {reservationData.profileType === 'Particulier' ? 'Paiement par carte' : 'Confirmation de réservation'}
               </h2>
               
               <div className="bg-gray-50 p-6 rounded-lg">
@@ -544,23 +559,47 @@ export default function ReservationSimple() {
                 </div>
               </div>
 
-              <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg">
-                <p className="text-amber-800 text-sm">
-                  📧 <strong>Information importante :</strong> Toutes les informations seront automatiquement envoyées à inscription@edjs.ma
-                </p>
-              </div>
+              {reservationData.profileType === 'Particulier' ? (
+                <div className="space-y-4">
+                  <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+                    <p className="text-blue-800 text-sm">
+                      💳 <strong>Paiement sécurisé :</strong> Procédez au paiement par carte bancaire pour confirmer votre réservation
+                    </p>
+                  </div>
+                  
+                  <div className="bg-green-50 border-l-4 border-green-400 p-4">
+                    <h5 className="text-green-800 font-semibold mb-2">
+                      ✅ Après paiement
+                    </h5>
+                    <ul className="text-green-700 text-sm space-y-1">
+                      <li>• Confirmation immédiate par email</li>
+                      <li>• Réception des billets électroniques</li>
+                      <li>• Accès aux informations du spectacle</li>
+                      <li>• Support client disponible</li>
+                    </ul>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="bg-amber-50 border border-amber-200 p-4 rounded-lg">
+                    <p className="text-amber-800 text-sm">
+                      📧 <strong>Information importante :</strong> Votre demande sera envoyée à inscription@edjs.ma pour traitement
+                    </p>
+                  </div>
 
-              <div className="bg-green-50 border-l-4 border-green-400 p-4">
-                <h5 className="text-green-800 font-semibold mb-2">
-                  ✅ Après validation
-                </h5>
-                <ul className="text-green-700 text-sm space-y-1">
-                  <li>• Réception d'un email de confirmation</li>
-                  <li>• Contact dans les plus brefs délais pour finaliser</li>
-                  <li>• Réception des billets par email</li>
-                  <li>• Option de téléchargement via QR Code sur le site EDJS</li>
-                </ul>
-              </div>
+                  <div className="bg-green-50 border-l-4 border-green-400 p-4">
+                    <h5 className="text-green-800 font-semibold mb-2">
+                      ✅ Après validation
+                    </h5>
+                    <ul className="text-green-700 text-sm space-y-1">
+                      <li>• Réception d'un email de confirmation</li>
+                      <li>• Contact dans les plus brefs délais pour finaliser</li>
+                      <li>• Réception des billets par email</li>
+                      <li>• Option de téléchargement via QR Code sur le site EDJS</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

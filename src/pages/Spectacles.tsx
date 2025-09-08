@@ -851,6 +851,25 @@ export default function Spectacles() {
             display: ${user ? 'block' : 'none'};
           }
 
+          .spectacles-grid .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+          }
+
+          .spectacles-grid .row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -10px;
+          }
+
+          .spectacles-grid .col-lg-6 {
+            flex: 0 0 50%;
+            max-width: 50%;
+            padding: 0 10px;
+            box-sizing: border-box;
+          }
+
           .spectacle-card {
             background: white;
             border-radius: 20px;
@@ -862,6 +881,8 @@ export default function Spectacles() {
             transition: all 0.4s ease;
             position: relative;
             margin: 20px 0;
+            max-width: 100%;
+            box-sizing: border-box;
           }
 
           .spectacle-card:hover {
@@ -949,9 +970,130 @@ export default function Spectacles() {
             .hero-title { font-size: 2.2rem !important; }
             .auth-gate-options { flex-direction: column; align-items: center; gap: 25px; }
             .auth-option { width: 100%; max-width: 350px; }
-            .spectacle-card { height: auto !important; flex-direction: column !important; }
-            .spectacle-card > div:first-child { width: 100% !important; height: 200px !important; }
-            .spectacle-card > div:last-child { width: 100% !important; }
+            
+            .spectacles-grid .col-lg-6 {
+              flex: 0 0 100% !important;
+              max-width: 100% !important;
+            }
+            
+            .spectacle-card { 
+              height: auto !important; 
+              flex-direction: column !important; 
+              margin: 15px 0 !important;
+              width: 100% !important;
+              max-width: 100% !important;
+            }
+            .spectacle-card > div:first-child { 
+              width: 100% !important; 
+              height: 200px !important; 
+              padding: 20px !important;
+              justify-content: center !important;
+            }
+            .spectacle-card > div:last-child { 
+              width: 100% !important; 
+              padding: 20px !important;
+            }
+            .spectacle-card > div:last-child > div {
+              margin-left: 0 !important;
+              text-align: center !important;
+              padding-right: 0 !important;
+            }
+            .spectacle-card__title {
+              font-size: 24px !important;
+            }
+            .spectacle-card > div:last-child > div > div:last-child {
+              justify-content: center !important;
+            }
+          }
+
+          @media (max-width: 576px) {
+            .container {
+              padding: 0 10px !important;
+            }
+            .row {
+              margin: 0 !important;
+            }
+            .col-lg-6, .col-md-6 {
+              padding: 0 5px !important;
+            }
+            .spectacle-card {
+              margin: 10px 0 !important;
+              border-radius: 15px !important;
+              width: 100% !important;
+              max-width: 100% !important;
+            }
+            .spectacle-card > div:first-child {
+              height: 180px !important;
+              padding: 15px !important;
+              width: 100% !important;
+            }
+            .spectacle-card > div:last-child {
+              padding: 15px !important;
+              width: 100% !important;
+            }
+            .spectacle-card > div:last-child > div {
+              width: 100% !important;
+              margin-left: 0 !important;
+              padding-right: 0 !important;
+            }
+            .spectacle-card__title {
+              font-size: 18px !important;
+              padding: 6px 12px !important;
+              margin-bottom: 10px !important;
+            }
+            .btn-reserve, .btn-details {
+              padding: 8px 12px !important;
+              font-size: 11px !important;
+              min-width: 80px !important;
+              flex: 1 !important;
+              max-width: 120px !important;
+            }
+            /* Fix button container overflow */
+            .spectacle-card > div:last-child > div > div:last-child {
+              flex-wrap: wrap !important;
+              gap: 6px !important;
+              justify-content: center !important;
+              width: 100% !important;
+              margin-bottom: 10px !important;
+            }
+            /* Ensure info badges wrap properly */
+            .spectacle-card > div:last-child > div > div:nth-child(3) {
+              margin-bottom: 15px !important;
+            }
+            .spectacle-card > div:last-child > div > div:nth-child(3) > div {
+              flex-wrap: wrap !important;
+              gap: 4px !important;
+              justify-content: center !important;
+            }
+            .spectacle-card > div:last-child > div > div:nth-child(3) > div > div {
+              font-size: 9px !important;
+              padding: 3px 6px !important;
+            }
+          }
+
+          @media (max-width: 480px) {
+            .container {
+              padding: 0 5px !important;
+            }
+            .spectacle-card {
+              margin: 8px 0 !important;
+            }
+            .spectacle-card > div:first-child {
+              height: 160px !important;
+              padding: 10px !important;
+            }
+            .spectacle-card > div:last-child {
+              padding: 10px !important;
+            }
+            .spectacle-card__title {
+              font-size: 16px !important;
+              padding: 4px 8px !important;
+            }
+            .btn-reserve, .btn-details {
+              padding: 6px 10px !important;
+              font-size: 10px !important;
+              min-width: 70px !important;
+            }
           }
         </style>
 
@@ -1016,8 +1158,8 @@ export default function Spectacles() {
                   </div>
                   
                   <!-- Right Side: Content -->
-                  <div style="width: 50%; padding: 25px 80px 25px 5px; display: flex; flex-direction: column; justify-content: center;">
-                    <div style="width: 100%; margin-left: 30px;">
+                  <div style="width: 50%; padding: 25px 10px 25px 5px; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="width: 100%; margin-left: 10px; padding-right: 5px;">
                       <!-- Date Badge -->
                       <div style="margin-bottom: 15px;">
                         <div class="spectacle-card__date" style="color: #999; font-size: 12px; font-weight: 600; text-transform: uppercase;">Oct 2025</div>
@@ -1031,7 +1173,7 @@ export default function Spectacles() {
                         <div style="display: flex; justify-content: flex-start; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                             <i class="fas fa-clock" style="color: #BDCF00;"></i>
-                            <span>50 minutes</span>
+                            <span>60 minutes</span>
                           </div>
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                             <i class="fas fa-child" style="color: #BDCF00;"></i>
@@ -1041,7 +1183,7 @@ export default function Spectacles() {
                         <div style="display: flex; justify-content: flex-start; gap: 10px; flex-wrap: wrap;">
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                             <i class="fas fa-users" style="color: #BDCF00;"></i>
-                            <span>3 comédiens</span>
+                            <span>2 comédiens</span>
                           </div>
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                             <i class="fas fa-heart" style="color: #BDCF00;"></i>
@@ -1051,11 +1193,11 @@ export default function Spectacles() {
                       </div>
                       
                       <!-- Buttons -->
-                      <div style="display: flex; gap: 12px; justify-content: flex-start; margin-bottom: 20px;">
-                        <button class="btn-reserve" onclick="window.handleReservation('le-petit-prince')" style="background: #BDCF00; color: white; padding: 12px 24px; border-radius: 8px; border: none; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">
+                      <div style="display: flex; gap: 8px; justify-content: flex-start; margin-bottom: 20px; flex-wrap: wrap;">
+                        <button class="btn-reserve" onclick="window.handleReservation('le-petit-prince')" style="background: #BDCF00; color: white; padding: 10px 16px; border-radius: 8px; border: none; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">
                           Réserver
                         </button>
-                        <button class="btn-details" onclick="window.handleDetails('le-petit-prince')" style="background: transparent; color: #BDCF00; padding: 12px 24px; border: 2px solid #BDCF00; border-radius: 8px; font-weight: 600; font-size: 14px; min-width: 120px; cursor: pointer;">Détails</button>
+                        <button class="btn-details" onclick="window.handleDetails('le-petit-prince')" style="background: transparent; color: #BDCF00; padding: 10px 16px; border: 2px solid #BDCF00; border-radius: 8px; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">Détails</button>
                       </div>
                     </div>
                   </div>
@@ -1397,7 +1539,7 @@ export default function Spectacles() {
                       <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-clock" style="color: #17a2b8;"></i>
-                          <span>50 minutes</span>
+                          <span>60 minutes</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-child" style="color: #17a2b8;"></i>
@@ -1405,7 +1547,7 @@ export default function Spectacles() {
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-users" style="color: #17a2b8;"></i>
-                          <span>4 comédiens</span>
+                          <span>3 comédiens</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-heart" style="color: #17a2b8;"></i>

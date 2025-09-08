@@ -1,9 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import SpectacleFooter from '@/components/SpectacleFooter';
+import VideoPopup from '@/components/VideoPopup';
 
 export default function SpectacleLePetitPrince() {
   const { user } = useAuth();
+  const [isVideoOpen, setIsVideoOpen] = useState(false);
 
   useEffect(() => {
     // Load external stylesheets
@@ -33,6 +35,8 @@ export default function SpectacleLePetitPrince() {
   useEffect(() => {
     // Expose handleReservation to window object for inline event handlers
     (window as any).handleReservation = handleReservation;
+    // Expose video popup handler
+    (window as any).openVideoPopup = () => setIsVideoOpen(true);
   }, [user]);
 
   return (
@@ -344,10 +348,6 @@ export default function SpectacleLePetitPrince() {
           <div class="hero-container">
             <div class="hero-left">
               <div class="hero-content">
-                <div class="hero-badge">
-                  <i class="fas fa-star"></i>
-                  Spectacle Poétique
-                </div>
                 <h1 class="hero-title">Le Petit Prince</h1>
                 <p class="hero-subtitle">Un voyage poétique à travers les étoiles et les rencontres extraordinaires</p>
                 <div class="info-pills">
@@ -378,7 +378,7 @@ export default function SpectacleLePetitPrince() {
                 <div class="tv-frame">
                   <div class="tv-screen">
                     <img src="https://edjs.art/assets/img/affiche LPP VF .jpeg" alt="Le Petit Prince Affiche" class="tv-video" style="width: 100%; height: auto; border-radius: 10px; display: block;">
-                    <div class="play-button-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.3); cursor: pointer; transition: all 0.3s ease;">
+                    <div class="play-button-overlay" onclick="openVideoPopup()" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.3); cursor: pointer; transition: all 0.3s ease;">
                       <div class="play-button" style="background: rgba(255,255,255,0.9); border-radius: 50%; width: 80px; height: 80px; display: flex; justify-content: center; align-items: center; font-size: 2rem; color: #333; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: all 0.3s ease;">
                         <i class="fas fa-play" style="margin-left: 4px;"></i>
                       </div>
@@ -759,6 +759,11 @@ export default function SpectacleLePetitPrince() {
         </script>
       `
     }} />
+    <VideoPopup 
+      isOpen={isVideoOpen} 
+      onClose={() => setIsVideoOpen(false)} 
+      videoId="iARC1DejKHo" 
+    />
     <SpectacleFooter />
     </>
   );

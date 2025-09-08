@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { toast } from 'sonner';
 import { Settings, Save, RefreshCw, Database, Mail, Shield } from 'lucide-react';
+import { AdminDataCleaner } from '@/components/AdminDataCleaner';
 
 export default function AdminSettings() {
   const [settings, setSettings] = useState({
@@ -301,6 +302,9 @@ export default function AdminSettings() {
           </div>
         </CardContent>
         </Card>
+
+      {/* Data Management */}
+      <AdminDataCleaner />
     </DashboardLayout>
   );
 }

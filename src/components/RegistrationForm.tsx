@@ -153,6 +153,24 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
     setLoading(true);
 
     try {
+      // Check if email already exists first
+      const { data: existingUsers, error: checkError } = await supabase
+        .from('profiles')
+        .select('email')
+        .eq('email', formData.email);
+
+      if (checkError) {
+        console.error('Error checking existing email:', checkError);
+      } else if (existingUsers && existingUsers.length > 0) {
+        toast({
+          title: "Email déjà utilisé",
+          description: "Cet email est déjà utilisé. Veuillez utiliser un autre email.",
+          variant: "destructive"
+        });
+        setLoading(false);
+        return;
+      }
+
       // 1. Create auth user
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
@@ -172,7 +190,19 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
       console.log('Confirmation sent:', authData?.user?.confirmation_sent_at);
       console.log('Session:', authData?.session);
 
-      if (authError) throw authError;
+      if (authError) {
+        // Handle duplicate email error
+        if (authError.message.includes('already registered') || authError.message.includes('User already registered')) {
+          toast({
+            title: "Email déjà utilisé",
+            description: "Cet email est déjà utilisé. Veuillez utiliser un autre email.",
+            variant: "destructive"
+          });
+          setLoading(false);
+          return;
+        }
+        throw authError;
+      }
 
       if (!authData.user) {
         throw new Error("Erreur lors de la création du compte");

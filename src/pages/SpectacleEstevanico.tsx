@@ -1,8 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import SpectacleFooter from '@/components/SpectacleFooter';
+import VideoPopup from '@/components/VideoPopup';
 
 export default function SpectacleEstevanico() {
   const { user } = useAuth();
+  const [isVideoOpen, setIsVideoOpen] = useState(false);
 
   useEffect(() => {
     // Load external stylesheets
@@ -32,6 +35,8 @@ export default function SpectacleEstevanico() {
   useEffect(() => {
     // Expose handleReservation to window object for inline event handlers
     (window as any).handleReservation = handleReservation;
+    // Expose video popup handler
+    (window as any).openVideoPopup = () => setIsVideoOpen(true);
   }, [user]);
 
   return (
@@ -341,10 +346,6 @@ export default function SpectacleEstevanico() {
           <div class="hero-container">
             <div class="hero-left">
               <div class="hero-content">
-                <div class="hero-badge">
-                  <i class="fas fa-compass"></i>
-                  Spectacle Historique
-                </div>
                 <h1 class="hero-title">Estevanico</h1>
                 <p class="hero-subtitle">L'explorateur du Nouveau Monde et ses aventures extraordinaires</p>
                 <div class="info-pills">
@@ -375,7 +376,7 @@ export default function SpectacleEstevanico() {
                 <div class="tv-frame">
                   <div class="tv-screen">
                     <img src="https://edjs.art/assets/img/spectacles/estevanico.png" alt="Estevanico Affiche" class="tv-video" style="width: 100%; height: auto; border-radius: 10px; display: block;">
-                    <div class="play-button-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.3); cursor: pointer; transition: all 0.3s ease;">
+                    <div class="play-button-overlay" onclick="openVideoPopup()" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.3); cursor: pointer; transition: all 0.3s ease;">
                       <div class="play-button" style="background: rgba(255,255,255,0.9); border-radius: 50%; width: 80px; height: 80px; display: flex; justify-content: center; align-items: center; font-size: 2rem; color: #333; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: all 0.3s ease;">
                         <i class="fas fa-play" style="margin-left: 4px;"></i>
                       </div>

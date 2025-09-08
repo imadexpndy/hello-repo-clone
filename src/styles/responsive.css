@@ -1,0 +1,441 @@
+/* Hello Planet App - Mobile & Tablet Responsive Styles */
+
+/* Base responsive utilities */
+.container {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+/* Mobile breakpoints */
+@media (max-width: 768px) {
+  /* Dashboard Layout */
+  .dashboard-layout {
+    flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100% !important;
+    position: fixed;
+    top: 0;
+    left: -100%;
+    height: 100vh;
+    z-index: 1000;
+    transition: left 0.3s ease;
+  }
+  
+  .sidebar.open {
+    left: 0;
+  }
+  
+  .main-content {
+    margin-left: 0 !important;
+    padding: 10px;
+  }
+  
+  /* Navigation */
+  .nav-menu {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .nav-item {
+    width: 100%;
+    text-align: center;
+  }
+  
+  /* Cards */
+  .card {
+    margin-bottom: 15px;
+    padding: 15px;
+  }
+  
+  .card-grid {
+    grid-template-columns: 1fr !important;
+    gap: 15px;
+  }
+  
+  /* Forms */
+  .form-row {
+    flex-direction: column;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .input-group {
+    flex-direction: column;
+  }
+  
+  .btn {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+  
+  .btn-group {
+    flex-direction: column;
+  }
+  
+  /* Tables */
+  .table-responsive {
+    overflow-x: auto;
+  }
+  
+  .table {
+    font-size: 14px;
+  }
+  
+  .table th,
+  .table td {
+    padding: 8px 4px;
+    white-space: nowrap;
+  }
+  
+  /* Modals */
+  .modal-content {
+    margin: 20px;
+    max-width: calc(100vw - 40px);
+  }
+  
+  /* Spectacle Pages */
+  .spectacle-hero {
+    height: 50vh !important;
+    padding: 20px 10px;
+  }
+  
+  .spectacle-title {
+    font-size: 2rem !important;
+  }
+  
+  .spectacle-content {
+    padding: 20px 15px;
+  }
+  
+  .spectacle-sidebar {
+    margin-top: 30px;
+  }
+  
+  /* User Type Selection */
+  .user-type-container {
+    padding: 20px 15px;
+  }
+  
+  .user-type-card {
+    margin-bottom: 20px;
+  }
+  
+  /* Stats Cards */
+  .stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .stats-card {
+    text-align: center;
+  }
+  
+  /* Header */
+  .header {
+    padding: 10px 15px;
+  }
+  
+  .header-title {
+    font-size: 1.5rem;
+  }
+  
+  .header-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  /* Footer */
+  .footer {
+    padding: 20px 15px;
+    text-align: center;
+  }
+  
+  .footer-links {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+/* Tablet breakpoints */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .sidebar {
+    width: 200px !important;
+  }
+  
+  .main-content {
+    margin-left: 200px !important;
+    padding: 20px;
+  }
+  
+  .card-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  .spectacle-hero {
+    height: 60vh !important;
+  }
+  
+  .table {
+    font-size: 15px;
+  }
+}
+
+/* Small mobile breakpoints */
+@media (max-width: 480px) {
+  .container {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  
+  .card {
+    padding: 10px;
+  }
+  
+  .spectacle-hero {
+    height: 40vh !important;
+  }
+  
+  .spectacle-title {
+    font-size: 1.5rem !important;
+  }
+  
+  .btn {
+    padding: 10px 15px;
+    font-size: 14px;
+  }
+  
+  .modal-content {
+    margin: 10px;
+    max-width: calc(100vw - 20px);
+  }
+  
+  .header-title {
+    font-size: 1.2rem;
+  }
+  
+  .table th,
+  .table td {
+    padding: 6px 2px;
+    font-size: 12px;
+  }
+}
+
+/* Admin Dashboard Specific */
+@media (max-width: 768px) {
+  .admin-header {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .admin-nav {
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  
+  .admin-nav-item {
+    display: inline-block;
+    margin-right: 15px;
+  }
+  
+  .admin-content {
+    padding: 15px;
+  }
+  
+  .admin-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .admin-table-actions {
+    flex-direction: column;
+    gap: 5px;
+  }
+  
+  .admin-filters {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+/* Reservation Flow */
+@media (max-width: 768px) {
+  .reservation-steps {
+    flex-direction: column;
+  }
+  
+  .reservation-step {
+    margin-bottom: 15px;
+  }
+  
+  .reservation-form {
+    padding: 15px;
+  }
+  
+  .reservation-summary {
+    margin-top: 20px;
+    padding: 15px;
+  }
+  
+  .participant-row {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+/* Profile Page */
+@media (max-width: 768px) {
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+  
+  .profile-avatar {
+    margin: 0 auto;
+  }
+  
+  .profile-form {
+    padding: 15px;
+  }
+  
+  .profile-sections {
+    flex-direction: column;
+  }
+  
+  .profile-section {
+    margin-bottom: 20px;
+  }
+}
+
+/* Messages Page */
+@media (max-width: 768px) {
+  .messages-layout {
+    flex-direction: column;
+  }
+  
+  .messages-sidebar {
+    width: 100% !important;
+    margin-bottom: 20px;
+  }
+  
+  .messages-content {
+    width: 100% !important;
+  }
+  
+  .message-item {
+    padding: 10px;
+  }
+}
+
+/* Calendar Page */
+@media (max-width: 768px) {
+  .calendar-header {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .calendar-nav {
+    justify-content: center;
+  }
+  
+  .calendar-grid {
+    font-size: 12px;
+  }
+  
+  .calendar-event {
+    font-size: 10px;
+    padding: 2px;
+  }
+}
+
+/* Utilities */
+.mobile-only {
+  display: none;
+}
+
+.desktop-only {
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .mobile-only {
+    display: block;
+  }
+  
+  .desktop-only {
+    display: none;
+  }
+  
+  .mobile-hidden {
+    display: none !important;
+  }
+  
+  .mobile-full-width {
+    width: 100% !important;
+  }
+  
+  .mobile-text-center {
+    text-align: center !important;
+  }
+  
+  .mobile-no-padding {
+    padding: 0 !important;
+  }
+  
+  .mobile-small-padding {
+    padding: 10px !important;
+  }
+}
+
+/* Touch-friendly elements */
+@media (max-width: 768px) {
+  button,
+  .btn,
+  a {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  input,
+  select,
+  textarea {
+    min-height: 44px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+  
+  .clickable {
+    cursor: pointer;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Loading states */
+@media (max-width: 768px) {
+  .loading-spinner {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .loading-text {
+    font-size: 14px;
+  }
+}
+
+/* Error states */
+@media (max-width: 768px) {
+  .error-message {
+    padding: 10px;
+    font-size: 14px;
+  }
+  
+  .error-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+}

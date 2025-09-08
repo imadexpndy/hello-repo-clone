@@ -48,37 +48,25 @@ export default function GuestReservationModal({
   const handleSubmitGuestReservation = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Here you would typically send the data to your backend
+    // Redirect to payment for guest particulier reservations
     const reservationData = {
       spectacleId,
       spectacleName,
-      type: 'guest',
+      type: 'guest_particulier',
       ...guestForm,
       createdAt: new Date().toISOString()
     };
 
-    console.log('Guest reservation submitted:', reservationData);
+    // Store reservation data in sessionStorage for payment page
+    sessionStorage.setItem('guestReservationData', JSON.stringify(reservationData));
     
-    // For now, just show success and close
-    alert('Votre demande de réservation a été envoyée avec succès ! Nous vous contacterons bientôt.');
-    onClose();
-    setStep('options');
-    setGuestForm({
-      name: '',
-      phone: '',
-      email: '',
-      participants: 1,
-      organizationType: 'individual',
-      organizationName: '',
-      numberOfChildren: 0,
-      numberOfAccompanists: 0,
-      notes: ''
-    });
+    // Redirect to payment page
+    window.location.href = `/payment?type=guest&spectacle=${spectacleId}&participants=${guestForm.participants}`;
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-lg max-w-5xl w-full max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center p-6 border-b">
           <h2 className="text-2xl font-bold text-gray-900">
             Réserver - {spectacleName}
@@ -95,51 +83,51 @@ export default function GuestReservationModal({
               <p className="text-gray-600">Choisissez l'option qui vous convient le mieux</p>
             </div>
 
-            <div className="grid gap-4">
+            <div className="grid md:grid-cols-3 gap-4">
               {/* Login Option */}
               <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={handleLogin}>
-                <CardContent className="p-6">
-                  <div className="flex items-center space-x-4">
-                    <div className="bg-blue-100 p-3 rounded-full">
+                <CardContent className="p-4">
+                  <div className="text-center space-y-3">
+                    <div className="bg-blue-100 p-3 rounded-full mx-auto w-fit">
                       <LogIn className="h-6 w-6 text-blue-600" />
                     </div>
-                    <div className="flex-1">
+                    <div>
                       <h4 className="font-semibold text-lg">Se connecter</h4>
-                      <p className="text-gray-600">J'ai déjà un compte</p>
+                      <p className="text-gray-600 text-sm">J'ai déjà un compte</p>
                     </div>
-                    <Button>Connexion</Button>
+                    <Button className="w-full">Connexion</Button>
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Guest Reservation Option */}
+              {/* Guest Reservation Option - Only for Particuliers */}
               <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={handleGuestReservation}>
-                <CardContent className="p-6">
-                  <div className="flex items-center space-x-4">
-                    <div className="bg-green-100 p-3 rounded-full">
+                <CardContent className="p-4">
+                  <div className="text-center space-y-3">
+                    <div className="bg-green-100 p-3 rounded-full mx-auto w-fit">
                       <User className="h-6 w-6 text-green-600" />
                     </div>
-                    <div className="flex-1">
+                    <div>
                       <h4 className="font-semibold text-lg">Réserver en tant qu'invité</h4>
-                      <p className="text-gray-600">Réservation rapide sans compte</p>
+                      <p className="text-gray-600 text-sm">Particulier uniquement - Paiement par carte</p>
                     </div>
-                    <Button variant="outline">Continuer</Button>
+                    <Button variant="outline" className="w-full">Continuer</Button>
                   </div>
                 </CardContent>
               </Card>
 
               {/* Create Account Option */}
               <Card className="cursor-pointer hover:shadow-md transition-shadow" onClick={handleSignup}>
-                <CardContent className="p-6">
-                  <div className="flex items-center space-x-4">
-                    <div className="bg-purple-100 p-3 rounded-full">
+                <CardContent className="p-4">
+                  <div className="text-center space-y-3">
+                    <div className="bg-purple-100 p-3 rounded-full mx-auto w-fit">
                       <UserPlus className="h-6 w-6 text-purple-600" />
                     </div>
-                    <div className="flex-1">
+                    <div>
                       <h4 className="font-semibold text-lg">Créer un compte</h4>
-                      <p className="text-gray-600">Profitez de tous les avantages</p>
+                      <p className="text-gray-600 text-sm">Profitez de tous les avantages</p>
                     </div>
-                    <Button variant="outline">S'inscrire</Button>
+                    <Button variant="outline" className="w-full">S'inscrire</Button>
                   </div>
                 </CardContent>
               </Card>
@@ -234,14 +222,12 @@ export default function GuestReservationModal({
                 <label className="block text-sm font-medium mb-2">Type de réservation</label>
                 <select 
                   className="w-full p-2 border rounded-md"
-                  value={guestForm.organizationType}
-                  onChange={(e) => setGuestForm({...guestForm, organizationType: e.target.value})}
+                  value="individual"
+                  disabled
                 >
                   <option value="individual">Particulier</option>
-                  <option value="school">École</option>
-                  <option value="association">Association</option>
-                  <option value="company">Entreprise</option>
                 </select>
+                <p className="text-xs text-gray-500 mt-1">Les réservations invité sont uniquement pour les particuliers</p>
               </div>
               {guestForm.organizationType === 'individual' ? (
                 <div>
@@ -259,50 +245,6 @@ export default function GuestReservationModal({
               )}
             </div>
 
-            {/* Professional reservation fields */}
-            {guestForm.organizationType !== 'individual' && (
-              <div className="space-y-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                <h4 className="font-medium text-blue-800">Réservation professionnelle</h4>
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Nombre d'enfants *</label>
-                    <Input
-                      required
-                      type="number"
-                      min="0"
-                      value={guestForm.numberOfChildren}
-                      onChange={(e) => setGuestForm({...guestForm, numberOfChildren: parseInt(e.target.value)})}
-                      placeholder="Nombre d'enfants"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Nombre d'accompagnateurs *</label>
-                    <Input
-                      required
-                      type="number"
-                      min="0"
-                      value={guestForm.numberOfAccompanists}
-                      onChange={(e) => setGuestForm({...guestForm, numberOfAccompanists: parseInt(e.target.value)})}
-                      placeholder="Nombre d'accompagnateurs"
-                    />
-                  </div>
-                </div>
-                <div className="text-sm text-blue-700 bg-blue-100 p-3 rounded-md">
-                  <strong>Note importante :</strong> Merci de ne pas dépasser 3 accompagnateurs par groupe de 30 enfants.
-                </div>
-              </div>
-            )}
-
-            {guestForm.organizationType !== 'individual' && (
-              <div>
-                <label className="block text-sm font-medium mb-2">Nom de l'organisation</label>
-                <Input
-                  value={guestForm.organizationName}
-                  onChange={(e) => setGuestForm({...guestForm, organizationName: e.target.value})}
-                  placeholder="Nom de votre école/association/entreprise"
-                />
-              </div>
-            )}
 
             <div>
               <label className="block text-sm font-medium mb-2">Notes ou demandes spéciales</label>
@@ -324,7 +266,7 @@ export default function GuestReservationModal({
                 Retour
               </Button>
               <Button type="submit" className="flex-1">
-                Envoyer la demande
+                Procéder au paiement
               </Button>
             </div>
 

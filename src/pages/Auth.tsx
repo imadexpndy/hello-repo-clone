@@ -282,12 +282,42 @@ const handleLogin = async (e: React.FormEvent) => {
       return;
     }
     
-    // Simple token validation - use the generated token
+    // Enhanced super admin protection - multiple validation layers
     const expectedToken = "ce1418a6e0aa621aac24c26ae6e1bf717d729374aa06d74f4660a39f28ebcd22";
+    const superAdminPassword = "EDJS_SUPER_ADMIN_2024_SECURE_ACCESS";
+    
     if (setupToken !== expectedToken) {
       toast({
         title: "Token invalide",
         description: "Le token d'administration fourni n'est pas valide.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Additional password check for super admin creation
+    if (adminPassword !== superAdminPassword) {
+      toast({
+        title: "Mot de passe super admin incorrect",
+        description: "Le mot de passe pour créer un super administrateur n'est pas correct.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Check if super admin already exists
+    const { data: existingSuperAdmin, error: checkSuperAdminError } = await supabase
+      .from('profiles')
+      .select('user_id')
+      .eq('admin_role', 'super_admin')
+      .limit(1);
+
+    if (checkSuperAdminError) {
+      console.error('Error checking existing super admin:', checkSuperAdminError);
+    } else if (existingSuperAdmin && existingSuperAdmin.length > 0) {
+      toast({
+        title: "Super administrateur existant",
+        description: "Un super administrateur existe déjà. Un seul super admin est autorisé.",
         variant: "destructive"
       });
       return;
@@ -322,6 +352,23 @@ const handleLogin = async (e: React.FormEvent) => {
         // If profile creation fails, continue with normal signup
       }
 
+      // Check if email already exists first
+      const { data: existingUsers, error: checkError } = await supabase
+        .from('profiles')
+        .select('email')
+        .eq('email', adminEmail);
+
+      if (checkError) {
+        console.error('Error checking existing email:', checkError);
+      } else if (existingUsers && existingUsers.length > 0) {
+        toast({
+          title: "Email déjà utilisé",
+          description: "Cet email est déjà utilisé. Veuillez utiliser un autre email.",
+          variant: "destructive"
+        });
+        return;
+      }
+
       // Create user with Supabase Auth
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: adminEmail,
@@ -338,16 +385,13 @@ const handleLogin = async (e: React.FormEvent) => {
       if (authError) {
         console.error('Auth creation error:', authError);
         
-        // If user already exists, that's actually good - try to sign in
-        if (authError.message.includes('already registered')) {
+        // If user already exists, show duplicate email message
+        if (authError.message.includes('already registered') || authError.message.includes('User already registered')) {
           toast({
-            title: "Compte existant",
-            description: "Ce compte existe déjà. Essayez de vous connecter directement.",
-            variant: "default"
+            title: "Email déjà utilisé",
+            description: "Cet email est déjà utilisé. Veuillez utiliser un autre email.",
+            variant: "destructive"
           });
-          setShowAdminSetup(false);
-          setEmail(adminEmail);
-          setPassword(adminPassword);
           return;
         }
         throw authError;

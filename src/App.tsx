@@ -63,6 +63,7 @@ import SpectacleEstevanico from "./pages/SpectacleEstevanico";
 import SpectacleCharlotte from "./pages/SpectacleCharlotte";
 import SpectacleAliceChezLesMerveilles from "./pages/SpectacleAliceChezLesMerveilles";
 import MyReservations from "./pages/MyReservations";
+import Payment from "./pages/Payment";
 
 const queryClient = new QueryClient();
 
@@ -109,6 +110,7 @@ const App = () => {
               <Route path="/profile" element={<Profile />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
+              <Route path="/payment" element={<Payment />} />
               <Route path="/reservation/:spectacleId" element={
                 <ProtectedRoute>
                   <ReservationFlow />

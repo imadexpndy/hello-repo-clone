@@ -1,8 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import VideoPopup from '@/components/VideoPopup';
 
 export default function SpectacleLePetitPrinceFixed() {
   const { user } = useAuth();
+  const [isVideoOpen, setIsVideoOpen] = useState(false);
 
   useEffect(() => {
     // Load external stylesheets
@@ -28,6 +30,12 @@ export default function SpectacleLePetitPrinceFixed() {
       window.location.href = `/auth?return_url=${returnUrl}`;
     }
   };
+
+  useEffect(() => {
+    // Expose handlers to window object for inline event handlers
+    (window as any).handleReservation = handleReservation;
+    (window as any).openVideoPopup = () => setIsVideoOpen(true);
+  }, [user]);
 
   return (
     <>
@@ -463,6 +471,11 @@ export default function SpectacleLePetitPrinceFixed() {
           </div>
         </div>
       </div>
+      <VideoPopup 
+        isOpen={isVideoOpen} 
+        onClose={() => setIsVideoOpen(false)} 
+        videoId="iARC1DejKHo" 
+      />
     </>
   );
 }
