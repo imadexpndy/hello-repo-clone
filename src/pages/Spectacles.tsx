@@ -1172,23 +1172,45 @@ export default function Spectacles() {
         <script>
           // Update age/study level display based on user type
           function updateAgeStudyDisplay() {
+            console.log('updateAgeStudyDisplay called');
             const userType = sessionStorage.getItem('userType');
             const professionalType = sessionStorage.getItem('professionalType');
             
+            console.log('User type:', userType, 'Professional type:', professionalType);
+            
             if (userType === 'professional' && professionalType === 'scolaire-privee') {
+              console.log('Updating to study levels for private schools');
               // Update all age-level displays to show study levels
               document.querySelectorAll('.age-level-display').forEach(element => {
                 const studyLevel = element.getAttribute('data-study-level');
                 const textSpan = element.querySelector('.age-level-text');
+                console.log('Element:', element, 'Study level:', studyLevel, 'Text span:', textSpan);
                 if (studyLevel && textSpan) {
                   textSpan.textContent = studyLevel;
+                  console.log('Updated text to:', studyLevel);
+                }
+              });
+            } else {
+              console.log('Not private school, showing age ranges');
+              // Restore age ranges for other user types
+              document.querySelectorAll('.age-level-display').forEach(element => {
+                const age = element.getAttribute('data-age');
+                const textSpan = element.querySelector('.age-level-text');
+                if (age && textSpan) {
+                  textSpan.textContent = age;
                 }
               });
             }
           }
           
           // Run on page load
-          document.addEventListener('DOMContentLoaded', updateAgeStudyDisplay);
+          document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, calling updateAgeStudyDisplay');
+            updateAgeStudyDisplay();
+          });
+          
+          // Also run after a short delay to ensure everything is loaded
+          setTimeout(updateAgeStudyDisplay, 500);
           
           // Listen for user type changes
           window.addEventListener('userTypeChanged', updateAgeStudyDisplay);

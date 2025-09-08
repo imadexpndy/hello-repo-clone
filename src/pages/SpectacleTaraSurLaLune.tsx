@@ -371,7 +371,7 @@ export default function SpectacleTaraSurLaLune() {
                     <i class="fas fa-users"></i>1 comédien
                   </span>
                   <span class="info-pill">
-                    <i class="fas fa-child"></i>${userTypeInfo.getAgeOrStudyText('5 ans et +', getStudyLevelForSpectacle('tara-sur-la-lune'))}
+                    <i class="fas fa-child"></i>${userTypeInfo.getAgeOrStudyText('5 ans et +', 'Maternelle, Primaire')}
                   </span>
                   <span class="info-pill">
                     <i class="fas fa-theater-masks"></i>Théâtre avec projection
@@ -619,7 +619,7 @@ export default function SpectacleTaraSurLaLune() {
                   </div>
                   <div class="info-item">
                     <i class="fas fa-child"></i>
-                    <span>${userTypeInfo.showStudyLevel ? 'Niveau scolaire : ' + getStudyLevelForSpectacle('tara-sur-la-lune') : 'Âge recommandé : 5 ans et +'}</span>
+                    <span>${userTypeInfo.showStudyLevel ? 'Niveau scolaire : Maternelle, Primaire' : 'Âge recommandé : 5 ans et +'}</span>
                   </div>
                   <div class="info-item">
                     <i class="fas fa-calendar"></i>
@@ -627,11 +627,7 @@ export default function SpectacleTaraSurLaLune() {
                   </div>
                   <div class="info-item">
                     <i class="fas fa-language"></i>
-                    <span>Langue : Français</span>
-                  </div>
-                  <div class="info-item">
-                    <i class="fas fa-rocket"></i>
-                    <span>Genre : Aventure & Science-fiction</span>
+                    <span>Langue : Darija</span>
                   </div>
                 </div>
 
