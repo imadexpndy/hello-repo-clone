@@ -140,7 +140,7 @@ const Auth = () => {
       // Get user profile to determine user type
       const { data: profile } = await supabase
         .from('profiles')
-        .select('admin_role, professional_type')
+        .select('admin_role')
         .eq('user_id', user?.id)
         .single();
       
@@ -372,7 +372,6 @@ const handleLogin = async (e: React.FormEvent) => {
           user_id: adminUserId,
           email: adminEmail,
           admin_role: 'super_admin',
-          role: 'admin',
           first_name: (adminFullName || 'Administrator').split(' ')[0],
           last_name: (adminFullName || 'Administrator').split(' ').slice(1).join(' ') || '',
           full_name: adminFullName || 'Administrator',
@@ -445,7 +444,6 @@ const handleLogin = async (e: React.FormEvent) => {
           user_id: authData.user.id,
           email: adminEmail,
           admin_role: 'super_admin',
-          role: 'admin',
           first_name: (adminFullName || 'Administrator').split(' ')[0],
           last_name: (adminFullName || 'Administrator').split(' ').slice(1).join(' ') || '',
           full_name: adminFullName || 'Administrator',
