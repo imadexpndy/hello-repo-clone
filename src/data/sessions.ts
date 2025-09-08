@@ -81,6 +81,62 @@ export const SESSIONS: Session[] = [
   { id: 'scb-8', date: '2025-12-19', time: '09:30', location: 'CASABLANCA - COMPLEXE EL HASSANI', audienceType: 'scolaire-publique', spectacleId: 'simple-comme-bonjour', month: 'decembre' },
   { id: 'scb-9', date: '2025-12-19', time: '14:30', location: 'CASABLANCA - COMPLEXE EL HASSANI', audienceType: 'association', spectacleId: 'simple-comme-bonjour', month: 'decembre' },
   { id: 'scb-10', date: '2025-12-20', time: '15:00', location: 'CASABLANCA - COMPLEXE EL HASSANI', audienceType: 'tout-public', spectacleId: 'simple-comme-bonjour', month: 'decembre' },
+
+  // FEVRIER - ESTEVANICO
+  // CASABLANCA - COMPLEXE EL HASSANI
+  { id: 'est-1', date: '2025-02-07', time: '15:00', location: 'CASABLANCA - COMPLEXE EL HASSANI', audienceType: 'tout-public', spectacleId: 'estevanico', month: 'fevrier' },
+  { id: 'est-2', date: '2025-02-09', time: '09:30', location: 'CASABLANCA - COMPLEXE EL HASSANI', audienceType: 'scolaire-privee', spectacleId: 'estevanico', month: 'fevrier' },
+  { id: 'est-3', date: '2025-02-09', time: '14:30', location: 'CASABLANCA - COMPLEXE EL HASSANI', audienceType: 'scolaire-publique', spectacleId: 'estevanico', month: 'fevrier' },
+  { id: 'est-4', date: '2025-02-10', time: '14:30', location: 'CASABLANCA - COMPLEXE EL HASSANI', audienceType: 'association', spectacleId: 'estevanico', month: 'fevrier' },
+  
+  // RABAT - THEATRE BAHNINI
+  { id: 'est-5', date: '2025-02-12', time: '09:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-privee', spectacleId: 'estevanico', month: 'fevrier' },
+  { id: 'est-6', date: '2025-02-12', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-publique', spectacleId: 'estevanico', month: 'fevrier' },
+  { id: 'est-7', date: '2025-02-13', time: '09:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'association', spectacleId: 'estevanico', month: 'fevrier' },
+  { id: 'est-8', date: '2025-02-13', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'association', spectacleId: 'estevanico', month: 'fevrier' },
+  { id: 'est-9', date: '2025-02-14', time: '15:00', location: 'RABAT - THEATRE BAHNINI', audienceType: 'tout-public', spectacleId: 'estevanico', month: 'fevrier' },
+
+  // JANVIER - CHARLOTTE
+  // RABAT - THEATRE BAHNINI
+  { id: 'cha-1', date: '2025-01-10', time: '15:00', location: 'RABAT - THEATRE BAHNINI', audienceType: 'tout-public', spectacleId: 'charlotte', month: 'janvier' },
+  { id: 'cha-2', date: '2025-01-12', time: '09:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-privee', spectacleId: 'charlotte', month: 'janvier' },
+  { id: 'cha-3', date: '2025-01-12', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-publique', spectacleId: 'charlotte', month: 'janvier' },
+  { id: 'cha-4', date: '2025-01-13', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'association', spectacleId: 'charlotte', month: 'janvier' },
+  
+  // CASABLANCA - COMPLEXE EL HASSANI
+  { id: 'cha-5', date: '2025-01-15', time: '09:30', location: 'CASABLANCA - COMPLEXE EL HASSANI', audienceType: 'scolaire-privee', spectacleId: 'charlotte', month: 'janvier' },
+  { id: 'cha-6', date: '2025-01-15', time: '14:30', location: 'CASABLANCA - COMPLEXE EL HASSANI', audienceType: 'scolaire-publique', spectacleId: 'charlotte', month: 'janvier' },
+  { id: 'cha-7', date: '2025-01-16', time: '09:30', location: 'CASABLANCA - COMPLEXE EL HASSANI', audienceType: 'association', spectacleId: 'charlotte', month: 'janvier' },
+  { id: 'cha-8', date: '2025-01-16', time: '14:30', location: 'CASABLANCA - COMPLEXE EL HASSANI', audienceType: 'association', spectacleId: 'charlotte', month: 'janvier' },
+  { id: 'cha-9', date: '2025-01-17', time: '15:00', location: 'CASABLANCA - COMPLEXE EL HASSANI', audienceType: 'tout-public', spectacleId: 'charlotte', month: 'janvier' },
+
+  // MARS - L'ENFANT DE L'ARBRE
+  // CASABLANCA - THEATRE ZEFZAF
+  { id: 'enf-1', date: '2025-03-07', time: '15:00', location: 'CASABLANCA - THEATRE ZEFZAF', audienceType: 'tout-public', spectacleId: 'lenfant-de-larbre', month: 'mars' },
+  { id: 'enf-2', date: '2025-03-09', time: '09:30', location: 'CASABLANCA - THEATRE ZEFZAF', audienceType: 'scolaire-privee', spectacleId: 'lenfant-de-larbre', month: 'mars' },
+  { id: 'enf-3', date: '2025-03-09', time: '14:30', location: 'CASABLANCA - THEATRE ZEFZAF', audienceType: 'scolaire-publique', spectacleId: 'lenfant-de-larbre', month: 'mars' },
+  { id: 'enf-4', date: '2025-03-10', time: '14:30', location: 'CASABLANCA - THEATRE ZEFZAF', audienceType: 'association', spectacleId: 'lenfant-de-larbre', month: 'mars' },
+  
+  // RABAT - THEATRE BAHNINI
+  { id: 'enf-5', date: '2025-03-12', time: '09:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-privee', spectacleId: 'lenfant-de-larbre', month: 'mars' },
+  { id: 'enf-6', date: '2025-03-12', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-publique', spectacleId: 'lenfant-de-larbre', month: 'mars' },
+  { id: 'enf-7', date: '2025-03-13', time: '09:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'association', spectacleId: 'lenfant-de-larbre', month: 'mars' },
+  { id: 'enf-8', date: '2025-03-13', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'association', spectacleId: 'lenfant-de-larbre', month: 'mars' },
+  { id: 'enf-9', date: '2025-03-14', time: '15:00', location: 'RABAT - THEATRE BAHNINI', audienceType: 'tout-public', spectacleId: 'lenfant-de-larbre', month: 'mars' },
+
+  // AVRIL - ALICE CHEZ LES MERVEILLES
+  // RABAT - THEATRE BAHNINI
+  { id: 'ali-1', date: '2025-04-11', time: '15:00', location: 'RABAT - THEATRE BAHNINI', audienceType: 'tout-public', spectacleId: 'alice-chez-les-merveilles', month: 'avril' },
+  { id: 'ali-2', date: '2025-04-13', time: '09:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-privee', spectacleId: 'alice-chez-les-merveilles', month: 'avril' },
+  { id: 'ali-3', date: '2025-04-13', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-publique', spectacleId: 'alice-chez-les-merveilles', month: 'avril' },
+  { id: 'ali-4', date: '2025-04-14', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'association', spectacleId: 'alice-chez-les-merveilles', month: 'avril' },
+  
+  // CASABLANCA - COMPLEXE EL HASSANI
+  { id: 'ali-5', date: '2025-04-16', time: '09:30', location: 'CASABLANCA - COMPLEXE EL HASSANI', audienceType: 'scolaire-privee', spectacleId: 'alice-chez-les-merveilles', month: 'avril' },
+  { id: 'ali-6', date: '2025-04-16', time: '14:30', location: 'CASABLANCA - COMPLEXE EL HASSANI', audienceType: 'scolaire-publique', spectacleId: 'alice-chez-les-merveilles', month: 'avril' },
+  { id: 'ali-7', date: '2025-04-17', time: '09:30', location: 'CASABLANCA - COMPLEXE EL HASSANI', audienceType: 'association', spectacleId: 'alice-chez-les-merveilles', month: 'avril' },
+  { id: 'ali-8', date: '2025-04-17', time: '14:30', location: 'CASABLANCA - COMPLEXE EL HASSANI', audienceType: 'association', spectacleId: 'alice-chez-les-merveilles', month: 'avril' },
+  { id: 'ali-9', date: '2025-04-18', time: '15:00', location: 'CASABLANCA - COMPLEXE EL HASSANI', audienceType: 'tout-public', spectacleId: 'alice-chez-les-merveilles', month: 'avril' },
 ];
 
 export const getUserTypeSessions = (spectacleId: string, userType?: string, userCity?: string) => {
