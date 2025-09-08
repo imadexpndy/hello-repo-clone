@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import SpectacleFooter from '@/components/SpectacleFooter';
 import VideoPopup from '@/components/VideoPopup';
+import SessionsDisplay from '@/components/SessionsDisplay';
 
 export default function SpectacleLePetitPrinceFixed() {
   const { user } = useAuth();
@@ -433,6 +435,14 @@ export default function SpectacleLePetitPrinceFixed() {
             
             <div className="col-lg-4">
               <div className="sidebar">
+                <h3><i className="fas fa-calendar-alt"></i> Séances Disponibles</h3>
+                <SessionsDisplay 
+                  spectacleId="le-petit-prince" 
+                  onReservation={handleReservation}
+                />
+              </div>
+              
+              <div className="sidebar" style={{ marginTop: '2rem' }}>
                 <h3>Informations Pratiques</h3>
                 
                 <div className="sidebar-info">

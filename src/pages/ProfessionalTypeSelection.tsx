@@ -11,6 +11,8 @@ export default function ProfessionalTypeSelection() {
     // Set professional type in session storage
     sessionStorage.setItem('userType', 'professional');
     sessionStorage.setItem('professionalType', type);
+    // Dispatch custom event to notify components of user type change
+    window.dispatchEvent(new CustomEvent('userTypeChanged'));
     navigate('/spectacles');
   };
 

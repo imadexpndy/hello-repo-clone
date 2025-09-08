@@ -57,7 +57,7 @@ import ReservationFlow from "./pages/ReservationFlow";
 import AuthStatus from "./pages/api/auth/status";
 import Spectacles from "./pages/Spectacles";
 import SpectacleMinimal from "./pages/SpectacleMinimal";
-import SpectacleLePetitPrince from "./pages/SpectacleLePetitPrince";
+import SpectacleLePetitPrinceFixed from "./pages/SpectacleLePetitPrinceFixed";
 import SpectacleTaraSurLaLune from "./pages/SpectacleTaraSurLaLune";
 import SpectacleEstevanico from "./pages/SpectacleEstevanico";
 import SpectacleCharlotte from "./pages/SpectacleCharlotte";
@@ -117,12 +117,12 @@ const App = () => {
                 </ProtectedRoute>
               } />
               <Route path="/spectacles" element={<Spectacles />} />
-              <Route path="/spectacle/le-petit-prince" element={<SpectacleLePetitPrince />} />
+              <Route path="/spectacle/le-petit-prince" element={<SpectacleLePetitPrinceFixed />} />
               <Route path="/spectacle/tara-sur-la-lune" element={<SpectacleTaraSurLaLune />} />
               <Route path="/spectacle/estevanico" element={<SpectacleEstevanico />} />
               <Route path="/spectacle/charlotte" element={<SpectacleCharlotte />} />
               <Route path="/spectacle/alice-chez-les-merveilles" element={<SpectacleAliceChezLesMerveilles />} />
-              <Route path="/spectacle/le-petit-prince-ar" element={<SpectacleLePetitPrince />} />
+              <Route path="/spectacle/le-petit-prince-ar" element={<SpectacleLePetitPrinceFixed />} />
               <Route path="/spectacle/mirath-atfal" element={<SpectacleEstevanico />} />
               <Route path="/spectacle/simple-comme-bonjour" element={<SpectacleMinimal />} />
               <Route path="/spectacle/lenfant-de-larbre" element={<SpectacleMinimal />} />

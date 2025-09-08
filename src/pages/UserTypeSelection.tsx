@@ -10,6 +10,8 @@ export default function UserTypeSelection() {
   const handleParticulierChoice = () => {
     // Set user type in session storage for later use
     sessionStorage.setItem('userType', 'particulier');
+    // Dispatch custom event to notify components of user type change
+    window.dispatchEvent(new CustomEvent('userTypeChanged'));
     navigate('/spectacles');
   };
 

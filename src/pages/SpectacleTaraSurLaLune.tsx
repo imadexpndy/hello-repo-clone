@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import SpectacleFooter from '@/components/SpectacleFooter';
 import VideoPopup from '@/components/VideoPopup';
+import SessionsDisplay from '@/components/SessionsDisplay';
 
 export default function SpectacleTaraSurLaLune() {
   const { user } = useAuth();
