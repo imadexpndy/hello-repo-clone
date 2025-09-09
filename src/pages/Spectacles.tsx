@@ -1596,6 +1596,65 @@ export default function Spectacles() {
                 </div>
               </div>
 
+              <!-- L'EAU LA -->
+              <div class="col-lg-6 col-md-6 spectacle-item" data-category="primaire">
+                <div class="spectacle-card fade-in-up visible" style="background: url('https://edjs.art/assets/img/Asset%209@4x.png') center/cover; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden; width: 100%; height: 400px; display: flex; transition: all 0.4s ease; position: relative; margin: 20px 0;">
+                  <!-- Status Badge -->
+                  <div style="position: absolute; top: 15px; right: 15px; z-index: 10;">
+                    <div class="spectacle-card__status" style="background: #20c997; color: white; padding: 6px 12px; border-radius: 15px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Disponible</div>
+                  </div>
+                  
+                  <!-- Left Side: Affiche -->
+                  <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
+                    <img src="/assets/img/spectacles/leau-la.png" alt="L'EAU LA" style="width: 150%; height: 120%; object-fit: contain;" />
+                    <!-- Character Image -->
+                    <img src="/src/assets/spectacles%20elements/leau@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
+                  </div>
+                  
+                  <!-- Right Side: Content -->
+                  <div style="width: 50%; padding: 25px 80px 25px 5px; display: flex; flex-direction: column; justify-content: center;">
+                    <div style="width: 100%; margin-left: 30px;">
+                      <!-- Date Badge -->
+                      <div style="margin-bottom: 15px;">
+                        <div class="spectacle-card__date" style="color: #999; font-size: 12px; font-weight: 600; text-transform: uppercase;">Nov 2025</div>
+                      </div>
+                      
+                      <!-- Title -->
+                      <h3 class="spectacle-card__title" style="font-size: 32px; font-weight: 800; margin: 15px 0; line-height: 1.2; background: white; padding: 8px 15px; border-radius: 8px; display: inline-block; color: #333;">L'EAU LA</h3>
+                      
+                      
+                      <!-- Info Badges -->
+                      <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                          <i class="fas fa-clock" style="color: #20c997;"></i>
+                          <span>55 minutes</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display leau-la-age-study" id="leau-la-age-study" data-age="8 ans et +" data-study-level="CM1, CM2, Collège, Lycée">
+                          <i class="fas fa-child" style="color: #20c997;"></i>
+                          <span class="age-level-text">8 ans et +</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                          <i class="fas fa-users" style="color: #20c997;"></i>
+                          <span>3 comédiens</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
+                          <i class="fas fa-theater-masks" style="color: #20c997;"></i>
+                          <span>Théâtre musical et danse</span>
+                        </div>
+                      </div>
+                      
+                      <!-- Buttons -->
+                      <div style="display: flex; gap: 8px; justify-content: flex-start; margin-bottom: 20px; flex-wrap: wrap;">
+                        <button class="btn-reserve spectacle-btn" onclick="window.handleReservation('leau-la')" style="background: #20c997; color: white; padding: 10px 16px; border-radius: 8px; border: none; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">
+                          Réserver
+                        </button>
+                        <button class="btn-details spectacle-btn" onclick="window.handleDetails('leau-la')" style="background: transparent; color: #20c997; padding: 10px 16px; border: 2px solid #20c997; border-radius: 8px; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">Détails</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <!-- Mirath Atfal -->
               <div class="col-lg-6 col-md-6 spectacle-item" data-category="primaire">
                 <div class="spectacle-card fade-in-up visible" style="background: url('https://edjs.art/assets/img/Asset%209@4x.png') center/cover; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden; width: 100%; height: 400px; display: flex; transition: all 0.4s ease; position: relative; margin: 20px 0;">
@@ -2012,65 +2071,6 @@ export default function Spectacles() {
                 </div>
               </div>
 
-              <!-- L'EAU LA -->
-              <div class="col-lg-6 col-md-6 spectacle-item" data-category="primaire">
-                <div class="spectacle-card fade-in-up visible" style="background: url('https://edjs.art/assets/img/Asset%209@4x.png') center/cover; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden; width: 100%; height: 400px; display: flex; transition: all 0.4s ease; position: relative; margin: 20px 0;">
-                  <!-- Status Badge -->
-                  <div style="position: absolute; top: 15px; right: 15px; z-index: 10;">
-                    <div class="spectacle-card__status" style="background: #20c997; color: white; padding: 6px 12px; border-radius: 15px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Disponible</div>
-                  </div>
-                  
-                  <!-- Left Side: Affiche -->
-                  <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
-                    <img src="/assets/img/spectacles/leau-la.png" alt="L'EAU LA" style="width: 150%; height: 120%; object-fit: contain;" />
-                    <!-- Character Image -->
-                    <img src="/src/assets/spectacles%20elements/leau@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
-                  </div>
-                  
-                  <!-- Right Side: Content -->
-                  <div style="width: 50%; padding: 25px 80px 25px 5px; display: flex; flex-direction: column; justify-content: center;">
-                    <div style="width: 100%; margin-left: 30px;">
-                      <!-- Date Badge -->
-                      <div style="margin-bottom: 15px;">
-                        <div class="spectacle-card__date" style="color: #999; font-size: 12px; font-weight: 600; text-transform: uppercase;">Juin 2026</div>
-                      </div>
-                      
-                      <!-- Title -->
-                      <h3 class="spectacle-card__title" style="font-size: 32px; font-weight: 800; margin: 15px 0; line-height: 1.2; background: white; padding: 8px 15px; border-radius: 8px; display: inline-block; color: #333;">L'EAU LA</h3>
-                      
-                      
-                      <!-- Info Badges -->
-                      <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                          <i class="fas fa-clock" style="color: #20c997;"></i>
-                          <span>55 minutes</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display leau-la-age-study" id="leau-la-age-study" data-age="8 ans et +" data-study-level="CM1, CM2, Collège, Lycée">
-                          <i class="fas fa-child" style="color: #20c997;"></i>
-                          <span class="age-level-text">8 ans et +</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                          <i class="fas fa-users" style="color: #20c997;"></i>
-                          <span>3 comédiens</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                          <i class="fas fa-theater-masks" style="color: #20c997;"></i>
-                          <span>Théâtre musical et danse</span>
-                        </div>
-                      </div>
-                      
-                      <!-- Buttons -->
-                      <div style="display: flex; gap: 8px; justify-content: flex-start; margin-bottom: 20px; flex-wrap: wrap;">
-                        <button class="btn-reserve spectacle-btn" onclick="window.handleReservation('leau-la')" style="background: #20c997; color: white; padding: 10px 16px; border-radius: 8px; border: none; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">
-                          Réserver
-                        </button>
-                        <button class="btn-details spectacle-btn" onclick="window.handleDetails('leau-la')" style="background: transparent; color: #20c997; padding: 10px 16px; border: 2px solid #20c997; border-radius: 8px; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">Détails</button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
             </div>
           </div>
         </section>
