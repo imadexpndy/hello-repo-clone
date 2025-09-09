@@ -62,6 +62,11 @@ import SpectacleTaraSurLaLune from "./pages/SpectacleTaraSurLaLune";
 import SpectacleEstevanico from "./pages/SpectacleEstevanico";
 import SpectacleCharlotte from "./pages/SpectacleCharlotte";
 import SpectacleAliceChezLesMerveilles from "./pages/SpectacleAliceChezLesMerveilles";
+import SpectacleMirathAtfal from "./pages/SpectacleMirathAtfal";
+import SpectacleSimpleCommeBonjour from "./pages/SpectacleSimpleCommeBonjour";
+import SpectacleLenfantDeLarbre from "./pages/SpectacleLenfantDeLarbre";
+import SpectacleAntigone from "./pages/SpectacleAntigone";
+import SpectacleLeauLa from "./pages/SpectacleLeauLa";
 import MyReservations from "./pages/MyReservations";
 import Payment from "./pages/Payment";
 
@@ -123,13 +128,13 @@ const App = () => {
               <Route path="/spectacle/estevanico" element={<SpectacleEstevanico />} />
               <Route path="/spectacle/charlotte" element={<SpectacleCharlotte />} />
               <Route path="/spectacle/alice-chez-les-merveilles" element={<SpectacleAliceChezLesMerveilles />} />
-              <Route path="/spectacle/mirath-atfal" element={<SpectacleEstevanico />} />
-              <Route path="/spectacle/simple-comme-bonjour" element={<SpectacleMinimal />} />
-              <Route path="/spectacle/lenfant-de-larbre" element={<SpectacleMinimal />} />
-              <Route path="/spectacle/antigone" element={<SpectacleMinimal />} />
+              <Route path="/spectacle/mirath-atfal" element={<SpectacleMirathAtfal />} />
+              <Route path="/spectacle/simple-comme-bonjour" element={<SpectacleSimpleCommeBonjour />} />
+              <Route path="/spectacle/lenfant-de-larbre" element={<SpectacleLenfantDeLarbre />} />
+              <Route path="/spectacle/antigone" element={<SpectacleAntigone />} />
               <Route path="/spectacle/alice-aux-pays-des-merveilles" element={<SpectacleAliceChezLesMerveilles />} />
               <Route path="/spectacle/casse-noisette" element={<SpectacleMinimal />} />
-              <Route path="/spectacle/leau-la" element={<SpectacleMinimal />} />
+              <Route path="/spectacle/leau-la" element={<SpectacleLeauLa />} />
 
               {/* Protected Admin Routes */}
               <Route 

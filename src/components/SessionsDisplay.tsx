@@ -1,201 +1,230 @@
 import React, { useState, useEffect } from 'react';
-import { getUserTypeSessions, Session } from '@/data/sessions';
+import { SESSIONS, Session } from '@/data/sessions';
 
 interface SessionsDisplayProps {
   spectacleId: string;
   onReservation?: () => void;
 }
 
-interface GroupedSessions {
-  rabat: Session[];
-  casablanca: Session[];
-  supplementaires: Session[];
-}
-
 const SessionsDisplay: React.FC<SessionsDisplayProps> = ({ spectacleId, onReservation }) => {
+  const [userType, setUserType] = useState<string>('');
   const [sessions, setSessions] = useState<Session[]>([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadSessions = () => {
-      try {
-        const userType = sessionStorage.getItem('userType');
-        const professionalType = sessionStorage.getItem('professionalType');
-        const userCity = sessionStorage.getItem('userCity');
-        
-        let effectiveUserType = userType;
-        if (userType === 'professional' && professionalType) {
-          effectiveUserType = professionalType;
-        }
-        
-        const filteredSessions = getUserTypeSessions(spectacleId, effectiveUserType, userCity);
-        setSessions(filteredSessions);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error loading sessions:', error);
-        setLoading(false);
+    // Get user type from multiple sources
+    const checkUserType = () => {
+      const userType = sessionStorage.getItem('userType') || localStorage.getItem('userType');
+      const professionalType = sessionStorage.getItem('professionalType') || localStorage.getItem('professionalType');
+      
+      let effectiveUserType = userType;
+      
+      // Handle professional types
+      if (userType === 'professional' && professionalType) {
+        effectiveUserType = professionalType;
+      } else if (userType === 'particulier') {
+        effectiveUserType = 'individual';
       }
+      
+      setUserType(effectiveUserType || '');
+      
+      // Filter sessions for this spectacle and user type
+      let filteredSessions = SESSIONS.filter(s => s.spectacleId === spectacleId);
+      
+      if (effectiveUserType === 'individual') {
+        filteredSessions = filteredSessions.filter(s => s.audienceType === 'tout-public');
+      } else if (effectiveUserType === 'scolaire-privee') {
+        filteredSessions = filteredSessions.filter(s => s.audienceType === 'scolaire-privee');
+      } else if (effectiveUserType === 'scolaire-publique') {
+        filteredSessions = filteredSessions.filter(s => s.audienceType === 'scolaire-publique');
+      } else if (effectiveUserType === 'association') {
+        filteredSessions = filteredSessions.filter(s => s.audienceType === 'association');
+      }
+      
+      setSessions(filteredSessions);
     };
 
-    loadSessions();
-
-    // Listen for user type changes
-    const handleStorageChange = () => {
-      loadSessions();
-    };
-
-    window.addEventListener('storage', handleStorageChange);
+    checkUserType();
     
-    // Also listen for custom events when user type changes
-    window.addEventListener('userTypeChanged', handleStorageChange);
-
+    // Listen for changes
+    const interval = setInterval(checkUserType, 1000);
+    window.addEventListener('storage', checkUserType);
+    window.addEventListener('userTypeChanged', checkUserType);
+    
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('userTypeChanged', handleStorageChange);
+      clearInterval(interval);
+      window.removeEventListener('storage', checkUserType);
+      window.removeEventListener('userTypeChanged', checkUserType);
     };
   }, [spectacleId]);
 
-  const groupSessions = (sessions: Session[]): GroupedSessions => {
-    return {
-      rabat: sessions.filter(s => s.location.includes('RABAT')),
-      casablanca: sessions.filter(s => s.location.includes('CASABLANCA')),
-      supplementaires: sessions.filter(s => s.location.includes('supplémentaires'))
-    };
+  const formatSessionDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const days = ['DIMANCHE', 'LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
+    const months = ['JANVIER', 'FÉVRIER', 'MARS', 'AVRIL', 'MAI', 'JUIN', 'JUILLET', 'AOÛT', 'SEPTEMBRE', 'OCTOBRE', 'NOVEMBRE', 'DÉCEMBRE'];
+    
+    return `${days[date.getDay()]} ${date.getDate()} ${months[date.getMonth()]}`;
   };
 
-  const formatDateRange = (sessions: Session[], location: string) => {
-    if (sessions.length === 0) return '';
-    
-    const dates = sessions.map(s => new Date(s.date)).sort((a, b) => a.getTime() - b.getTime());
-    const firstDate = dates[0];
-    const lastDate = dates[dates.length - 1];
-    
-    if (location.includes('supplémentaires')) {
-      return 'Octobre 2025';
+  const getAudienceLabel = (type: string) => {
+    switch (type) {
+      case 'tout-public': return 'Tout public';
+      case 'scolaire-privee': return 'Scolaire privée';
+      case 'scolaire-publique': return 'Scolaire publique';
+      case 'association': return 'Association';
+      default: return type;
     }
-    
-    const formatDate = (date: Date) => {
-      return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' });
-    };
-    
-    if (firstDate.getTime() === lastDate.getTime()) {
-      return formatDate(firstDate);
-    }
-    
-    return `${firstDate.getDate()} au ${lastDate.getDate()} ${firstDate.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })}`;
   };
 
-  const getLocationLabel = (location: string) => {
-    if (location.includes('RABAT')) return 'Rabat - Représentations';
-    if (location.includes('CASABLANCA')) return 'Casablanca - Représentations';
-    if (location.includes('supplémentaires')) return 'Séances supplémentaires';
-    return location;
-  };
+  // Debug logging
+  console.log('SessionsDisplay Debug:', {
+    spectacleId,
+    userType,
+    allSessions: SESSIONS.filter(s => s.spectacleId === spectacleId),
+    filteredSessions: sessions,
+    sessionCount: sessions.length
+  });
 
-  if (loading) {
+  if (!userType) {
     return (
-      <div className="showtime-item" style={{
-        background: 'var(--bg-light)',
+      <div style={{
+        background: '#f8f9fa',
         borderRadius: '0.5rem',
         padding: '1rem',
-        marginBottom: '1rem',
-        borderLeft: '4px solid var(--primary-color)'
+        borderLeft: '4px solid #BDCF00',
+        textAlign: 'center'
       }}>
-        <div style={{ color: 'var(--text-light)' }}>Chargement des séances...</div>
-      </div>
-    );
-  }
-
-  const groupedSessions = groupSessions(sessions);
-
-  if (sessions.length === 0) {
-    return (
-      <div className="showtime-item" style={{
-        background: 'var(--bg-light)',
-        borderRadius: '0.5rem',
-        padding: '1rem',
-        marginBottom: '1rem',
-        borderLeft: '4px solid #dc3545'
-      }}>
-        <div className="showtime-date" style={{
-          fontWeight: 600,
-          color: 'var(--text-dark)',
-          marginBottom: '0.25rem',
-          fontFamily: "'Raleway', sans-serif"
-        }}>
-          Aucune séance disponible
-        </div>
-        <div className="showtime-time" style={{
-          color: 'var(--text-light)',
-          fontSize: '0.9rem',
-          marginBottom: '0.75rem',
-          fontFamily: "'Raleway', sans-serif"
-        }}>
-          Veuillez sélectionner votre type d'utilisateur
-        </div>
-      </div>
-    );
-  }
-
-  const renderSessionGroup = (sessions: Session[], location: string) => {
-    if (sessions.length === 0) return null;
-
-    return (
-      <div key={location} className="showtime-item" style={{
-        background: 'var(--bg-light)',
-        borderRadius: '0.5rem',
-        padding: '1rem',
-        marginBottom: '1rem',
-        borderLeft: '4px solid var(--primary-color)'
-      }}>
-        <div className="showtime-date" style={{
-          fontWeight: 600,
-          color: 'var(--text-dark)',
-          marginBottom: '0.25rem',
-          fontFamily: "'Raleway', sans-serif"
-        }}>
-          {formatDateRange(sessions, location)}
-        </div>
-        <div className="showtime-time" style={{
-          color: 'var(--text-light)',
-          fontSize: '0.9rem',
-          marginBottom: '0.75rem',
-          fontFamily: "'Raleway', sans-serif"
-        }}>
-          {getLocationLabel(location)}
+        <div style={{ color: '#666', marginBottom: '1rem' }}>
+          Veuillez sélectionner votre profil pour voir les séances disponibles
         </div>
         <button 
-          className="showtime-btn" 
-          onClick={onReservation || (() => (window as any).handleReservation?.())}
+          onClick={() => window.location.href = '/user-type-selection'}
           style={{
-            background: 'var(--primary-color)',
+            background: '#BDCF00',
             color: 'white',
             border: 'none',
             padding: '0.5rem 1rem',
             borderRadius: '0.5rem',
-            fontSize: '0.9rem',
-            fontWeight: 500,
-            textDecoration: 'none',
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.25rem',
-            transition: 'all 0.3s ease',
-            fontFamily: "'Raleway', sans-serif",
             cursor: 'pointer'
           }}
         >
-          <i className="fas fa-ticket-alt"></i>
-          Réserver
+          Choisir mon profil
         </button>
       </div>
     );
-  };
+  }
+
+  if (sessions.length === 0) {
+    // Show all sessions for debugging when no filtered sessions found
+    const allSpectacleSessions = SESSIONS.filter(s => s.spectacleId === spectacleId);
+    
+    return (
+      <div>
+        <div style={{
+          background: '#fff3cd',
+          borderRadius: '0.5rem',
+          padding: '1rem',
+          borderLeft: '4px solid #ffc107',
+          marginBottom: '1rem'
+        }}>
+          <div style={{ color: '#856404', marginBottom: '0.5rem', fontWeight: 500 }}>
+            Aucune séance disponible pour votre profil ({userType})
+          </div>
+          <div style={{ color: '#856404', fontSize: '0.85rem' }}>
+            Toutes les séances pour ce spectacle:
+          </div>
+        </div>
+        
+        {allSpectacleSessions.map((session) => (
+          <div key={session.id} style={{
+            background: '#f8f9fa',
+            borderRadius: '0.5rem',
+            padding: '1rem',
+            marginBottom: '1rem',
+            borderLeft: '4px solid #6c757d',
+            opacity: 0.7
+          }}>
+            <div style={{
+              fontWeight: 500,
+              color: '#333',
+              marginBottom: '0.5rem',
+              fontSize: '0.9rem'
+            }}>
+              Date: {formatSessionDate(session.date)}, Heure: {session.time.replace(':', 'H')}, Séance: {getAudienceLabel(session.audienceType)}
+            </div>
+            <div style={{
+              color: '#666',
+              fontSize: '0.85rem',
+              marginBottom: '0.75rem'
+            }}>
+              {session.location}
+            </div>
+            <div style={{ fontSize: '0.8rem', color: '#6c757d' }}>
+              (Non disponible pour votre profil)
+            </div>
+          </div>
+        ))}
+        
+        <button 
+          onClick={() => window.location.href = '/user-type-selection'}
+          style={{
+            background: '#BDCF00',
+            color: 'white',
+            border: 'none',
+            padding: '0.5rem 1rem',
+            borderRadius: '0.5rem',
+            cursor: 'pointer',
+            width: '100%',
+            marginTop: '1rem'
+          }}
+        >
+          Changer mon profil
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div>
-      {renderSessionGroup(groupedSessions.rabat, 'RABAT')}
-      {renderSessionGroup(groupedSessions.casablanca, 'CASABLANCA')}
-      {renderSessionGroup(groupedSessions.supplementaires, 'supplémentaires')}
+      {sessions.map((session) => (
+        <div key={session.id} style={{
+          background: '#f8f9fa',
+          borderRadius: '0.5rem',
+          padding: '1rem',
+          marginBottom: '1rem',
+          borderLeft: '4px solid #BDCF00'
+        }}>
+          <div style={{
+            fontWeight: 500,
+            color: '#333',
+            marginBottom: '0.5rem',
+            fontSize: '0.9rem'
+          }}>
+            Date: {formatSessionDate(session.date)}, Heure: {session.time.replace(':', 'H')}, Séance: {getAudienceLabel(session.audienceType)}
+          </div>
+          <div style={{
+            color: '#666',
+            fontSize: '0.85rem',
+            marginBottom: '0.75rem'
+          }}>
+            {session.location}
+          </div>
+          <button 
+            onClick={onReservation || (() => (window as any).handleReservation?.())}
+            style={{
+              background: '#BDCF00',
+              color: 'white',
+              border: 'none',
+              padding: '0.5rem 1rem',
+              borderRadius: '0.5rem',
+              fontSize: '0.9rem',
+              fontWeight: 500,
+              cursor: 'pointer'
+            }}
+          >
+            <i className="fas fa-ticket-alt"></i> Réserver
+          </button>
+        </div>
+      ))}
     </div>
   );
 };

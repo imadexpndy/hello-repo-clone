@@ -15,8 +15,150 @@ export default function Spectacles() {
   });
 
   // Get user type from session storage
-  const userType = sessionStorage.getItem('userType');
-  const professionalType = sessionStorage.getItem('professionalType');
+  const [userType, setUserType] = useState(sessionStorage.getItem('userType'));
+  const [professionalType, setProfessionalType] = useState(sessionStorage.getItem('professionalType'));
+
+  // Update age/study level display based on user type
+  const updateAgeStudyDisplay = () => {
+    console.log('🔄 updateAgeStudyDisplay called');
+    const currentUserType = sessionStorage.getItem('userType');
+    const currentProfessionalType = sessionStorage.getItem('professionalType');
+    
+    console.log('📊 User type:', currentUserType, 'Professional type:', currentProfessionalType);
+    
+    // Wait for DOM to be fully loaded
+    setTimeout(() => {
+      const elements = document.querySelectorAll('.age-level-display');
+      console.log('🎯 Found', elements.length, 'age-level-display elements');
+      
+      if (currentUserType === 'professional' && currentProfessionalType === 'scolaire-privee') {
+        console.log('🏫 Updating to study levels for private schools');
+        elements.forEach((element, index) => {
+          const studyLevel = element.getAttribute('data-study-level');
+          const textSpan = element.querySelector('.age-level-text');
+          console.log('Element ' + index + ':', element.id, 'Study level:', studyLevel);
+          if (studyLevel && textSpan) {
+            textSpan.textContent = studyLevel;
+            console.log('✅ Updated', element.id, 'to:', studyLevel);
+          }
+        });
+      } else {
+        console.log('👥 Showing age ranges for other user types');
+        elements.forEach((element, index) => {
+          const age = element.getAttribute('data-age');
+          const textSpan = element.querySelector('.age-level-text');
+          console.log('Element ' + index + ':', element.id, 'Age:', age);
+          if (age && textSpan) {
+            textSpan.textContent = age;
+            console.log('✅ Updated', element.id, 'to:', age);
+          }
+        });
+      }
+    }, 100);
+  };
+
+  // Update spectacle visibility for private schools
+  const updateSpectacleVisibility = () => {
+    const currentUserType = sessionStorage.getItem('userType');
+    const currentProfessionalType = sessionStorage.getItem('professionalType');
+    const arabicCard = document.getElementById('le-petit-prince-ar-card');
+    
+    console.log('=== SPECTACLE VISIBILITY DEBUG ===');
+    console.log('userType:', currentUserType);
+    console.log('professionalType:', currentProfessionalType);
+    console.log('arabicCard found:', !!arabicCard);
+    
+    if (currentUserType === 'professional' && currentProfessionalType === 'scolaire-privee' && arabicCard) {
+      console.log('✅ HIDING Arabic card for private schools');
+      arabicCard.style.setProperty('display', 'none', 'important');
+      arabicCard.style.visibility = 'hidden';
+      arabicCard.style.opacity = '0';
+      arabicCard.style.height = '0';
+      arabicCard.style.overflow = 'hidden';
+      arabicCard.style.margin = '0';
+      arabicCard.style.padding = '0';
+      arabicCard.style.transform = 'scale(0)';
+      console.log('Arabic card hidden successfully');
+    } else if (arabicCard) {
+      console.log('⚠️ SHOWING Arabic card - Conditions not met for hiding');
+      arabicCard.style.removeProperty('display');
+      arabicCard.style.visibility = 'visible';
+      arabicCard.style.opacity = '1';
+      arabicCard.style.height = 'auto';
+      arabicCard.style.overflow = 'visible';
+      arabicCard.style.margin = '20px 0';
+      arabicCard.style.padding = '';
+      arabicCard.style.transform = '';
+    }
+    console.log('=== END DEBUG ===');
+  };
+
+  // Combined update function
+  const updateDisplayForUserType = () => {
+    updateAgeStudyDisplay();
+    updateSpectacleVisibility();
+  };
+
+  // Effect to handle user type changes and initial load
+  useEffect(() => {
+    console.log('DOM loaded, calling updateDisplayForUserType');
+    updateDisplayForUserType();
+
+    // Set up event listeners for user type changes
+    const handleUserTypeChange = () => {
+      const newUserType = sessionStorage.getItem('userType');
+      const newProfessionalType = sessionStorage.getItem('professionalType');
+      setUserType(newUserType);
+      setProfessionalType(newProfessionalType);
+      updateDisplayForUserType();
+    };
+
+    window.addEventListener('userTypeChanged', handleUserTypeChange);
+    window.addEventListener('storage', handleUserTypeChange);
+
+    // Run updates with delays to ensure DOM is ready
+    const timeouts = [500, 1000, 2000, 3000, 5000].map(delay => 
+      setTimeout(updateDisplayForUserType, delay)
+    );
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('userTypeChanged', handleUserTypeChange);
+      window.removeEventListener('storage', handleUserTypeChange);
+      timeouts.forEach(timeout => clearTimeout(timeout));
+    };
+  }, []);
+
+  // Effect to update display when user type changes
+  useEffect(() => {
+    updateDisplayForUserType();
+  }, [userType, professionalType]);
+
+  // Add debug function to window for testing
+  useEffect(() => {
+    (window as any).debugUpdateDisplay = () => {
+      console.log('🔧 MANUAL DEBUG: debugUpdateDisplay called');
+      updateDisplayForUserType();
+    };
+    
+    (window as any).debugCheckElements = () => {
+      const elements = document.querySelectorAll('.age-level-display');
+      console.log('🎯 Found', elements.length, 'age-level-display elements:');
+      elements.forEach((element, index) => {
+        console.log(`Element ${index}:`, {
+          id: element.id,
+          age: element.getAttribute('data-age'),
+          studyLevel: element.getAttribute('data-study-level'),
+          currentText: element.querySelector('.age-level-text')?.textContent
+        });
+      });
+    };
+
+    return () => {
+      delete (window as any).debugUpdateDisplay;
+      delete (window as any).debugCheckElements;
+    };
+  }, []);
 
   const handleReservation = (spectacleId: string, spectacleName: string = '') => {
     console.log('handleReservation called with:', spectacleId);
@@ -32,6 +174,7 @@ export default function Spectacles() {
     }
     
     // If user is authenticated, redirect to reservation page
+
     navigate(`/reservation/${spectacleId}`);
   };
 
@@ -70,6 +213,38 @@ export default function Spectacles() {
     if (!userType) {
       navigate('/user-type-selection');
       return;
+    }
+
+    // Immediate filtering for private schools - multiple attempts
+    if (userType === 'professional' && professionalType === 'scolaire-privee') {
+      console.log('🎯 IMMEDIATE FILTER: Hiding Arabic card for private school');
+      
+      const hideArabicCard = () => {
+        const arabicCard = document.getElementById('le-petit-prince-ar-card');
+        if (arabicCard) {
+          // Only hide the specific Arabic card, NOT its parent
+          arabicCard.style.setProperty('display', 'none', 'important');
+          arabicCard.style.visibility = 'hidden';
+          arabicCard.style.opacity = '0';
+          arabicCard.style.height = '0';
+          arabicCard.style.overflow = 'hidden';
+          arabicCard.style.margin = '0';
+          arabicCard.style.padding = '0';
+          arabicCard.style.transform = 'scale(0)';
+          console.log('✅ Arabic card hidden successfully (card only, not parent)');
+          return true;
+        } else {
+          console.log('❌ Arabic card not found, retrying...');
+          return false;
+        }
+      };
+
+      // Try multiple times with increasing delays
+      setTimeout(hideArabicCard, 50);
+      setTimeout(hideArabicCard, 200);
+      setTimeout(hideArabicCard, 500);
+      setTimeout(hideArabicCard, 1000);
+      setTimeout(hideArabicCard, 2000);
     }
 
     // Show spectacles section immediately after component mounts
@@ -338,7 +513,7 @@ export default function Spectacles() {
 
           .auth-btn:hover {
             background: #a8b800;
-            transform: translateY(-4px) scale(1.05);
+            transform: translateY(-4px);
             box-shadow: 0 8px 25px rgba(189, 207, 0, 0.5);
           }
 
@@ -1168,86 +1343,7 @@ export default function Spectacles() {
             }
           }
         </style>
-        
-        <script>
-          // Update age/study level display based on user type
-          function updateAgeStudyDisplay() {
-            console.log('updateAgeStudyDisplay called');
-            const userType = sessionStorage.getItem('userType');
-            const professionalType = sessionStorage.getItem('professionalType');
-            
-            console.log('User type:', userType, 'Professional type:', professionalType);
-            
-            if (userType === 'professional' && professionalType === 'scolaire-privee') {
-              console.log('Updating to study levels for private schools');
-              // Update all age-level displays to show study levels
-              document.querySelectorAll('.age-level-display').forEach(element => {
-                const studyLevel = element.getAttribute('data-study-level');
-                const textSpan = element.querySelector('.age-level-text');
-                console.log('Element:', element, 'Study level:', studyLevel, 'Text span:', textSpan);
-                if (studyLevel && textSpan) {
-                  textSpan.textContent = studyLevel;
-                  console.log('Updated text to:', studyLevel);
-                }
-              });
-            } else {
-              console.log('Not private school, showing age ranges');
-              // Restore age ranges for other user types
-              document.querySelectorAll('.age-level-display').forEach(element => {
-                const age = element.getAttribute('data-age');
-                const textSpan = element.querySelector('.age-level-text');
-                if (age && textSpan) {
-                  textSpan.textContent = age;
-                }
-              });
-            }
-          }
-          
-          // Update spectacle visibility for private schools
-          function updateSpectacleVisibility() {
-            const userType = sessionStorage.getItem('userType');
-            const professionalType = sessionStorage.getItem('professionalType');
-            const arabicCard = document.getElementById('le-petit-prince-ar-card');
-            
-            console.log('updateSpectacleVisibility - userType:', userType, 'professionalType:', professionalType);
-            
-            if (userType === 'professional' && professionalType === 'scolaire-privee' && arabicCard) {
-              console.log('Hiding Arabic card for private schools');
-              arabicCard.style.display = 'none';
-            } else if (arabicCard) {
-              console.log('Showing Arabic card');
-              arabicCard.style.display = 'block';
-            }
-          }
-          
-          // Combined update function
-          function updateDisplayForUserType() {
-            updateAgeStudyDisplay();
-            updateSpectacleVisibility();
-          }
-          
-          // Run on page load
-          document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM loaded, calling updateDisplayForUserType');
-            updateDisplayForUserType();
-          });
-          
-          // Also run after delays to ensure everything is loaded
-          setTimeout(updateDisplayForUserType, 500);
-          setTimeout(updateDisplayForUserType, 1000);
-          setTimeout(updateDisplayForUserType, 2000);
-          
-          // Listen for user type changes
-          window.addEventListener('userTypeChanged', updateDisplayForUserType);
-          window.addEventListener('storage', updateDisplayForUserType);
-          
-        </script>
 
-        <!-- Filter Section -->
-        <section class="filter-section" id="filterSection" style="display: block; background: #f8f9fa; padding: 60px 0 0 0;">
-          <div class="container">
-          </div>
-        </section>  
 
           <!-- Authentication Gate Section -->
 
@@ -1272,7 +1368,7 @@ export default function Spectacles() {
                   
                   <!-- Right Side: Content -->
                   <div style="width: 50%; padding: 25px 10px 25px 5px; display: flex; flex-direction: column; justify-content: center;">
-                    <div style="width: 100%; margin-left: 10px; padding-right: 5px;">
+                    <div style="width: 100%; margin-left: 10px;">
                       <!-- Date Badge -->
                       <div style="margin-bottom: 15px;">
                         <div class="spectacle-card__date" style="color: #999; font-size: 12px; font-weight: 600; text-transform: uppercase;">Oct 2025</div>
@@ -1288,7 +1384,7 @@ export default function Spectacles() {
                             <i class="fas fa-clock" style="color: #BDCF00;"></i>
                             <span>60 mins</span>
                           </div>
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="7 ans et +" data-study-level="CM1, CM2, Collège, Lycée">
+                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display le-petit-prince-age-study" id="le-petit-prince-age-study" data-age="7 ans et +" data-study-level="CM1, CM2, Collège, Lycée">
                             <i class="fas fa-child" style="color: #BDCF00;"></i>
                             <span class="age-level-text">7 ans et +</span>
                           </div>
@@ -1300,17 +1396,17 @@ export default function Spectacles() {
                           </div>
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                             <i class="fas fa-theater-masks" style="color: #BDCF00;"></i>
-                            <span>Conte / Dessin sur Sable</span>
+                            <span>Conte avec dessin sur sable</span>
                           </div>
                         </div>
                       </div>
                       
                       <!-- Buttons -->
                       <div style="display: flex; gap: 8px; justify-content: flex-start; margin-bottom: 20px; flex-wrap: wrap;">
-                        <button class="btn-reserve spectacle-btn" onclick="window.handleReservation('le-petit-prince')" style="background: #BDCF00; color: white; padding: 10px 16px; border-radius: 8px; border: none; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">
+                        <button class="btn-reserve spectacle-btn" onclick="window.handleReservation('le-petit-prince')" style="background: #BDCF00; color: white; padding: 6px 8px; border-radius: 8px; border: none; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">
                           Réserver
                         </button>
-                        <button class="btn-details spectacle-btn" onclick="window.handleDetails('le-petit-prince')" style="background: transparent; color: #BDCF00; padding: 10px 16px; border: 2px solid #BDCF00; border-radius: 8px; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">Détails</button>
+                        <button class="btn-details spectacle-btn" onclick="window.handleDetails('le-petit-prince')" style="background: transparent; color: #BDCF00; padding: 6px 12px; border: 2px solid #BDCF00; border-radius: 8px; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">Détails</button>
                       </div>
                     </div>
                   </div>
@@ -1350,7 +1446,7 @@ export default function Spectacles() {
                             <i class="fas fa-clock" style="color: #BDCF00;"></i>
                             <span>50 دقيقة</span>
                           </div>
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="7 سنوات وأكثر" data-study-level="CM1, CM2, Collège, Lycée">
+                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display le-petit-prince-ar-age-study" id="le-petit-prince-ar-age-study" data-age="7 سنوات وأكثر" data-study-level="CM1, CM2, Collège, Lycée">
                             <i class="fas fa-child" style="color: #BDCF00;"></i>
                             <span class="age-level-text">7 سنوات وأكثر</span>
                           </div>
@@ -1389,7 +1485,7 @@ export default function Spectacles() {
                   
                   <!-- Left Side: Affiche -->
                   <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
-                    <img src="/assets/img/spectacles/tara-sur-la-lune.png" alt="Tara sur la Lune" style="width: 150%; height: 120%; object-fit: contain;" />
+                    <img src="/src/assets/tara new poster@4x.png" alt="Tara sur la Lune" style="width: 150%; height: 120%; object-fit: contain;" />
                     <!-- Character Image -->
                     <img src="/src/assets/spectacles%20elements/tara@4x.png" alt="Tara Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
                   </div>
@@ -1409,17 +1505,17 @@ export default function Spectacles() {
                       <div style="margin-bottom: 25px;">
                         <div style="display: flex; justify-content: flex-start; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                            <i class="fas fa-theater-masks" style="color: #6f42c1;"></i>
+                            <i class="fas fa-clock" style="color: #6f42c1;"></i>
                             <span>55 mins</span>
                           </div>
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="5 ans et +" data-study-level="Maternelles, Primaires">
-                            <i class="fas fa-child" style="color: #BDCF00;"></i>
+                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display tara-sur-la-lune-age-study" id="tara-sur-la-lune-age-study" data-age="5 ans et +" data-study-level="Maternelles, Primaires">
+                            <i class="fas fa-child" style="color: #20c997;"></i>
                             <span class="age-level-text">5 ans et +</span>
                           </div>
                         </div>
                         <div style="display: flex; justify-content: flex-start; gap: 10px; flex-wrap: wrap;">
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                            <i class="fas fa-theater-masks" style="color: #6f42c1;"></i>
+                            <i class="fas fa-users" style="color: #6f42c1;"></i>
                             <span>1 comédien</span>
                           </div>
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
@@ -1431,10 +1527,10 @@ export default function Spectacles() {
                       
                       <!-- Buttons -->
                       <div style="display: flex; gap: 8px; justify-content: flex-start; margin-bottom: 20px; flex-wrap: wrap;">
-                        <button class="btn-reserve spectacle-btn" onclick="window.handleReservation('tara-sur-la-lune')" style="background: #6f42c1; color: white; padding: 10px 16px; border-radius: 8px; border: none; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">
+                        <button class="btn-reserve spectacle-btn" onclick="window.handleReservation('tara-sur-la-lune')" style="background: #6f42c1; color: white; padding: 6px 8px; border-radius: 8px; border: none; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">
                           Réserver
                         </button>
-                        <button class="btn-details spectacle-btn" onclick="window.handleDetails('tara-sur-la-lune')" style="background: transparent; color: #6f42c1; padding: 10px 16px; border: 2px solid #6f42c1; border-radius: 8px; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">Détails</button>
+                        <button class="btn-details spectacle-btn" onclick="window.handleDetails('tara-sur-la-lune')" style="background: transparent; color: #6f42c1; padding: 6px 12px; border: 2px solid #6f42c1; border-radius: 8px; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">Détails</button>
                       </div>
                     </div>
                   </div>
@@ -1471,17 +1567,17 @@ export default function Spectacles() {
                       <div style="margin-bottom: 25px;">
                         <div style="display: flex; justify-content: flex-start; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                            <i class="fas fa-theater-masks" style="color: #dc3545;"></i>
+                            <i class="fas fa-clock" style="color: #dc3545;"></i>
                             <span>60 mins</span>
                           </div>
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="5 ans et +" data-study-level="Maternelles, Primaires">
+                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display mirath-atfal-age-study" id="mirath-atfal-age-study" data-age="5 ans et +" data-study-level="Primaire, Collège, Lycée">
                             <i class="fas fa-child" style="color: #dc3545;"></i>
                             <span class="age-level-text">5 ans et +</span>
                           </div>
                         </div>
                         <div style="display: flex; justify-content: flex-start; gap: 10px; flex-wrap: wrap;">
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                            <i class="fas fa-theater-masks" style="color: #dc3545;"></i>
+                            <i class="fas fa-users" style="color: #dc3545;"></i>
                             <span>4 comédiens</span>
                           </div>
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
@@ -1533,10 +1629,10 @@ export default function Spectacles() {
                       <!-- Info Badges -->
                       <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                          <i class="fas fa-theater-masks" style="color: #ffc107;"></i>
+                          <i class="fas fa-clock" style="color: #ffc107;"></i>
                           <span>60 minutes</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="6 ans et +" data-study-level="Maternelles, Primaires, Collège">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display simple-comme-bonjour-age-study" id="simple-comme-bonjour-age-study" data-age="6 ans et +" data-study-level="Du GS au CE2">
                           <i class="fas fa-child" style="color: #ffc107;"></i>
                           <span class="age-level-text">6 ans et +</span>
                         </div>
@@ -1545,8 +1641,8 @@ export default function Spectacles() {
                           <span>3 comédiens</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                          <i class="fas fa-heart" style="color: #ffc107;"></i>
-                          <span>Musical</span>
+                          <i class="fas fa-theater-masks" style="color: #ffc107;"></i>
+                          <span>Théâtre musical</span>
                         </div>
                       </div>
                       
@@ -1592,10 +1688,10 @@ export default function Spectacles() {
                       <!-- Info Badges -->
                       <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                          <i class="fas fa-theater-masks" style="color: #e91e63;"></i>
+                          <i class="fas fa-clock" style="color: #e91e63;"></i>
                           <span>50 mins</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="5 ans et +" data-study-level="Maternelles, Primaires">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display charlotte-age-study" id="charlotte-age-study" data-age="6 ans et +" data-study-level="Du GS au CE2">
                           <i class="fas fa-child" style="color: #e91e63;"></i>
                           <span class="age-level-text">5 ans et +</span>
                         </div>
@@ -1604,7 +1700,7 @@ export default function Spectacles() {
                           <span>2 comédiens</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                          <i class="fas fa-music" style="color: #e91e63;"></i>
+                          <i class="fas fa-theater-masks" style="color: #e91e63;"></i>
                           <span>Théâtre musical</span>
                         </div>
                       </div>
@@ -1651,10 +1747,10 @@ export default function Spectacles() {
                       <!-- Info Badges -->
                       <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                          <i class="fas fa-theater-masks" style="color: #17a2b8;"></i>
+                          <i class="fas fa-clock" style="color: #17a2b8;"></i>
                           <span>70 mins</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="10 ans et +" data-study-level="Collège, Lycée">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display estevanico-age-study" id="estevanico-age-study" data-age="8 ans et +" data-study-level="CE2, CM1, CM2, Collège">
                           <i class="fas fa-child" style="color: #17a2b8;"></i>
                           <span class="age-level-text">10 ans et +</span>
                         </div>
@@ -1663,7 +1759,7 @@ export default function Spectacles() {
                           <span>3 comédiens</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                          <i class="fas fa-music" style="color: #17a2b8;"></i>
+                          <i class="fas fa-theater-masks" style="color: #17a2b8;"></i>
                           <span>Théâtre musical</span>
                         </div>
                       </div>
@@ -1710,10 +1806,10 @@ export default function Spectacles() {
                       <!-- Info Badges -->
                       <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                          <i class="fas fa-theater-masks" style="color: #28a745;"></i>
+                          <i class="fas fa-clock" style="color: #28a745;"></i>
                           <span>65 mins</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="10 ans et +" data-study-level="Collège, Lycée">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display lenfant-de-larbre-age-study" id="lenfant-de-larbre-age-study" data-age="9 ans et +" data-study-level="CM2, Collège">
                           <i class="fas fa-child" style="color: #28a745;"></i>
                           <span class="age-level-text">10 ans et +</span>
                         </div>
@@ -1769,20 +1865,20 @@ export default function Spectacles() {
                       <!-- Info Badges -->
                       <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                          <i class="fas fa-theater-masks" style="color: #6f42c1;"></i>
+                          <i class="fas fa-clock" style="color: #6f42c1;"></i>
                           <span>60 minutes</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="12 ans et +" data-study-level="Collège, Lycée">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display antigone-age-study" id="antigone-age-study" data-age="12 ans et +" data-study-level="Collège, Lycée">
                           <i class="fas fa-child" style="color: #6f42c1;"></i>
                           <span class="age-level-text">12 ans et +</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-users" style="color: #6f42c1;"></i>
-                          <span>5 comédiens</span>
+                          <span>6 comédiens</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                          <i class="fas fa-heart" style="color: #6f42c1;"></i>
-                          <span>Tragédie</span>
+                          <i class="fas fa-theater-masks" style="color: #6f42c1;"></i>
+                          <span>Théâtre classique</span>
                         </div>
                       </div>
                       
@@ -1828,20 +1924,20 @@ export default function Spectacles() {
                       <!-- Info Badges -->
                       <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                          <i class="fas fa-theater-masks" style="color: #e83e8c;"></i>
+                          <i class="fas fa-clock" style="color: #e83e8c;"></i>
                           <span>50 minutes</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="5 ans et +" data-study-level="Maternelles, Primaires">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display alice-chez-les-merveilles-age-study" id="alice-chez-les-merveilles-age-study" data-age="5 ans et +" data-study-level="MS, GS, CP">
                           <i class="fas fa-child" style="color: #e83e8c;"></i>
                           <span class="age-level-text">5 ans et +</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-users" style="color: #e83e8c;"></i>
-                          <span>4 comédiens</span>
+                          <span>3 comédiens</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                          <i class="fas fa-heart" style="color: #e83e8c;"></i>
-                          <span>Fantastique</span>
+                          <i class="fas fa-theater-masks" style="color: #e83e8c;"></i>
+                          <span>Théâtre</span>
                         </div>
                       </div>
                       
@@ -1887,12 +1983,12 @@ export default function Spectacles() {
                       <!-- Info Badges -->
                       <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                          <i class="fas fa-theater-masks" style="color: #20c997;"></i>
-                          <span>45 minutes</span>
+                          <i class="fas fa-clock" style="color: #20c997;"></i>
+                          <span>55 minutes</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display" data-age="6 ans et +" data-study-level="Maternelles, Primaires, Collège">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display leau-la-age-study" id="leau-la-age-study" data-age="9 ans et +" data-study-level="CM1, CM2, Collège, Lycée">
                           <i class="fas fa-child" style="color: #20c997;"></i>
-                          <span class="age-level-text">6 ans et +</span>
+                          <span class="age-level-text">5 ans et +</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-users" style="color: #20c997;"></i>
@@ -1900,7 +1996,7 @@ export default function Spectacles() {
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-theater-masks" style="color: #20c997;"></i>
-                          <span>Écologique</span>
+                          <span>Théâtre musical et danse</span>
                         </div>
                       </div>
                       
@@ -1922,22 +2018,77 @@ export default function Spectacles() {
 
         <script>
           // Make handleReservation available globally
+          // Make handleDetails available globally
+          window.handleDetails = function(spectacleId) {
+            console.log('handleDetails called with:', spectacleId);
+            // Navigate to individual spectacle detail page within Hello Planet app
+            const spectacleRoutes = {
+              'le-petit-prince': '/spectacle/le-petit-prince',
+              'le-petit-prince-ar': '/spectacle/le-petit-prince-ar',
+              'tara-sur-la-lune': '/spectacle/tara-sur-la-lune',
+              'mirath-atfal': '/spectacle/mirath-atfal',
+              'simple-comme-bonjour': '/spectacle/simple-comme-bonjour',
+              'charlotte': '/spectacle/charlotte',
+              'estevanico': '/spectacle/estevanico',
+              'lenfant-de-larbre': '/spectacle/lenfant-de-larbre',
+              'antigone': '/spectacle/antigone',
+              'alice-chez-les-merveilles': '/spectacle/alice-chez-les-merveilles',
+              'leau-la': '/spectacle/leau-la'
+            };
+            
+            const route = spectacleRoutes[spectacleId];
+            if (route) {
+              window.location.href = route;
+            } else {
+              console.error('Unknown spectacle ID:', spectacleId);
+            }
+          };
+          
+          // Make handleReservation available globally
           window.handleReservation = function(spectacleId) {
             console.log('handleReservation called with:', spectacleId);
-            ${user ? `
-              console.log('User is authenticated, redirecting to reservation');
-              window.location.href = '/reservation/' + spectacleId;
-            ` : `
-              console.log('User not authenticated, redirecting to auth');
-              const returnUrl = encodeURIComponent(window.location.href);
-              window.location.href = '/auth?return_url=' + returnUrl;
-            `}
+            
+            // Get user type and professional type from session storage
+            const userType = sessionStorage.getItem('userType');
+            const professionalType = sessionStorage.getItem('professionalType');
+            
+            // Map spectacle IDs to reservation URLs on EDJS site
+            const reservationUrls = {
+              'le-petit-prince': 'https://edjs.art/reservation-le-petit-prince.html',
+              'le-petit-prince-ar': 'https://edjs.art/reservation-le-petit-prince-ar.html',
+              'tara-sur-la-lune': 'https://edjs.art/reservation-tara-sur-la-lune.html',
+              'mirath-atfal': 'https://edjs.art/reservation-mirath-atfal.html',
+              'simple-comme-bonjour': 'https://edjs.art/reservation-simple-comme-bonjour.html',
+              'charlotte': 'https://edjs.art/reservation-charlotte.html',
+              'estevanico': 'https://edjs.art/reservation-estevanico.html',
+              'lenfant-de-larbre': 'https://edjs.art/reservation-lenfant-de-larbre.html',
+              'antigone': 'https://edjs.art/reservation-antigone.html',
+              'alice-chez-les-merveilles': 'https://edjs.art/reservation-alice-chez-les-merveilles.html',
+              'leau-la': 'https://edjs.art/reservation-leau-la.html'
+            };
+            
+            const url = reservationUrls[spectacleId];
+            if (url) {
+              // Add user type parameters to the URL if available
+              let finalUrl = url;
+              if (userType) {
+                const separator = url.includes('?') ? '&' : '?';
+                finalUrl += separator + 'userType=' + encodeURIComponent(userType);
+                if (professionalType) {
+                  finalUrl += '&professionalType=' + encodeURIComponent(professionalType);
+                }
+              }
+              window.open(finalUrl, '_blank');
+            } else {
+              console.error('Unknown spectacle ID for reservation:', spectacleId);
+            }
           };
           
           // Ensure function is available immediately
           console.log('handleReservation function set up:', typeof window.handleReservation);
         </script>
 
+{{ ... }}
         <!-- Simple Footer -->
         <footer style="background: #000; color: white; padding: 40px 0 0 0; margin: 0;">
           <div class="container">

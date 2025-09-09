@@ -4,10 +4,12 @@ import { X, Play, Pause } from 'lucide-react';
 interface VideoPopupProps {
   isOpen: boolean;
   onClose: () => void;
-  videoId: string;
+  videoId?: string;
+  videoUrl?: string;
+  title?: string;
 }
 
-export default function VideoPopup({ isOpen, onClose, videoId }: VideoPopupProps) {
+export default function VideoPopup({ isOpen, onClose, videoId, videoUrl, title }: VideoPopupProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
@@ -33,6 +35,19 @@ export default function VideoPopup({ isOpen, onClose, videoId }: VideoPopupProps
 
   if (!isOpen) return null;
 
+  // Extract video ID from URL if videoUrl is provided
+  const getVideoId = () => {
+    if (videoId) return videoId;
+    if (videoUrl) {
+      // Handle various YouTube URL formats including shorts
+      const match = videoUrl.match(/(?:youtube\.com\/embed\/|youtu\.be\/|youtube\.com\/watch\?v=|youtube\.com\/shorts\/)([^&\n?#]+)/);
+      return match ? match[1] : 'dQw4w9WgXcQ'; // fallback
+    }
+    return 'dQw4w9WgXcQ'; // fallback
+  };
+
+  const finalVideoId = getVideoId();
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4">
       <div className="relative w-full max-w-4xl mx-auto">
@@ -48,8 +63,8 @@ export default function VideoPopup({ isOpen, onClose, videoId }: VideoPopupProps
         <div className="relative bg-black rounded-lg overflow-hidden" style={{ aspectRatio: '16/9' }}>
           <iframe
             ref={iframeRef}
-            src={`https://www.youtube.com/embed/${videoId}?enablejsapi=1&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&cc_load_policy=0&fs=0&disablekb=1&autoplay=0`}
-            title="Video Player"
+            src={`https://www.youtube.com/embed/${finalVideoId}?enablejsapi=1&controls=0&showinfo=0&rel=0&modestbranding=1&iv_load_policy=3&cc_load_policy=0&fs=0&disablekb=1&autoplay=0`}
+            title={title || "Video Player"}
             className="w-full h-full"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"

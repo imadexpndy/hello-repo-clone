@@ -3,12 +3,14 @@ import { useAuth } from '@/hooks/useAuth';
 import SpectacleFooter from '@/components/SpectacleFooter';
 import VideoPopup from '@/components/VideoPopup';
 import SessionsDisplay from '@/components/SessionsDisplay';
-import { getUserTypeInfo, getStudyLevelForSpectacle } from '@/utils/userTypeUtils';
+import { getUserTypeInfo, getStudyLevelForSpectacle, getAgeRangeForSpectacle } from '@/utils/userTypeUtils';
 
 export default function SpectacleAliceChezLesMerveilles() {
   const { user } = useAuth();
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   const [userTypeInfo, setUserTypeInfo] = useState(getUserTypeInfo());
+  const [userType, setUserType] = useState<string>('');
+  const [professionalType, setProfessionalType] = useState<string>('');
 
   useEffect(() => {
     // Load external stylesheets
@@ -41,15 +43,25 @@ export default function SpectacleAliceChezLesMerveilles() {
     // Expose video popup handler
     (window as any).openVideoPopup = () => setIsVideoOpen(true);
     
-    // Listen for user type changes
-    const handleUserTypeChange = () => {
+    // Check user type on component mount
+    const checkUserType = () => {
+      const storedUserType = sessionStorage.getItem('userType') || localStorage.getItem('userType');
+      const storedProfessionalType = sessionStorage.getItem('professionalType') || localStorage.getItem('professionalType');
+      
+      setUserType(storedUserType || '');
+      setProfessionalType(storedProfessionalType || '');
       setUserTypeInfo(getUserTypeInfo());
     };
+
+    checkUserType();
     
-    window.addEventListener('userTypeChanged', handleUserTypeChange);
+    // Listen for user type changes
+    window.addEventListener('storage', checkUserType);
+    window.addEventListener('userTypeChanged', checkUserType);
     
     return () => {
-      window.removeEventListener('userTypeChanged', handleUserTypeChange);
+      window.removeEventListener('storage', checkUserType);
+      window.removeEventListener('userTypeChanged', checkUserType);
     };
   }, [user]);
 
@@ -373,7 +385,7 @@ export default function SpectacleAliceChezLesMerveilles() {
                     <i class="fas fa-clock"></i>50 minutes
                   </span>
                   <span class="info-pill">
-                    <i class="fas fa-child"></i>${userTypeInfo.getAgeOrStudyText('5 ans et +', getStudyLevelForSpectacle('alice-chez-les-merveilles'))}
+                    <i class="fas fa-child"></i><span>${userTypeInfo.showStudyLevel ? 'MS, GS, CP' : (userTypeInfo.showAgeRange ? '5 ans et +' : '')}</span>
                   </span>
                   <span class="info-pill">
                     <i class="fas fa-theater-masks"></i>Théâtre
@@ -382,7 +394,7 @@ export default function SpectacleAliceChezLesMerveilles() {
                 <div class="hero-buttons">
                   <button class="btn-primary" onclick="window.handleReservation()">
                     <i class="fas fa-ticket-alt"></i>
-                    ${user ? 'Réserver Maintenant' : 'Se connecter pour réserver'}
+                    Se connecter pour réserver
                   </button>
                 </div>
               </div>

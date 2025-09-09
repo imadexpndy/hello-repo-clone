@@ -3,12 +3,14 @@ import { useAuth } from '@/hooks/useAuth';
 import SpectacleFooter from '@/components/SpectacleFooter';
 import VideoPopup from '@/components/VideoPopup';
 import SessionsDisplay from '@/components/SessionsDisplay';
-import { getUserTypeInfo, getStudyLevelForSpectacle } from '@/utils/userTypeUtils';
+import { getUserTypeInfo, getStudyLevelForSpectacle, getAgeRangeForSpectacle } from '@/utils/userTypeUtils';
 
 export default function SpectacleCharlotte() {
   const { user } = useAuth();
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   const [userTypeInfo, setUserTypeInfo] = useState(getUserTypeInfo());
+  const [userType, setUserType] = useState<string>('');
+  const [professionalType, setProfessionalType] = useState<string>('');
 
   useEffect(() => {
     // Load external stylesheets
@@ -41,15 +43,25 @@ export default function SpectacleCharlotte() {
     // Expose video popup handler
     (window as any).openVideoPopup = () => setIsVideoOpen(true);
     
-    // Listen for user type changes
-    const handleUserTypeChange = () => {
+    // Check user type on component mount
+    const checkUserType = () => {
+      const storedUserType = sessionStorage.getItem('userType') || localStorage.getItem('userType');
+      const storedProfessionalType = sessionStorage.getItem('professionalType') || localStorage.getItem('professionalType');
+      
+      setUserType(storedUserType || '');
+      setProfessionalType(storedProfessionalType || '');
       setUserTypeInfo(getUserTypeInfo());
     };
+
+    checkUserType();
     
-    window.addEventListener('userTypeChanged', handleUserTypeChange);
+    // Listen for user type changes
+    window.addEventListener('storage', checkUserType);
+    window.addEventListener('userTypeChanged', checkUserType);
     
     return () => {
-      window.removeEventListener('userTypeChanged', handleUserTypeChange);
+      window.removeEventListener('storage', checkUserType);
+      window.removeEventListener('userTypeChanged', checkUserType);
     };
   }, [user]);
 
@@ -126,8 +138,8 @@ export default function SpectacleCharlotte() {
             padding: 30px 25px 40px 25px;
             box-shadow: 0 0 30px rgba(0,0,0,0.3), inset 0 0 20px rgba(0,0,0,0.2), inset 0 2px 5px rgba(255,255,255,0.1);
             position: relative;
-            width: 400px;
-            height: 400px;
+            width: 600px;
+            height: 450px;
             margin: 0 auto;
           }
 
@@ -361,7 +373,7 @@ export default function SpectacleCharlotte() {
             <div class="hero-left">
               <div class="hero-content">
                 <h1 class="hero-title">Charlotte</h1>
-                <p class="hero-subtitle">Une histoire touchante d'amitié, de courage et de découverte de soi</p>
+                <p class="hero-subtitle">Une histoire touchante d'amitié et d'émotion</p>
                 <div class="info-pills">
                   <span class="info-pill">
                     <i class="fas fa-clock"></i>50 minutes
@@ -370,7 +382,7 @@ export default function SpectacleCharlotte() {
                     <i class="fas fa-users"></i>2 comédiens
                   </span>
                   <span class="info-pill">
-                    <i class="fas fa-child"></i>${userTypeInfo.getAgeOrStudyText('5 ans et +', getStudyLevelForSpectacle('charlotte'))}
+                    <i class="fas fa-child"></i><span>${userTypeInfo.showStudyLevel ? 'Du GS au CE2' : (userTypeInfo.showAgeRange ? '6 ans et +' : '')}</span>
                   </span>
                   <span class="info-pill">
                     <i class="fas fa-theater-masks"></i>Théâtre musical
@@ -379,7 +391,7 @@ export default function SpectacleCharlotte() {
                 <div class="hero-buttons">
                   <button class="btn-primary" onclick="window.handleReservation()">
                     <i class="fas fa-ticket-alt"></i>
-                    ${user ? 'Réserver Maintenant' : 'Se connecter pour réserver'}
+                    Se connecter pour réserver
                   </button>
                 </div>
               </div>
@@ -473,19 +485,19 @@ export default function SpectacleCharlotte() {
                   <div class="gallery-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
                     <div class="gallery-item" style="position: relative; border-radius: 0.75rem; overflow: hidden; cursor: pointer; transition: transform 0.3s ease;">
                       <img src="https://edjs.art/assets/img/spectacles/charlotte.png" alt="Charlotte - Photo 1" class="gallery-img" style="width: 100%; height: 200px; object-fit: cover; transition: transform 0.3s ease;">
-                      <div class="gallery-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255, 107, 157, 0.8); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
+                      <div class="gallery-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.3); cursor: pointer; transition: all 0.3s ease;">
                         <i class="fas fa-expand" style="color: white; font-size: 1.5rem;"></i>
                       </div>
                     </div>
                     <div class="gallery-item" style="position: relative; border-radius: 0.75rem; overflow: hidden; cursor: pointer; transition: transform 0.3s ease;">
                       <img src="https://edjs.art/assets/img/spectacles elements/charlotte@4x.png" alt="Charlotte - Character" class="gallery-img" style="width: 100%; height: 200px; object-fit: cover; transition: transform 0.3s ease;">
-                      <div class="gallery-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255, 107, 157, 0.8); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
+                      <div class="gallery-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.3); cursor: pointer; transition: all 0.3s ease;">
                         <i class="fas fa-expand" style="color: white; font-size: 1.5rem;"></i>
                       </div>
                     </div>
                     <div class="gallery-item" style="position: relative; border-radius: 0.75rem; overflow: hidden; cursor: pointer; transition: transform 0.3s ease;">
                       <img src="https://edjs.art/assets/img/spectacles/charlotte.png" alt="Charlotte - Scene" class="gallery-img" style="width: 100%; height: 200px; object-fit: cover; transition: transform 0.3s ease;">
-                      <div class="gallery-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255, 107, 157, 0.8); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
+                      <div class="gallery-overlay" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; justify-content: center; align-items: center; background: rgba(0,0,0,0.3); cursor: pointer; transition: all 0.3s ease;">
                         <i class="fas fa-expand" style="color: white; font-size: 1.5rem;"></i>
                       </div>
                     </div>
@@ -565,29 +577,94 @@ export default function SpectacleCharlotte() {
                     <i class="fas fa-calendar-alt"></i>
                     Séances Disponibles
                   </h3>
-                  <SessionsDisplay spectacleId="charlotte" />
-                  <div class="showtime-item" style="background: var(--bg-light); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem; border-left: 4px solid var(--primary-color);">
-                    <div class="showtime-date" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.25rem; font-family: 'Raleway', sans-serif;">5 au 9 Mars 2026</div>
-                    <div class="showtime-time" style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.75rem; font-family: 'Raleway', sans-serif;">Rabat - Représentations</div>
-                    <button class="showtime-btn" onclick="window.handleReservation()" style="background: var(--primary-color); color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.9rem; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem; transition: all 0.3s ease; font-family: 'Raleway', sans-serif; cursor: pointer;">
-                      <i class="fas fa-ticket-alt"></i>
-                      Réserver
-                    </button>
-                  </div>
-                  <div class="showtime-item" style="background: var(--bg-light); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem; border-left: 4px solid var(--primary-color);">
-                    <div class="showtime-date" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.25rem; font-family: 'Raleway', sans-serif;">12 au 16 Mars 2026</div>
-                    <div class="showtime-time" style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.75rem; font-family: 'Raleway', sans-serif;">Casablanca - Représentations</div>
-                    <button class="showtime-btn" onclick="window.handleReservation()" style="background: var(--primary-color); color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.9rem; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem; transition: all 0.3s ease; font-family: 'Raleway', sans-serif; cursor: pointer;">
-                      <i class="fas fa-ticket-alt"></i>
-                      Réserver
-                    </button>
-                  </div>
-                  <div class="showtime-item" style="background: var(--bg-light); border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem; border-left: 4px solid var(--primary-color);">
-                    <div class="showtime-date" style="font-weight: 600; color: var(--text-dark); margin-bottom: 0.25rem; font-family: 'Raleway', sans-serif;">Mars 2026</div>
-                    <div class="showtime-time" style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 0.75rem; font-family: 'Raleway', sans-serif;">Séances supplémentaires</div>
-                    <button class="showtime-btn" onclick="window.handleReservation()" style="background: var(--primary-color); color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; font-size: 0.9rem; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem; transition: all 0.3s ease; font-family: 'Raleway', sans-serif; cursor: pointer;">
-                      <i class="fas fa-ticket-alt"></i>
-                      Réserver
+                  <div className="sessions-list">
+                    <h4 style={{color: '#BDCF00', fontWeight: 'bold', marginBottom: '1rem'}}>CHARLOTTE</h4>
+                    
+                    {/* RABAT Sessions */}
+                    <h5 style={{color: '#333', fontWeight: 600, marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>RABAT</h5>
+                    <h6 style={{color: '#666', fontWeight: 500, marginBottom: '0.5rem', fontFamily: 'Raleway, sans-serif'}}>THEATRE BAHNINI</h6>
+                    <div style={{marginBottom: '1rem'}}>
+                      {/* Tout public session - show for particulier */}
+                      {(userType === 'particulier' || !userType) && (
+                        <div style={{background: '#f8f9fa', padding: '0.5rem', marginBottom: '0.25rem', borderLeft: '3px solid #BDCF00', fontSize: '0.85rem'}}>
+                          - Date: SAMEDI 24 JANVIER, Heure: 15H00, Séance: Tout public
+                        </div>
+                      )}
+                      
+                      {/* Private school sessions - show for scolaire-privee */}
+                      {professionalType === 'scolaire-privee' && (
+                        <>
+                          <div style={{background: '#f8f9fa', padding: '0.5rem', marginBottom: '0.25rem', borderLeft: '3px solid #BDCF00', fontSize: '0.85rem'}}>
+                            - Date: LUNDI 26 JANVIER, Heure: 9H30, Séance: École privée
+                          </div>
+                          <div style={{background: '#f8f9fa', padding: '0.5rem', marginBottom: '0.25rem', borderLeft: '3px solid #BDCF00', fontSize: '0.85rem'}}>
+                            - Date: LUNDI 26 JANVIER, Heure: 14H30, Séance: École privée
+                          </div>
+                        </>
+                      )}
+                      
+                      {/* Association / public school session - show for association and scolaire-publique */}
+                      {(professionalType === 'association' || professionalType === 'scolaire-publique') && (
+                        <div style={{background: '#f8f9fa', padding: '0.5rem', marginBottom: '0.25rem', borderLeft: '3px solid #BDCF00', fontSize: '0.85rem'}}>
+                          - Date: MARDI 27 JANVIER, Heure: 14H30, Séance: {professionalType === 'association' ? 'Association / Ecoles publiques' : 'Association / Ecoles publiques'}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* CASABLANCA Sessions */}
+                    <h5 style={{color: '#333', fontWeight: 600, marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>CASABLANCA</h5>
+                    <h6 style={{color: '#666', fontWeight: 500, marginBottom: '0.5rem', fontFamily: 'Raleway, sans-serif'}}>COMPLEXE EL HASSANI</h6>
+                    <div style={{marginBottom: '1rem'}}>
+                      {/* Public school session - show for scolaire-publique */}
+                      {professionalType === 'scolaire-publique' && (
+                        <div style={{background: '#f8f9fa', padding: '0.5rem', marginBottom: '0.25rem', borderLeft: '3px solid #BDCF00', fontSize: '0.85rem'}}>
+                          - Date: VENDREDI 30 JANVIER, Heure: 09H30, Séance: École publique
+                        </div>
+                      )}
+                      
+                      {/* Association session - show for association */}
+                      {professionalType === 'association' && (
+                        <div style={{background: '#f8f9fa', padding: '0.5rem', marginBottom: '0.25rem', borderLeft: '3px solid #BDCF00', fontSize: '0.85rem'}}>
+                          - Date: VENDREDI 30 JANVIER, Heure: 14H30, Séance: Association
+                        </div>
+                      )}
+                      
+                      {/* Private school sessions - show for scolaire-privee */}
+                      {professionalType === 'scolaire-privee' && (
+                        <>
+                          <div style={{background: '#f8f9fa', padding: '0.5rem', marginBottom: '0.25rem', borderLeft: '3px solid #BDCF00', fontSize: '0.85rem'}}>
+                            - Date: JEUDI 29 JANVIER, Heure: 09H30, Séance: École privée
+                          </div>
+                          <div style={{background: '#f8f9fa', padding: '0.5rem', marginBottom: '0.25rem', borderLeft: '3px solid #BDCF00', fontSize: '0.85rem'}}>
+                            - Date: JEUDI 29 JANVIER, Heure: 14H30, Séance: École privée
+                          </div>
+                        </>
+                      )}
+                      
+                      {/* Tout public session - show for particulier */}
+                      {(userType === 'particulier' || !userType) && (
+                        <div style={{background: '#f8f9fa', padding: '0.5rem', marginBottom: '0.25rem', borderLeft: '3px solid #BDCF00', fontSize: '0.85rem'}}>
+                          - Date: SAMEDI 31 JANVIER, Heure: 15H00, Séance: Tout public
+                        </div>
+                      )}
+                    </div>
+
+                    <button 
+                      onClick={handleReservation}
+                      style={{
+                        background: '#BDCF00', 
+                        color: 'white', 
+                        border: 'none', 
+                        padding: '0.75rem 1.5rem', 
+                        borderRadius: '0.5rem', 
+                        fontSize: '1rem', 
+                        fontWeight: 500, 
+                        cursor: 'pointer', 
+                        width: '100%', 
+                        marginTop: '1rem'
+                      }}
+                    >
+                      <i className="fas fa-ticket-alt"></i> Réserver
                     </button>
                   </div>
                 </div>
