@@ -3,7 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { CreditCard, Lock, CheckCircle } from 'lucide-react';
+import { CreditCard, Lock, CheckCircle, Building2 } from 'lucide-react';
 
 export default function Payment() {
   const [searchParams] = useSearchParams();
@@ -39,9 +39,25 @@ export default function Payment() {
   }, [type, navigate]);
 
   const calculatePrice = () => {
-    const basePrice = 80; // Price per ticket for particuliers
-    const numParticipants = parseInt(participants || '1');
-    return basePrice * numParticipants;
+    // Check if user is from private school
+    const isPrivateSchool = reservationData?.userType === 'scolaire-privee' || 
+                           reservationData?.organizationType === 'private_school' ||
+                           reservationData?.organizationType === 'private_school_teacher';
+    
+    const basePrice = isPrivateSchool ? 100 : 80; // 100 DHS TTC for private schools, 80 for others
+    
+    // Calculate total participants from children + accompaniers
+    const childrenCount = parseInt(reservationData?.childrenCount || '0');
+    const accompaniersCount = parseInt(reservationData?.accompaniersCount || '0');
+    const totalParticipants = childrenCount + accompaniersCount;
+    
+    return basePrice * Math.max(totalParticipants, 1); // Ensure at least 1 participant
+  };
+
+  const isPrivateSchoolUser = () => {
+    return reservationData?.userType === 'scolaire-privee' || 
+           reservationData?.organizationType === 'private_school' ||
+           reservationData?.organizationType === 'private_school_teacher';
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -237,7 +253,7 @@ export default function Payment() {
                   </div>
                   <div className="flex justify-between">
                     <span>Prix unitaire :</span>
-                    <span>80 MAD</span>
+                    <span>{isPrivateSchoolUser() ? '100' : '80'} MAD {isPrivateSchoolUser() ? 'TTC' : ''}</span>
                   </div>
                   <hr />
                   <div className="flex justify-between font-semibold text-lg">
@@ -266,6 +282,25 @@ export default function Payment() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* Bank Transfer Info for Private Schools */}
+                {isPrivateSchoolUser() && (
+                  <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg mb-6">
+                    <h5 className="font-semibold text-blue-800 mb-3 flex items-center">
+                      <Building2 className="h-4 w-4 mr-2" />
+                      Informations de virement bancaire - Écoles Privées
+                    </h5>
+                    <div className="space-y-2 text-sm text-blue-700">
+                      <div><strong>RIB :</strong> 190780212110543439000859</div>
+                      <div><strong>Banque :</strong> Banque Populaire</div>
+                      <div><strong>Bénéficiaire :</strong> LIMA PRODUCTION</div>
+                      <div><strong>Montant :</strong> {calculatePrice()} DHS TTC</div>
+                    </div>
+                    <div className="mt-3 p-3 bg-blue-100 rounded text-xs text-blue-800">
+                      <strong>Note :</strong> Veuillez effectuer le virement bancaire avec ces informations. 
+                      Vous pouvez également procéder au paiement par carte ci-dessous.
+                    </div>
+                  </div>
+                )}
                 <div className="flex items-center text-sm text-gray-600 mb-4">
                   <Lock className="h-4 w-4 mr-2" />
                   Vos informations sont protégées par cryptage SSL
@@ -328,7 +363,7 @@ export default function Payment() {
                   />
                 </div>
 
-                <div className="pt-4">
+                <div className="pt-4 space-y-3">
                   <Button
                     onClick={processPayment}
                     disabled={isProcessing || !validateForm()}
@@ -344,6 +379,21 @@ export default function Payment() {
                       `Payer ${calculatePrice()} MAD`
                     )}
                   </Button>
+                  
+                  {isPrivateSchoolUser() && (
+                    <Button
+                      onClick={() => {
+                        // Mark payment as sent and redirect to confirmation
+                        sessionStorage.setItem('paymentSent', 'true');
+                        navigate('/payment-confirmation');
+                      }}
+                      variant="outline"
+                      className="w-full"
+                      size="lg"
+                    >
+                      Paiement envoyé (Virement bancaire)
+                    </Button>
+                  )}
                 </div>
 
                 <div className="text-xs text-gray-500 text-center">

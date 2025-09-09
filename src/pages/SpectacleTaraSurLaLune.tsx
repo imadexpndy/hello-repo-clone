@@ -7,8 +7,18 @@ export default function SpectacleTaraSurLaLune() {
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   const [userType, setUserType] = useState<string>('');
   const [professionalType, setProfessionalType] = useState<string>('');
+  
+  // Review form state
+  const [reviewForm, setReviewForm] = useState({
+    name: '',
+    organization: '',
+    rating: 0,
+    comment: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
+    // Load external stylesheets
     const loadStylesheet = (href: string) => {
       if (!document.querySelector(`link[href="${href}"]`)) {
         const link = document.createElement('link');
@@ -22,16 +32,22 @@ export default function SpectacleTaraSurLaLune() {
     loadStylesheet('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
     loadStylesheet('https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css');
 
+    // Check user type on component mount and set up listeners
     const checkUserType = () => {
       const storedUserType = sessionStorage.getItem('userType') || localStorage.getItem('userType');
       const storedProfessionalType = sessionStorage.getItem('professionalType') || localStorage.getItem('professionalType');
+      
+      console.log('Debug - User Type:', storedUserType);
+      console.log('Debug - Professional Type:', storedProfessionalType);
       
       setUserType(storedUserType || '');
       setProfessionalType(storedProfessionalType || '');
     };
 
+    // Initial check
     checkUserType();
     
+    // Set up event listeners
     const handleStorageChange = () => checkUserType();
     const handleUserTypeChange = () => checkUserType();
     
@@ -46,7 +62,9 @@ export default function SpectacleTaraSurLaLune() {
 
   const handleReservation = () => {
     if (user) {
-      window.location.href = '/reservation/tara-sur-la-lune';
+      // Pass user type as parameter to show only relevant sessions
+      const userTypeParam = professionalType || userType || '';
+      window.location.href = `/reservation/tara-sur-la-lune?userType=${userTypeParam}`;
     } else {
       const returnUrl = encodeURIComponent(window.location.href);
       window.location.href = `/auth?return_url=${returnUrl}`;
@@ -71,16 +89,35 @@ export default function SpectacleTaraSurLaLune() {
     window.location.href = '/user-type-selection';
   };
 
+  // Review form handlers
+  const handleReviewInputChange = (field: string, value: string | number) => {
+    setReviewForm(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reviewForm.name || !reviewForm.comment || reviewForm.rating === 0) {
+      alert('Veuillez remplir tous les champs obligatoires.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      alert('Merci pour votre avis ! Il sera publié après modération.');
+      setReviewForm({ name: '', organization: '', rating: 0, comment: '' });
+    } catch (error) {
+      alert('Erreur lors de l\'envoi de votre avis. Veuillez réessayer.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const userTypeDisplay = getUserTypeDisplay();
 
   return (
     <>
-      <VideoPopup 
-        isOpen={isVideoOpen} 
-        onClose={() => setIsVideoOpen(false)} 
-        videoUrl="https://youtube.com/shorts/iARC1DejKHo" 
-      />
-      
       <style>{`
         :root {
           --primary-color: #6f42c1;
@@ -147,13 +184,16 @@ export default function SpectacleTaraSurLaLune() {
         }
 
         .tv-frame {
-          background: linear-gradient(145deg, #6f42c1, #8b5cf6);
+          background: linear-gradient(145deg, #6f42c1, #9b59b6);
           border-radius: 20px;
-          padding: 30px 25px 40px 25px;
-          box-shadow: 0 0 30px rgba(0,0,0,0.3), inset 0 0 20px rgba(0,0,0,0.2), inset 0 2px 5px rgba(255,255,255,0.1);
+          padding: 40px 35px 50px 35px;
+          box-shadow: 
+            0 0 30px rgba(0,0,0,0.3),
+            inset 0 0 20px rgba(0,0,0,0.2),
+            inset 0 2px 5px rgba(255,255,255,0.1);
           position: relative;
-          width: 400px;
-          height: 400px;
+          max-width: 750px;
+          width: 100%;
           margin: 0 auto;
         }
 
@@ -166,7 +206,7 @@ export default function SpectacleTaraSurLaLune() {
           box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
           width: 100%;
           height: calc(100% - 60px);
-          aspect-ratio: 1;
+          aspect-ratio: 16/9;
         }
 
         .hero-title {
@@ -327,144 +367,186 @@ export default function SpectacleTaraSurLaLune() {
         }
       `}</style>
 
+      <VideoPopup 
+        isOpen={isVideoOpen} 
+        onClose={() => setIsVideoOpen(false)} 
+        videoUrl="https://youtube.com/shorts/iARC1DejKHo?feature=share" 
+      />
+      
       {userTypeDisplay && (
         <div style={{
-          position: 'fixed',
-          top: '20px',
-          right: '20px',
-          background: 'rgba(255, 255, 255, 0.95)',
-          padding: '0.75rem 1rem',
-          borderRadius: '2rem',
-          boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
-          zIndex: 1000,
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.5rem',
-          fontSize: '0.9rem',
-          fontWeight: 500,
-          color: '#2c3e50',
-          backdropFilter: 'blur(10px)'
+          background: 'rgba(111, 66, 193, 0.05)',
+          borderBottom: '1px solid rgba(111, 66, 193, 0.1)',
+          padding: '12px 0'
         }}>
-          <i className={userTypeDisplay.icon} style={{ color: '#6f42c1' }}></i>
-          {userTypeDisplay.label}
-          <button 
-            onClick={goBackToSelection}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#6c757d',
-              cursor: 'pointer',
-              marginLeft: '0.5rem',
-              fontSize: '0.8rem'
-            }}
-            title="Changer de type d'utilisateur"
-          >
-            <i className="fas fa-edit"></i>
-          </button>
+          <div style={{
+            maxWidth: '700px',
+            margin: '0 auto',
+            padding: '0 20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px'
+            }}>
+              <i className={userTypeDisplay.icon} style={{color: '#6f42c1', fontSize: '18px'}}></i>
+              <div>
+                <span style={{
+                  fontWeight: 600,
+                  color: '#333',
+                  fontSize: '16px'
+                }}>{userTypeDisplay.label}</span>
+                <span style={{
+                  color: '#666',
+                  marginLeft: '8px',
+                  fontSize: '14px'
+                }}>• Rabat - Casablanca</span>
+              </div>
+            </div>
+            <button 
+              onClick={goBackToSelection}
+              style={{
+                background: 'transparent',
+                border: '1px solid #ccc',
+                color: '#666',
+                padding: '8px 16px',
+                borderRadius: '6px',
+                fontSize: '14px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
+              <i className="fas fa-arrow-left"></i>
+              Changer de profil
+            </button>
+          </div>
         </div>
       )}
 
+      {/* Hero Section */}
       <section className="spectacle-hero">
         <div className="hero-container">
           <div className="hero-left">
             <div className="hero-content">
               <h1 className="hero-title">Tara sur la Lune</h1>
-              <p className="hero-subtitle">Une aventure spatiale extraordinaire avec Tara et ses amis</p>
+              <p className="hero-subtitle">Une aventure spatiale captivante avec Tara qui découvre les mystères de la lune</p>
               <div className="info-pills">
                 <span className="info-pill">
-                  <i className="fas fa-clock"></i>55 minutes
+                  <i className="fas fa-clock"></i>45 minutes
                 </span>
                 <span className="info-pill">
-                  <i className="fas fa-users"></i>1 comédien
+                  <i className="fas fa-users"></i>4 acteurs
                 </span>
+                {/* Debug conditional rendering */}
+                {/* Show study levels only for private schools */}
+                {userType === 'professional' && professionalType === 'scolaire-privee' && (
+                  <span className="info-pill">
+                    <i className="fas fa-child"></i>Maternelle, Primaire
+                  </span>
+                )}
+                {/* Show age ranges for public schools, associations, and particulier */}
+                {(userType === 'particulier' || 
+                  (userType === 'professional' && professionalType === 'scolaire-publique') ||
+                  (userType === 'professional' && professionalType === 'association')) && (
+                  <span className="info-pill">
+                    <i className="fas fa-child"></i>5 ans et +
+                  </span>
+                )}
                 <span className="info-pill">
-                  <i className="fas fa-child"></i>
-                  {userType === 'professional' && professionalType === 'scolaire-privee' ? 'Maternelles, Primaires' : '5 ans et +'}
-                </span>
-                <span className="info-pill">
-                  <i className="fas fa-theater-masks"></i>Théâtre avec projection
+                  <i className="fas fa-theater-masks"></i>Aventure spatiale
                 </span>
               </div>
-              <button className="btn-primary" onClick={handleReservation}>
-                <i className="fas fa-ticket-alt"></i>
-                {user ? 'Réserver maintenant' : 'Se connecter pour réserver'}
-              </button>
+              <div className="hero-buttons">
+                <button className="btn-primary" onClick={handleReservation}>
+                  <i className="fas fa-ticket-alt"></i>
+                  {user ? 'Réserver Maintenant' : 'Se connecter pour réserver'}
+                </button>
+              </div>
             </div>
           </div>
           
           <div className="hero-right">
-            <div className="vintage-tv-container">
+            <div className="vintage-tv-container" style={{
+              position: 'relative',
+              maxWidth: '750px',
+              margin: '0 auto'
+            }}>
               <div className="tv-frame">
                 <div className="tv-screen">
                   <img 
-                    src="/src/assets/tara new poster@4x.png" 
+                    src="https://edjs.art/assets/edjs%20img/Tara-sur-la-lune-Affiche.webp" 
                     alt="Tara sur la Lune Affiche" 
                     style={{
                       width: '100%', 
-                      height: '100%', 
-                      objectFit: 'cover', 
-                      borderRadius: '10px'
+                      height: 'auto', 
+                      borderRadius: '10px', 
+                      display: 'block'
                     }}
                   />
                   <div 
                     onClick={() => setIsVideoOpen(true)}
                     style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      background: 'rgba(0,0,0,0.3)',
-                      cursor: 'pointer',
+                      position: 'absolute', 
+                      top: 0, 
+                      left: 0, 
+                      right: 0, 
+                      bottom: 0, 
+                      display: 'flex', 
+                      justifyContent: 'center', 
+                      alignItems: 'center', 
+                      background: 'rgba(0,0,0,0.3)', 
+                      cursor: 'pointer', 
                       transition: 'all 0.3s ease'
                     }}
                   >
                     <div style={{
-                      background: 'rgba(255,255,255,0.9)',
-                      borderRadius: '50%',
-                      width: '80px',
-                      height: '80px',
-                      display: 'flex',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      fontSize: '2rem',
-                      color: '#333',
-                      boxShadow: '0 4px 15px rgba(0,0,0,0.3)',
+                      background: 'rgba(255,255,255,0.9)', 
+                      borderRadius: '50%', 
+                      width: '80px', 
+                      height: '80px', 
+                      display: 'flex', 
+                      justifyContent: 'center', 
+                      alignItems: 'center', 
+                      fontSize: '2rem', 
+                      color: '#333', 
+                      boxShadow: '0 4px 15px rgba(0,0,0,0.3)', 
                       transition: 'all 0.3s ease'
                     }}>
-                      <i className="fas fa-play" style={{ marginLeft: '4px' }}></i>
+                      <i className="fas fa-play" style={{marginLeft: '4px'}}></i>
                     </div>
                   </div>
                 </div>
                 <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  marginTop: '20px',
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'center', 
+                  marginTop: '20px', 
                   padding: '0 20px'
                 }}>
                   <div style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '50%',
-                    background: 'linear-gradient(145deg, #C0C0C0, #808080)',
+                    width: '40px', 
+                    height: '40px', 
+                    borderRadius: '50%', 
+                    background: 'linear-gradient(145deg, #C0C0C0, #808080)', 
                     boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.3), inset 0 -2px 4px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.2)'
                   }}></div>
                   <div style={{
-                    color: '#FFD700',
-                    fontWeight: 'bold',
-                    fontSize: '1.2rem',
-                    textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+                    color: '#FFD700', 
+                    fontWeight: 'bold', 
+                    fontSize: '1.2rem', 
+                    textShadow: '2px 2px 4px rgba(0,0,0,0.5)', 
                     letterSpacing: '2px'
                   }}>EDJS</div>
                   <div style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '50%',
-                    background: 'linear-gradient(145deg, #C0C0C0, #808080)',
+                    width: '40px', 
+                    height: '40px', 
+                    borderRadius: '50%', 
+                    background: 'linear-gradient(145deg, #C0C0C0, #808080)', 
                     boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.3), inset 0 -2px 4px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.2)'
                   }}></div>
                 </div>
@@ -474,22 +556,25 @@ export default function SpectacleTaraSurLaLune() {
         </div>
       </section>
 
+      {/* Main Content */}
       <section className="content-section">
         <div className="container">
           <div className="row">
             <div className="col-lg-8">
+              {/* Story & Synopsis Card */}
               <div className="content-card">
                 <h2 className="card-title">
                   <i className="fas fa-book-open"></i>
                   Synopsis
                 </h2>
-                <p>Tara, une petite fille curieuse et aventureuse, rêve d'explorer l'espace et de découvrir les mystères de la lune. Accompagnée de ses fidèles amis, elle embarque dans une aventure extraordinaire qui la mènera bien au-delà de ce qu'elle avait imaginé.</p>
+                <p>Rejoignez Tara dans une aventure extraordinaire qui l'emmène sur la lune ! Cette histoire captivante mélange science, imagination et émerveillement pour créer un spectacle unique qui fascine petits et grands.</p>
                 
-                <p>Cette histoire captivante nous emmène dans un voyage spatial plein de surprises, où Tara découvre que les plus grandes aventures commencent souvent par un simple rêve. Entre science-fiction et réalité, ce spectacle mélange habilement l'imaginaire et les connaissances scientifiques pour créer une expérience unique.</p>
+                <p>Tara, une jeune exploratrice curieuse, découvre un moyen magique de voyager jusqu'à la lune. Là-haut, elle rencontre des créatures lunaires extraordinaires et découvre les secrets cachés de notre satellite naturel.</p>
                 
-                <p>À travers les péripéties de Tara, les jeunes spectateurs découvriront l'importance de la persévérance, de l'amitié et du courage face à l'inconnu. Un spectacle qui inspire et fait rêver toute la famille.</p>
+                <p>À travers cette aventure spatiale, Tara apprend l'importance du courage, de la curiosité et de l'amitié. Un spectacle visuel et interactif qui éveille l'imagination et inspire les jeunes à rêver grand.</p>
               </div>
 
+              {/* Themes Card */}
               <div className="content-card">
                 <h2 className="card-title">
                   <i className="fas fa-lightbulb"></i>
@@ -499,186 +584,304 @@ export default function SpectacleTaraSurLaLune() {
                   <div className="col-md-6">
                     <div className="info-item">
                       <i className="fas fa-rocket"></i>
-                      <span>L'exploration spatiale</span>
+                      <span>L'exploration et la découverte</span>
                     </div>
                     <div className="info-item">
                       <i className="fas fa-heart"></i>
-                      <span>L'amitié et la solidarité</span>
+                      <span>Le courage et la persévérance</span>
                     </div>
                     <div className="info-item">
-                      <i className="fas fa-brain"></i>
-                      <span>La curiosité scientifique</span>
+                      <i className="fas fa-users"></i>
+                      <span>L'amitié et l'entraide</span>
                     </div>
                   </div>
                   <div className="col-md-6">
                     <div className="info-item">
+                      <i className="fas fa-brain"></i>
+                      <span>La curiosité scientifique</span>
+                    </div>
+                    <div className="info-item">
                       <i className="fas fa-star"></i>
-                      <span>Les rêves et l'imagination</span>
+                      <span>L'imagination et les rêves</span>
                     </div>
                     <div className="info-item">
                       <i className="fas fa-globe"></i>
-                      <span>La découverte du monde</span>
-                    </div>
-                    <div className="info-item">
-                      <i className="fas fa-users"></i>
-                      <span>Le travail d'équipe</span>
+                      <span>La protection de l'environnement</span>
                     </div>
                   </div>
                 </div>
               </div>
 
+              {/* Reviews Section */}
               <div className="content-card">
                 <h2 className="card-title">
                   <i className="fas fa-star"></i>
-                  Avis des Spectateurs
+                  Avis et commentaires
                 </h2>
-                <div style={{marginTop: '1.5rem'}}>
-                  <div style={{background: 'var(--bg-light)', padding: '1.5rem', borderRadius: '0.75rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem'}}>
-                      <div style={{fontWeight: 600, color: 'var(--text-dark)', fontSize: '0.9rem'}}>Sarah M. - École Primaire</div>
-                      <div style={{color: '#ffc107'}}>
+                
+                {/* Existing Reviews */}
+                <div className="reviews-list" style={{marginBottom: '2rem'}}>
+                  <div className="review-item" style={{padding: '1rem', backgroundColor: '#f8f9fa', borderRadius: '8px', marginBottom: '1rem', borderLeft: '4px solid #BDCF00'}}>
+                    <div style={{display: 'flex', alignItems: 'center', marginBottom: '0.5rem'}}>
+                      <div className="stars" style={{color: '#BDCF00', marginRight: '0.5rem'}}>
                         <i className="fas fa-star"></i>
                         <i className="fas fa-star"></i>
                         <i className="fas fa-star"></i>
                         <i className="fas fa-star"></i>
                         <i className="fas fa-star"></i>
                       </div>
+                      <strong style={{color: '#333'}}>Sarah M.</strong>
+                      <span style={{color: '#666', marginLeft: '0.5rem', fontSize: '0.9rem'}}>Parent</span>
                     </div>
-                    <p style={{color: 'var(--text-light)', fontStyle: 'italic', lineHeight: 1.6, margin: 0}}>"Un spectacle magnifique qui a captivé mes élèves ! L'histoire de Tara les a transportés dans l'espace et leur a donné envie d'en apprendre plus sur l'astronomie."</p>
+                    <p style={{color: '#555', margin: 0}}>"Une aventure spatiale magnifique ! Ma fille de 6 ans était captivée du début à la fin. Les décors et les costumes sont superbes."</p>
                   </div>
-                  <div style={{background: 'var(--bg-light)', padding: '1.5rem', borderRadius: '0.75rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem'}}>
-                      <div style={{fontWeight: 600, color: 'var(--text-dark)', fontSize: '0.9rem'}}>Ahmed K. - Parent</div>
-                      <div style={{color: '#ffc107'}}>
+                  
+                  <div className="review-item" style={{padding: '1rem', backgroundColor: '#f8f9fa', borderRadius: '8px', marginBottom: '1rem', borderLeft: '4px solid #BDCF00'}}>
+                    <div style={{display: 'flex', alignItems: 'center', marginBottom: '0.5rem'}}>
+                      <div className="stars" style={{color: '#BDCF00', marginRight: '0.5rem'}}>
                         <i className="fas fa-star"></i>
                         <i className="fas fa-star"></i>
                         <i className="fas fa-star"></i>
                         <i className="fas fa-star"></i>
-                        <i className="fas fa-star"></i>
+                        <i className="far fa-star"></i>
                       </div>
+                      <strong style={{color: '#333'}}>Marc L.</strong>
+                      <span style={{color: '#666', marginLeft: '0.5rem', fontSize: '0.9rem'}}>École Primaire</span>
                     </div>
-                    <p style={{color: 'var(--text-light)', fontStyle: 'italic', lineHeight: 1.6, margin: 0}}>"Ma fille de 6 ans était émerveillée ! Elle n'arrête pas de parler de Tara et de ses aventures sur la Lune. Un spectacle éducatif et divertissant."</p>
+                    <p style={{color: '#555', margin: 0}}>"Nos élèves ont été transportés sur la lune avec Tara ! Un spectacle éducatif et divertissant qui stimule l'imagination."</p>
                   </div>
                 </div>
                 
-                <div style={{marginTop: '2rem', padding: '1.5rem', background: 'var(--bg-light)', borderRadius: '0.75rem'}}>
-                  <h3 style={{color: 'var(--text-dark)', fontSize: '1.2rem', fontWeight: 600, marginBottom: '1rem'}}>Laissez votre avis</h3>
-                  <form>
-                    <div style={{marginBottom: '1rem'}}>
-                      <label style={{display: 'block', marginBottom: '0.5rem', fontWeight: 500, color: 'var(--text-dark)'}}>Votre nom</label>
-                      <input type="text" style={{width: '100%', padding: '0.75rem', border: '1px solid var(--border-light)', borderRadius: '0.5rem', fontFamily: 'Raleway, sans-serif'}} placeholder="Votre nom" required />
+                {/* Review Submission Form */}
+                <form onSubmit={handleReviewSubmit} className="review-form" style={{backgroundColor: '#fff', padding: '1.5rem', border: '2px solid #BDCF00', borderRadius: '8px'}}>
+                  <h3 style={{color: '#333', marginBottom: '1rem', fontSize: '1.2rem'}}>Laissez votre avis</h3>
+                  
+                  <div className="form-group" style={{marginBottom: '1rem'}}>
+                    <label style={{display: 'block', marginBottom: '0.5rem', color: '#333', fontWeight: 500}}>Votre nom *</label>
+                    <input 
+                      type="text" 
+                      value={reviewForm.name}
+                      onChange={(e) => handleReviewInputChange('name', e.target.value)}
+                      placeholder="Entrez votre nom"
+                      required
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem',
+                        border: '1px solid #ddd',
+                        borderRadius: '4px',
+                        fontSize: '1rem'
+                      }}
+                    />
+                  </div>
+                  
+                  <div className="form-group" style={{marginBottom: '1rem'}}>
+                    <label style={{display: 'block', marginBottom: '0.5rem', color: '#333', fontWeight: 500}}>Organisation (optionnel)</label>
+                    <input 
+                      type="text" 
+                      value={reviewForm.organization}
+                      onChange={(e) => handleReviewInputChange('organization', e.target.value)}
+                      placeholder="École, association, etc."
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem',
+                        border: '1px solid #ddd',
+                        borderRadius: '4px',
+                        fontSize: '1rem'
+                      }}
+                    />
+                  </div>
+                  
+                  <div className="form-group" style={{marginBottom: '1rem'}}>
+                    <label style={{display: 'block', marginBottom: '0.5rem', color: '#333', fontWeight: 500}}>Note *</label>
+                    <div className="star-rating" style={{display: 'flex', gap: '0.25rem', marginBottom: '0.5rem'}}>
+                      {[1, 2, 3, 4, 5].map(star => (
+                        <i 
+                          key={star}
+                          className={reviewForm.rating >= star ? 'fas fa-star' : 'far fa-star'}
+                          onClick={() => handleReviewInputChange('rating', star)}
+                          style={{
+                            fontSize: '1.5rem',
+                            color: '#BDCF00',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s'
+                          }}
+                        ></i>
+                      ))}
                     </div>
-                    <div style={{marginBottom: '1rem'}}>
-                      <label style={{display: 'block', marginBottom: '0.5rem', fontWeight: 500, color: 'var(--text-dark)'}}>Note</label>
-                      <div style={{display: 'flex', gap: '0.25rem', marginBottom: '0.5rem'}}>
-                        <i className="fas fa-star" style={{color: '#ddd', cursor: 'pointer', fontSize: '1.5rem', transition: 'color 0.2s'}}></i>
-                        <i className="fas fa-star" style={{color: '#ddd', cursor: 'pointer', fontSize: '1.5rem', transition: 'color 0.2s'}}></i>
-                        <i className="fas fa-star" style={{color: '#ddd', cursor: 'pointer', fontSize: '1.5rem', transition: 'color 0.2s'}}></i>
-                        <i className="fas fa-star" style={{color: '#ddd', cursor: 'pointer', fontSize: '1.5rem', transition: 'color 0.2s'}}></i>
-                        <i className="fas fa-star" style={{color: '#ddd', cursor: 'pointer', fontSize: '1.5rem', transition: 'color 0.2s'}}></i>
-                      </div>
-                    </div>
-                    <div style={{marginBottom: '1rem'}}>
-                      <label style={{display: 'block', marginBottom: '0.5rem', fontWeight: 500, color: 'var(--text-dark)'}}>Votre avis</label>
-                      <textarea rows={4} style={{width: '100%', padding: '0.75rem', border: '1px solid var(--border-light)', borderRadius: '0.5rem', fontFamily: 'Raleway, sans-serif', resize: 'vertical'}} placeholder="Partagez votre expérience..." required></textarea>
-                    </div>
-                    <button type="submit" style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.75rem 1.5rem', borderRadius: '0.5rem', fontWeight: 600, cursor: 'pointer', transition: 'all 0.3s ease'}}>
-                      <i className="fas fa-paper-plane" style={{marginRight: '0.5rem'}}></i>
-                      Publier l'avis
-                    </button>
-                  </form>
-                </div>
+                  </div>
+                  
+                  <div className="form-group" style={{marginBottom: '1.5rem'}}>
+                    <label style={{display: 'block', marginBottom: '0.5rem', color: '#333', fontWeight: 500}}>Votre commentaire *</label>
+                    <textarea 
+                      value={reviewForm.comment}
+                      onChange={(e) => handleReviewInputChange('comment', e.target.value)}
+                      placeholder="Partagez votre expérience du spectacle..."
+                      rows={4}
+                      required
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem',
+                        border: '1px solid #ddd',
+                        borderRadius: '4px',
+                        fontSize: '1rem',
+                        resize: 'vertical'
+                      }}
+                    ></textarea>
+                  </div>
+                  
+                  <button 
+                    type="submit"
+                    disabled={isSubmitting}
+                    style={{
+                      backgroundColor: isSubmitting ? '#ccc' : '#BDCF00',
+                      color: 'white',
+                      border: 'none',
+                      padding: '0.75rem 2rem',
+                      borderRadius: '4px',
+                      fontSize: '1rem',
+                      fontWeight: 600,
+                      cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                      transition: 'all 0.3s'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isSubmitting) (e.target as HTMLElement).style.backgroundColor = '#a8b800'
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isSubmitting) (e.target as HTMLElement).style.backgroundColor = '#BDCF00'
+                    }}
+                  >
+                    {isSubmitting ? 'Envoi en cours...' : 'Publier mon avis'}
+                  </button>
+                </form>
               </div>
             </div>
 
             <div className="col-lg-4">
+              {/* Available Sessions Card */}
               <div className="sidebar-card">
                 <h3>
                   <i className="fas fa-calendar-alt"></i>
                   Séances Disponibles
                 </h3>
-                <div style={{marginBottom: '1rem'}}>
-                  <h4 style={{color: '#6f42c1', fontWeight: 'bold', marginBottom: '1rem'}}>TARA SUR LA LUNE</h4>
-                  
-                  <h5 style={{color: '#333', fontWeight: 600, marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>CASABLANCA</h5>
-                  <h6 style={{color: '#666', fontWeight: 500, marginBottom: '0.5rem', fontFamily: 'Raleway, sans-serif'}}>COMPLEXE EL HASSANI</h6>
-                  <div style={{marginBottom: '1rem'}}>
-                    {professionalType === 'scolaire-privee' && (
-                      <div style={{background: '#f8f9fa', padding: '0.5rem', marginBottom: '0.25rem', borderLeft: '3px solid #6f42c1', fontSize: '0.85rem'}}>
-                        - Date: LUNDI 13 OCTOBRE, Heure: 14H30, Séance: Scolaire privée
-                      </div>
-                    )}
+                
+                {/* Tout public sessions - show for particulier */}
+                {(userType === 'particulier' || !userType) && (
+                  <>
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Samedi 11 Octobre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>15H00 - Rabat, Théâtre Bahnini</div>
+                      <button 
+                        onClick={handleReservation}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
                     
-                    {professionalType === 'scolaire-publique' && (
-                      <div style={{background: '#f8f9fa', padding: '0.5rem', marginBottom: '0.25rem', borderLeft: '3px solid #6f42c1', fontSize: '0.85rem'}}>
-                        - Date: MARDI 14 OCTOBRE, Heure: 09H30, Séance: Scolaire publique
-                      </div>
-                    )}
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Samedi 18 Octobre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>15H00 - Casablanca, Complexe El Hassani</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/tara-sur-la-lune?session=casablanca-oct-18-15h00'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
+                  </>
+                )}
+                
+                {/* Private school sessions - show for scolaire-privee */}
+                {professionalType === 'scolaire-privee' && (
+                  <>
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 9 Octobre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09H30 - Rabat, Théâtre Bahnini</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/tara-sur-la-lune?session=rabat-oct-9-09h30'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
                     
-                    {professionalType === 'association' && (
-                      <div style={{background: '#f8f9fa', padding: '0.5rem', marginBottom: '0.25rem', borderLeft: '3px solid #6f42c1', fontSize: '0.85rem'}}>
-                        - Date: MARDI 14 OCTOBRE, Heure: 14H30, Séance: Associations
-                      </div>
-                    )}
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Lundi 13 Octobre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Casablanca, Complexe El Hassani</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/tara-sur-la-lune?session=casablanca-oct-13-14h30'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
+                  </>
+                )}
+                
+                {/* Public school sessions - show for scolaire-publique */}
+                {professionalType === 'scolaire-publique' && (
+                  <>
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 9 Octobre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Rabat, Théâtre Bahnini</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/tara-sur-la-lune?session=rabat-oct-9-14h30'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
                     
-                    {(userType === 'particulier' || !userType) && (
-                      <div style={{background: '#f8f9fa', padding: '0.5rem', marginBottom: '0.25rem', borderLeft: '3px solid #6f42c1', fontSize: '0.85rem'}}>
-                        - Date: SAMEDI 18 OCTOBRE, Heure: 15H00, Séance: Tout public
-                      </div>
-                    )}
-                  </div>
-
-                  <h5 style={{color: '#333', fontWeight: 600, marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>RABAT</h5>
-                  <h6 style={{color: '#666', fontWeight: 500, marginBottom: '0.5rem', fontFamily: 'Raleway, sans-serif'}}>THEATRE BAHNINI</h6>
-                  <div style={{marginBottom: '1rem'}}>
-                    {professionalType === 'scolaire-privee' && (
-                      <div style={{background: '#f8f9fa', padding: '0.5rem', marginBottom: '0.25rem', borderLeft: '3px solid #6f42c1', fontSize: '0.85rem'}}>
-                        - Date: JEUDI 9 OCTOBRE, Heure: 09H30, Séance: Scolaire privée
-                      </div>
-                    )}
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mardi 14 Octobre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09H30 - Casablanca, Complexe El Hassani</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/tara-sur-la-lune?session=casablanca-oct-14-09h30'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
+                  </>
+                )}
+                
+                {/* Association sessions - show for association */}
+                {professionalType === 'association' && (
+                  <>
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Vendredi 10 Octobre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Rabat, Théâtre Bahnini</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/tara-sur-la-lune?session=rabat-oct-10-14h30'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
                     
-                    {professionalType === 'scolaire-publique' && (
-                      <div style={{background: '#f8f9fa', padding: '0.5rem', marginBottom: '0.25rem', borderLeft: '3px solid #6f42c1', fontSize: '0.85rem'}}>
-                        - Date: VENDREDI 10 OCTOBRE, Heure: 14H30, Séance: Scolaire publique
-                      </div>
-                    )}
-                    
-                    {professionalType === 'association' && (
-                      <div style={{background: '#f8f9fa', padding: '0.5rem', marginBottom: '0.25rem', borderLeft: '3px solid #6f42c1', fontSize: '0.85rem'}}>
-                        - Date: VENDREDI 10 OCTOBRE, Heure: 09H30, Séance: Associations
-                      </div>
-                    )}
-                    
-                    {(userType === 'particulier' || !userType) && (
-                      <div style={{background: '#f8f9fa', padding: '0.5rem', marginBottom: '0.25rem', borderLeft: '3px solid #6f42c1', fontSize: '0.85rem'}}>
-                        - Date: DIMANCHE 19 OCTOBRE, Heure: 16H00, Séance: Tout public
-                      </div>
-                    )}
-                  </div>
-
-                  <button 
-                    onClick={handleReservation}
-                    style={{
-                      background: '#6f42c1',
-                      color: 'white',
-                      border: 'none',
-                      padding: '0.75rem 1.5rem',
-                      borderRadius: '0.5rem',
-                      fontSize: '1rem',
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                      width: '100%',
-                      marginTop: '1rem',
-                      transition: 'all 0.3s ease',
-                      fontFamily: 'Raleway, sans-serif'
-                    }}
-                  >
-                    <i className="fas fa-ticket-alt" style={{marginRight: '0.5rem'}}></i>
-                    Réserver maintenant
-                  </button>
-                </div>
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mardi 14 Octobre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Casablanca, Complexe El Hassani</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/tara-sur-la-lune?session=casablanca-oct-14-14h30'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
 
+              {/* Booking Info Card */}
               <div className="sidebar-card">
                 <h3>
                   <i className="fas fa-info-circle"></i>
@@ -686,20 +889,27 @@ export default function SpectacleTaraSurLaLune() {
                 </h3>
                 <div className="info-item">
                   <i className="fas fa-clock"></i>
-                  <span>Durée : 55 minutes</span>
+                  <span>Durée : 45 minutes</span>
                 </div>
                 <div className="info-item">
                   <i className="fas fa-users"></i>
-                  <span>Distribution : 1 comédien</span>
+                  <span>Distribution : 4 acteurs</span>
                 </div>
-                <div className="info-item">
-                  <i className="fas fa-theater-masks"></i>
-                  <span>Genre : Théâtre avec projection</span>
-                </div>
-                <div className="info-item">
-                  <i className="fas fa-child"></i>
-                  <span>{userType === 'professional' && professionalType === 'scolaire-privee' ? 'Niveaux scolaires : Maternelle, Primaire' : 'Âge recommandé : 5 ans et +'}</span>
-                </div>
+                {/* Age recommendation - hidden for private schools */}
+                {professionalType !== 'scolaire-privee' && (
+                  <div className="info-item">
+                    <i className="fas fa-child"></i>
+                    <span>Âge recommandé : 5 ans et +</span>
+                  </div>
+                )}
+                
+                {/* Study level - visible only for private schools */}
+                {professionalType === 'scolaire-privee' && (
+                  <div className="info-item">
+                    <i className="fas fa-graduation-cap"></i>
+                    <span>Niveaux scolaires : Maternelle, Primaire</span>
+                  </div>
+                )}
                 <div className="info-item">
                   <i className="fas fa-calendar"></i>
                   <span>Période : Octobre 2025</span>
@@ -708,8 +918,94 @@ export default function SpectacleTaraSurLaLune() {
                   <i className="fas fa-map-marker-alt"></i>
                   <span>Lieux : Casablanca & Rabat</span>
                 </div>
+                <div className="info-item">
+                  <i className="fas fa-rocket"></i>
+                  <span>Genre : Aventure spatiale</span>
+                </div>
               </div>
 
+              {/* Reservation Card */}
+              <div className="sidebar-card">
+                <h3>
+                  <i className="fas fa-ticket-alt"></i>
+                  Réservation
+                </h3>
+                <p style={{color: 'var(--text-light)', marginBottom: '1.5rem'}}>Réservez dès maintenant vos places pour cette aventure spatiale avec Tara sur la Lune.</p>
+                <button className="btn-primary w-100" onClick={handleReservation} style={{width: '100%'}}>
+                  <i className="fas fa-ticket-alt"></i>
+                  {user ? 'Réserver Maintenant' : 'Se connecter pour réserver'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Next Spectacle Card Section */}
+      <section style={{padding: '4rem 0', background: '#f8f9fa'}}>
+        <div className="container">
+          <div className="row justify-content-center">
+            <div className="col-lg-8">
+              <div className="content-card" style={{textAlign: 'center'}}>
+                <h2 className="card-title" style={{marginBottom: '2rem'}}>
+                  <i className="fas fa-forward"></i>
+                  Prochain Spectacle
+                </h2>
+                <div className="row align-items-center">
+                  <div className="col-md-4">
+                    <img 
+                      src="/src/assets/spectacles affiches/l'eau la.png" 
+                      alt="L'eau Là" 
+                      style={{
+                        width: '100%',
+                        height: 'auto',
+                        borderRadius: '12px',
+                        boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
+                      }}
+                    />
+                  </div>
+                  <div className="col-md-8" style={{textAlign: 'left', paddingLeft: '2rem'}}>
+                    <h3 style={{color: '#BDCF00', fontSize: '2rem', marginBottom: '1rem'}}>L'eau Là</h3>
+                    <p style={{color: '#666', fontSize: '1.1rem', lineHeight: '1.6', marginBottom: '1.5rem'}}>
+                      Un spectacle poétique et musical qui explore la relation entre l'homme et l'eau, 
+                      élément vital et source d'inspiration. Une aventure sensorielle unique.
+                    </p>
+                    <div style={{display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap'}}>
+                      <span style={{background: '#e3f2fd', color: '#1976d2', padding: '0.5rem 1rem', borderRadius: '20px', fontSize: '0.9rem'}}>
+                        <i className="fas fa-clock"></i> 50 min
+                      </span>
+                      <span style={{background: '#f3e5f5', color: '#7b1fa2', padding: '0.5rem 1rem', borderRadius: '20px', fontSize: '0.9rem'}}>
+                        <i className="fas fa-users"></i> 3 comédiens
+                      </span>
+                      <span style={{background: '#e8f5e8', color: '#388e3c', padding: '0.5rem 1rem', borderRadius: '20px', fontSize: '0.9rem'}}>
+                        <i className="fas fa-child"></i> 6 ans et +
+                      </span>
+                    </div>
+                    <button 
+                      className="btn-primary"
+                      onClick={() => window.location.href = '/spectacle/leaula'}
+                      style={{
+                        padding: '0.75rem 2rem', 
+                        fontSize: '1rem',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.5rem'
+                      }}
+                      onMouseEnter={(e) => {
+                        (e.target as HTMLElement).style.background = '#a8b800';
+                        (e.target as HTMLElement).style.transform = 'translateY(-2px)';
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.target as HTMLElement).style.background = '#BDCF00';
+                        (e.target as HTMLElement).style.transform = 'translateY(0)';
+                      }}
+                    >
+                      <i className="fas fa-eye"></i>
+                      Découvrir L'eau Là
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -733,11 +1029,11 @@ export default function SpectacleTaraSurLaLune() {
                 Chaque élève a l'opportunité de découvrir et d'explorer la richesse des arts de la scène à travers la danse, le théâtre et la musique, qui sont au cœur de notre programme.
               </p>
               <div style={{display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '10px', marginBottom: '10px'}}>
-                <i className="fas fa-phone" style={{color: '#6f42c1'}}></i>
+                <i className="fas fa-phone" style={{color: '#BDCF00'}}></i>
                 <span style={{color: 'white'}}>+212 6 61 52 59 02</span>
               </div>
               <div style={{display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '10px'}}>
-                <i className="fas fa-envelope" style={{color: '#6f42c1'}}></i>
+                <i className="fas fa-envelope" style={{color: '#BDCF00'}}></i>
                 <span style={{color: 'white'}}>inscription@edjs.ma</span>
               </div>
             </div>
@@ -748,28 +1044,28 @@ export default function SpectacleTaraSurLaLune() {
               <ul style={{listStyle: 'none', padding: 0, margin: 0}}>
                 <li style={{marginBottom: '8px'}}>
                   <a href="/" style={{color: 'white', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.3s'}} 
-                     onMouseEnter={(e) => (e.target as HTMLElement).style.color = '#6f42c1'}
+                     onMouseEnter={(e) => (e.target as HTMLElement).style.color = '#BDCF00'}
                      onMouseLeave={(e) => (e.target as HTMLElement).style.color = 'white'}>
                     Accueil
                   </a>
                 </li>
                 <li style={{marginBottom: '8px'}}>
                   <a href="/spectacles" style={{color: 'white', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.3s'}}
-                     onMouseEnter={(e) => (e.target as HTMLElement).style.color = '#6f42c1'}
+                     onMouseEnter={(e) => (e.target as HTMLElement).style.color = '#BDCF00'}
                      onMouseLeave={(e) => (e.target as HTMLElement).style.color = 'white'}>
                     Spectacles
                   </a>
                 </li>
                 <li style={{marginBottom: '8px'}}>
                   <a href="https://edjs.art/gallery.html" style={{color: 'white', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.3s'}}
-                     onMouseEnter={(e) => (e.target as HTMLElement).style.color = '#6f42c1'}
+                     onMouseEnter={(e) => (e.target as HTMLElement).style.color = '#BDCF00'}
                      onMouseLeave={(e) => (e.target as HTMLElement).style.color = 'white'}>
                     Galerie
                   </a>
                 </li>
                 <li style={{marginBottom: '8px'}}>
                   <a href="https://edjs.art/contact.html" style={{color: 'white', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.3s'}}
-                     onMouseEnter={(e) => (e.target as HTMLElement).style.color = '#6f42c1'}
+                     onMouseEnter={(e) => (e.target as HTMLElement).style.color = '#BDCF00'}
                      onMouseLeave={(e) => (e.target as HTMLElement).style.color = 'white'}>
                     Contact
                   </a>
@@ -781,16 +1077,16 @@ export default function SpectacleTaraSurLaLune() {
           {/* Footer Bottom */}
           <div style={{borderTop: '1px solid #333', paddingTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px'}}>
             <p style={{color: 'white', margin: 0, fontSize: '0.85rem'}}>
-              Copyright © {new Date().getFullYear()} <a href="/" style={{color: '#6f42c1', textDecoration: 'none'}}>L'École des jeunes spectateurs</a>. Tous droits réservés.
+              Copyright © {new Date().getFullYear()} <a href="/" style={{color: '#BDCF00', textDecoration: 'none'}}>L'École des jeunes spectateurs</a>. Tous droits réservés.
             </p>
             <div style={{display: 'flex', gap: '20px'}}>
               <a href="https://edjs.art/contact.html" style={{color: 'white', textDecoration: 'none', fontSize: '0.85rem'}}
-                 onMouseEnter={(e) => (e.target as HTMLElement).style.color = '#6f42c1'}
+                 onMouseEnter={(e) => (e.target as HTMLElement).style.color = '#BDCF00'}
                  onMouseLeave={(e) => (e.target as HTMLElement).style.color = 'white'}>
                 Conditions Générales
               </a>
               <a href="https://edjs.art/contact.html" style={{color: 'white', textDecoration: 'none', fontSize: '0.85rem'}}
-                 onMouseEnter={(e) => (e.target as HTMLElement).style.color = '#6f42c1'}
+                 onMouseEnter={(e) => (e.target as HTMLElement).style.color = '#BDCF00'}
                  onMouseLeave={(e) => (e.target as HTMLElement).style.color = 'white'}>
                 Politique de Confidentialité
               </a>

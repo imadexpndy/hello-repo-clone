@@ -1,15 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import SpectacleFooter from '@/components/SpectacleFooter';
 import VideoPopup from '@/components/VideoPopup';
-import { getUserTypeInfo } from '@/utils/userTypeUtils';
 
 export default function SpectacleMirathAtfal() {
   const { user } = useAuth();
   const [isVideoOpen, setIsVideoOpen] = useState(false);
-  const [userTypeInfo, setUserTypeInfo] = useState(getUserTypeInfo());
+  const [userType, setUserType] = useState<string>('');
+  const [professionalType, setProfessionalType] = useState<string>('');
+  
+  // Review form state
+  const [reviewForm, setReviewForm] = useState({
+    name: '',
+    organization: '',
+    rating: 0,
+    comment: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
+    // Load external stylesheets
     const loadStylesheet = (href: string) => {
       if (!document.querySelector(`link[href="${href}"]`)) {
         const link = document.createElement('link');
@@ -22,68 +31,96 @@ export default function SpectacleMirathAtfal() {
     loadStylesheet('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Raleway:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Kalam:wght@300;400;700&display=swap');
     loadStylesheet('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
     loadStylesheet('https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css');
+
+    // Check user type on component mount and set up listeners
+    const checkUserType = () => {
+      const storedUserType = sessionStorage.getItem('userType') || localStorage.getItem('userType');
+      const storedProfessionalType = sessionStorage.getItem('professionalType') || localStorage.getItem('professionalType');
+      
+      console.log('Debug - User Type:', storedUserType);
+      console.log('Debug - Professional Type:', storedProfessionalType);
+      
+      setUserType(storedUserType || '');
+      setProfessionalType(storedProfessionalType || '');
+    };
+
+    // Initial check
+    checkUserType();
+    
+    // Set up event listeners
+    const handleStorageChange = () => checkUserType();
+    const handleUserTypeChange = () => checkUserType();
+    
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('userTypeChanged', handleUserTypeChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('userTypeChanged', handleUserTypeChange);
+    };
   }, []);
 
   const handleReservation = () => {
     if (user) {
-      window.location.href = '/reservation/mirath-atfal';
+      // Pass user type as parameter to show only relevant sessions
+      const userTypeParam = professionalType || userType || '';
+      window.location.href = `/reservation/mirath-atfal?userType=${userTypeParam}`;
     } else {
       const returnUrl = encodeURIComponent(window.location.href);
       window.location.href = `/auth?return_url=${returnUrl}`;
     }
   };
 
-  const handleUserTypeChange = () => {
-    setUserTypeInfo(getUserTypeInfo());
-  };
-
-  useEffect(() => {
-    window.addEventListener('userTypeChanged', handleUserTypeChange);
-    return () => {
-      window.removeEventListener('userTypeChanged', handleUserTypeChange);
-    };
-  }, [user]);
-
-  const sessions = [
-    { date: 'SAMEDI 8 NOVEMBRE', time: '15H00', venue: 'Theatre Zefzaf', city: 'Casablanca', type: 'tout-public', label: 'Tout public' },
-    { date: 'LUNDI 10 NOVEMBRE', time: '9H30', venue: 'Theatre Zefzaf', city: 'Casablanca', type: 'scolaire-privee', label: 'Scolaire privée' },
-    { date: 'LUNDI 10 NOVEMBRE', time: '14H30', venue: 'Theatre Zefzaf', city: 'Casablanca', type: 'scolaire-publique', label: 'Scolaire publique' },
-    { date: 'MARDI 11 NOVEMBRE', time: '14H30', venue: 'Theatre Zefzaf', city: 'Casablanca', type: 'association', label: 'Association' },
-    { date: 'JEUDI 13 NOVEMBRE', time: '09H30', venue: 'Theatre Bahnini', city: 'Rabat', type: 'scolaire-privee', label: 'Scolaire privée' },
-    { date: 'JEUDI 13 NOVEMBRE', time: '14H30', venue: 'Theatre Bahnini', city: 'Rabat', type: 'scolaire-publique', label: 'Scolaire publique' },
-    { date: 'VENDREDI 14 NOVEMBRE', time: '09H30', venue: 'Theatre Bahnini', city: 'Rabat', type: 'association', label: 'Association' },
-    { date: 'VENDREDI 14 NOVEMBRE', time: '14H30', venue: 'Theatre Bahnini', city: 'Rabat', type: 'association', label: 'Association' },
-    { date: 'SAMEDI 15 NOVEMBRE', time: '15H00', venue: 'Theatre Bahnini', city: 'Rabat', type: 'tout-public', label: 'Tout public' }
-  ];
-
-  const getFilteredSessions = () => {
-    const { userType, professionalType } = userTypeInfo;
-    
-    // Debug logging to see what user type is being detected
-    console.log('Current userType:', userType, 'professionalType:', professionalType);
-    
-    if (userType === 'individual') {
-      return sessions.filter(session => session.type === 'tout-public');
-    } else if (userType === 'professional') {
-      if (professionalType === 'private_school') {
-        return sessions.filter(session => session.type === 'scolaire-privee');
-      } else if (professionalType === 'public_school') {
-        return sessions.filter(session => session.type === 'scolaire-publique');
-      } else if (professionalType === 'association') {
-        return sessions.filter(session => session.type === 'association');
-      }
+  const getUserTypeDisplay = () => {
+    if (userType === 'professional' && professionalType) {
+      const typeLabels = {
+        'scolaire-privee': { label: 'École Privée', icon: 'fas fa-graduation-cap' },
+        'scolaire-publique': { label: 'École Publique', icon: 'fas fa-school' },
+        'association': { label: 'Association', icon: 'fas fa-users' }
+      };
+      return typeLabels[professionalType as keyof typeof typeLabels] || { label: professionalType, icon: 'fas fa-building' };
+    } else if (userType === 'particulier') {
+      return { label: 'Particulier', icon: 'fas fa-eye' };
     }
-    
-    // Default: show all sessions if user type is not determined
-    return sessions;
+    return null;
   };
+
+  const goBackToSelection = () => {
+    window.location.href = '/user-type-selection';
+  };
+
+  // Review form handlers
+  const handleReviewInputChange = (field: string, value: string | number) => {
+    setReviewForm(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reviewForm.name || !reviewForm.comment || reviewForm.rating === 0) {
+      alert('Veuillez remplir tous les champs obligatoires.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      alert('Merci pour votre avis ! Il sera publié après modération.');
+      setReviewForm({ name: '', organization: '', rating: 0, comment: '' });
+    } catch (error) {
+      alert('Erreur lors de l\'envoi de votre avis. Veuillez réessayer.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const userTypeDisplay = getUserTypeDisplay();
 
   return (
     <>
       <style>{`
         :root {
-          --primary-color: #e74c3c;
-          --primary-dark: #c0392b;
+          --primary-color: #8E44AD;
           --text-dark: #2c3e50;
           --text-light: #6c757d;
           --bg-light: #f8f9fa;
@@ -106,7 +143,7 @@ export default function SpectacleMirathAtfal() {
           align-items: center;
           overflow: hidden;
           padding: 0;
-          background: url('https://edjs.art/assets/img/Asset 9@4x.png') center/cover, linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+          background: url('https://edjs.art/assets/img/Asset 9@4x.png') center/cover, linear-gradient(135deg, #8E44AD 0%, #9B59B6 100%);
           background-size: cover, cover;
         }
 
@@ -130,28 +167,34 @@ export default function SpectacleMirathAtfal() {
 
         .hero-right {
           flex: 1;
+          position: relative;
           display: flex;
           justify-content: center;
           align-items: center;
-          padding-left: 2rem;
         }
 
         .vintage-tv-container {
           display: flex;
           justify-content: center;
           align-items: center;
+          height: 100%;
+          padding: 2rem;
           width: 100%;
           max-width: 400px;
         }
 
         .tv-frame {
-          background: linear-gradient(145deg, #BDCF00, #D4E157);
+          background: linear-gradient(145deg, #8E44AD, #9B59B6);
           border-radius: 20px;
-          padding: 30px 25px 40px 25px;
-          box-shadow: 0 0 30px rgba(0,0,0,0.3), inset 0 0 20px rgba(0,0,0,0.2), inset 0 2px 5px rgba(255,255,255,0.1);
+          padding: 40px 35px 50px 35px;
+          box-shadow: 
+            0 0 30px rgba(0,0,0,0.3),
+            inset 0 0 20px rgba(0,0,0,0.2),
+            inset 0 2px 5px rgba(255,255,255,0.1);
           position: relative;
-          width: 400px;
-          height: 400px;
+          max-width: 750px;
+          width: 100%;
+          margin: 0 auto;
         }
 
         .tv-screen {
@@ -163,93 +206,7 @@ export default function SpectacleMirathAtfal() {
           box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
           width: 100%;
           height: calc(100% - 60px);
-        }
-
-        .tv-video {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          border-radius: 10px;
-          display: block;
-        }
-
-        .play-button-overlay {
-          position: absolute;
-          top: 15px;
-          left: 15px;
-          right: 15px;
-          bottom: 15px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          background: rgba(0,0,0,0.3);
-          cursor: pointer;
-          transition: all 0.3s ease;
-          border-radius: 10px;
-        }
-
-        .play-button-overlay:hover {
-          background: rgba(0,0,0,0.5);
-        }
-
-        .play-button {
-          background: rgba(255,255,255,0.9);
-          border-radius: 50%;
-          width: 80px;
-          height: 80px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          font-size: 2rem;
-          color: #333;
-          box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-          transition: all 0.3s ease;
-        }
-
-        .play-button:hover {
-          transform: scale(1.1);
-          background: white;
-        }
-
-        .play-button i {
-          margin-left: 4px;
-        }
-
-        .tv-controls {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-top: 20px;
-          padding: 0 20px;
-        }
-
-        .tv-knob {
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          background: linear-gradient(145deg, #C0C0C0, #808080);
-          box-shadow: inset 0 2px 4px rgba(255,255,255,0.3), inset 0 -2px 4px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.2);
-          position: relative;
-        }
-
-        .tv-knob::after {
-          content: '';
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 8px;
-          height: 8px;
-          background: #333;
-          border-radius: 50%;
-        }
-
-        .tv-brand {
-          color: #333;
-          font-weight: bold;
-          font-size: 1.2rem;
-          text-shadow: 0 1px 2px rgba(255,255,255,0.5);
-          font-family: 'Amatic SC', cursive;
+          aspect-ratio: 16/9;
         }
 
         .hero-title {
@@ -266,6 +223,7 @@ export default function SpectacleMirathAtfal() {
           font-size: 1.2rem;
           margin-bottom: 2rem;
           color: rgba(255,255,255,0.9);
+          font-weight: 400;
         }
 
         .info-pills {
@@ -288,163 +246,101 @@ export default function SpectacleMirathAtfal() {
           backdrop-filter: blur(10px);
         }
 
-        .hero-buttons {
-          display: flex;
-          gap: 1rem;
-          margin-top: 2rem;
-        }
-
         .btn-primary {
-          background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+          background: #BDCF00;
           color: white;
           border: none;
           padding: 1rem 2rem;
-          border-radius: 50px;
+          border-radius: 2rem;
           font-weight: 600;
           font-size: 1.1rem;
+          text-decoration: none;
           display: inline-flex;
           align-items: center;
-          gap: 0.5rem;
+          gap: 0.75rem;
           transition: all 0.3s ease;
-          box-shadow: 0 4px 15px rgba(231, 76, 60, 0.3);
-          text-decoration: none;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.1);
           cursor: pointer;
         }
 
         .btn-primary:hover {
           transform: translateY(-2px);
-          box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
+          box-shadow: 0 8px 25px rgba(0,0,0,0.3);
           color: white;
+          background: #a8b800;
         }
 
         .content-section {
-          padding: 5rem 0;
-          background: white;
+          padding: 4rem 0;
+          background: var(--bg-light);
         }
 
         .content-card {
           background: white;
-          border-radius: 20px;
-          padding: 2.5rem;
-          box-shadow: var(--shadow);
+          border-radius: 1rem;
+          padding: 2rem;
           margin-bottom: 2rem;
-          border-left: 5px solid var(--primary-color);
+          box-shadow: var(--shadow);
+          transition: all 0.3s ease;
+          border: 1px solid var(--border-light);
+        }
+
+        .content-card:hover {
+          box-shadow: var(--shadow-hover);
+          transform: translateY(-2px);
         }
 
         .card-title {
-          font-family: 'Amatic SC', cursive;
-          font-size: 2.2rem;
-          font-weight: 700;
-          color: var(--primary-color);
+          color: var(--text-dark);
+          font-size: 1.5rem;
+          font-weight: 600;
           margin-bottom: 1rem;
           display: flex;
           align-items: center;
           gap: 0.5rem;
+          font-family: 'Raleway', sans-serif;
         }
 
-        .card-text {
-          font-size: 1.1rem;
-          line-height: 1.7;
-          color: var(--text-dark);
+        .card-title i {
+          color: var(--primary-color);
+        }
+
+        .sidebar-card {
+          background: white;
+          border-radius: 1rem;
+          padding: 1.5rem;
           margin-bottom: 1.5rem;
+          box-shadow: var(--shadow);
+          border: 1px solid var(--border-light);
+        }
+
+        .sidebar-card h3 {
+          color: var(--text-dark);
+          font-size: 1.25rem;
+          font-weight: 600;
+          margin-bottom: 1rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-family: 'Raleway', sans-serif;
+        }
+
+        .sidebar-card h3 i {
+          color: var(--primary-color);
         }
 
         .info-item {
           display: flex;
           align-items: center;
           gap: 0.75rem;
-          margin-bottom: 1rem;
-          font-size: 1rem;
-          color: var(--text-dark);
+          padding: 0.5rem 0;
+          color: var(--text-light);
+          font-family: 'Raleway', sans-serif;
         }
 
         .info-item i {
           color: var(--primary-color);
           width: 20px;
-          text-align: center;
-        }
-
-        .sidebar-card {
-          background: white;
-          border-radius: 15px;
-          padding: 2rem;
-          box-shadow: var(--shadow);
-          margin-bottom: 2rem;
-          border-top: 4px solid var(--primary-color);
-        }
-
-        .sidebar-card h3 {
-          font-family: 'Amatic SC', cursive;
-          font-size: 2rem;
-          font-weight: 700;
-          color: var(--text-dark);
-          margin-bottom: 1.5rem;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
-
-        .session-card {
-          background: var(--bg-light);
-          border-radius: 10px;
-          padding: 1rem;
-          margin-bottom: 1rem;
-          border-left: 3px solid var(--primary-color);
-        }
-
-        .session-date {
-          font-weight: 600;
-          color: var(--text-dark);
-          margin-bottom: 0.5rem;
-        }
-
-        .session-details {
-          font-size: 0.9rem;
-          color: var(--text-light);
-        }
-
-        .reviews-section {
-          background: var(--bg-light);
-          padding: 4rem 0;
-        }
-
-        .review-card {
-          background: white;
-          border-radius: 15px;
-          padding: 2rem;
-          margin-bottom: 2rem;
-          box-shadow: var(--shadow);
-          border-left: 4px solid var(--primary-color);
-        }
-
-        .review-stars {
-          color: #ffc107;
-          margin-bottom: 1rem;
-        }
-
-        .review-form {
-          background: white;
-          border-radius: 15px;
-          padding: 2rem;
-          box-shadow: var(--shadow);
-        }
-
-        .form-group {
-          margin-bottom: 1.5rem;
-        }
-
-        .form-control {
-          width: 100%;
-          padding: 0.75rem;
-          border: 2px solid var(--border-light);
-          border-radius: 8px;
-          font-size: 1rem;
-          transition: border-color 0.3s ease;
-        }
-
-        .form-control:focus {
-          outline: none;
-          border-color: var(--primary-color);
         }
 
         @media (max-width: 768px) {
@@ -452,16 +348,85 @@ export default function SpectacleMirathAtfal() {
             flex-direction: column;
           }
           
+          .hero-left, .hero-right {
+            flex: none;
+            width: 100%;
+          }
+          
           .hero-left {
-            padding: 3rem 1.5rem 2rem;
-            text-align: center;
+            padding: 2rem 1.5rem;
+          }
+          
+          .hero-right {
+            height: 50vh;
           }
           
           .hero-title {
-            font-size: 3rem;
+            font-size: 2.5rem;
           }
         }
       `}</style>
+
+      <VideoPopup 
+        isOpen={isVideoOpen} 
+        onClose={() => setIsVideoOpen(false)} 
+        videoUrl="https://youtube.com/shorts/iARC1DejKHo?feature=share" 
+      />
+      
+      {userTypeDisplay && (
+        <div style={{
+          background: 'rgba(189, 207, 0, 0.05)',
+          borderBottom: '1px solid rgba(189, 207, 0, 0.1)',
+          padding: '12px 0'
+        }}>
+          <div style={{
+            maxWidth: '700px',
+            margin: '0 auto',
+            padding: '0 20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px'
+            }}>
+              <i className={userTypeDisplay.icon} style={{color: '#BDCF00', fontSize: '18px'}}></i>
+              <div>
+                <span style={{
+                  fontWeight: 600,
+                  color: '#333',
+                  fontSize: '16px'
+                }}>{userTypeDisplay.label}</span>
+                <span style={{
+                  color: '#666',
+                  marginLeft: '8px',
+                  fontSize: '14px'
+                }}>• Rabat - Casablanca</span>
+              </div>
+            </div>
+            <button 
+              onClick={goBackToSelection}
+              style={{
+                background: 'transparent',
+                border: '1px solid #ccc',
+                color: '#666',
+                padding: '8px 16px',
+                borderRadius: '6px',
+                fontSize: '14px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
+              <i className="fas fa-arrow-left"></i>
+              Changer de profil
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Hero Section */}
       <section className="spectacle-hero">
@@ -469,20 +434,31 @@ export default function SpectacleMirathAtfal() {
           <div className="hero-left">
             <div className="hero-content">
               <h1 className="hero-title">Mirath Atfal</h1>
-              <p className="hero-subtitle">Un concert interactif célébrant le patrimoine musical arabe pour enfants</p>
+              <p className="hero-subtitle">Découvrez le riche patrimoine culturel marocain à travers les yeux des enfants</p>
               <div className="info-pills">
                 <span className="info-pill">
-                  <i className="fas fa-clock"></i>40 minutes
+                  <i className="fas fa-clock"></i>55 minutes
                 </span>
                 <span className="info-pill">
-                  <i className="fas fa-users"></i>3 comédiens
+                  <i className="fas fa-users"></i>4 comédiens
                 </span>
+                {/* Debug conditional rendering */}
+                {/* Show study levels only for private schools */}
+                {userType === 'professional' && professionalType === 'scolaire-privee' && (
+                  <span className="info-pill">
+                    <i className="fas fa-child"></i>CE2, CM1, CM2, Collège
+                  </span>
+                )}
+                {/* Show age ranges for public schools, associations, and particulier */}
+                {(userType === 'particulier' || 
+                  (userType === 'professional' && professionalType === 'scolaire-publique') ||
+                  (userType === 'professional' && professionalType === 'association')) && (
+                  <span className="info-pill">
+                    <i className="fas fa-child"></i>8 ans et +
+                  </span>
+                )}
                 <span className="info-pill">
-                  <i className="fas fa-child"></i>
-                  <span>{userTypeInfo.showStudyLevel ? 'Maternelle, Primaire' : '5 ans et +'}</span>
-                </span>
-                <span className="info-pill">
-                  <i className="fas fa-theater-masks"></i>Concert interactif
+                  <i className="fas fa-theater-masks"></i>Patrimoine culturel
                 </span>
               </div>
               <div className="hero-buttons">
@@ -495,20 +471,84 @@ export default function SpectacleMirathAtfal() {
           </div>
           
           <div className="hero-right">
-            <div className="vintage-tv-container">
+            <div className="vintage-tv-container" style={{
+              position: 'relative',
+              maxWidth: '750px',
+              margin: '0 auto'
+            }}>
               <div className="tv-frame">
                 <div className="tv-screen">
-                  <img src="https://edjs.art/assets/img/spectacles/mirath-atfal.png" alt="Mirath Atfal Affiche" className="tv-video" />
-                  <div className="play-button-overlay" onClick={() => setIsVideoOpen(true)}>
-                    <div className="play-button">
-                      <i className="fas fa-play"></i>
+                  <img 
+                    src="/assets/img/spectacles/simple-comme-bonjour.png" 
+                    alt="Simple Comme Bonjour" 
+                    style={{
+                      width: '100%', 
+                      height: 'auto', 
+                      borderRadius: '10px', 
+                      display: 'block'
+                    }}
+                  />
+                  <div 
+                    onClick={() => setIsVideoOpen(true)}
+                    style={{
+                      position: 'absolute', 
+                      top: 0, 
+                      left: 0, 
+                      right: 0, 
+                      bottom: 0, 
+                      display: 'flex', 
+                      justifyContent: 'center', 
+                      alignItems: 'center', 
+                      background: 'rgba(0,0,0,0.3)', 
+                      cursor: 'pointer', 
+                      transition: 'all 0.3s ease'
+                    }}
+                  >
+                    <div style={{
+                      background: 'rgba(255,255,255,0.9)', 
+                      borderRadius: '50%', 
+                      width: '80px', 
+                      height: '80px', 
+                      display: 'flex', 
+                      justifyContent: 'center', 
+                      alignItems: 'center', 
+                      fontSize: '2rem', 
+                      color: '#333', 
+                      boxShadow: '0 4px 15px rgba(0,0,0,0.3)', 
+                      transition: 'all 0.3s ease'
+                    }}>
+                      <i className="fas fa-play" style={{marginLeft: '4px'}}></i>
                     </div>
                   </div>
                 </div>
-                <div className="tv-controls">
-                  <div className="tv-knob"></div>
-                  <div className="tv-brand">EDJS</div>
-                  <div className="tv-knob"></div>
+                <div style={{
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'center', 
+                  marginTop: '20px', 
+                  padding: '0 20px'
+                }}>
+                  <div style={{
+                    width: '40px', 
+                    height: '40px', 
+                    borderRadius: '50%', 
+                    background: 'linear-gradient(145deg, #C0C0C0, #808080)', 
+                    boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.3), inset 0 -2px 4px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.2)'
+                  }}></div>
+                  <div style={{
+                    color: '#FFD700', 
+                    fontWeight: 'bold', 
+                    fontSize: '1.2rem', 
+                    textShadow: '2px 2px 4px rgba(0,0,0,0.5)', 
+                    letterSpacing: '2px'
+                  }}>EDJS</div>
+                  <div style={{
+                    width: '40px', 
+                    height: '40px', 
+                    borderRadius: '50%', 
+                    background: 'linear-gradient(145deg, #C0C0C0, #808080)', 
+                    boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.3), inset 0 -2px 4px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.2)'
+                  }}></div>
                 </div>
               </div>
             </div>
@@ -521,21 +561,17 @@ export default function SpectacleMirathAtfal() {
         <div className="container">
           <div className="row">
             <div className="col-lg-8">
-              {/* Synopsis Card */}
+              {/* Story & Synopsis Card */}
               <div className="content-card">
                 <h2 className="card-title">
                   <i className="fas fa-book-open"></i>
                   Synopsis
                 </h2>
-                <p className="card-text">
-                  "Mirath Atfal" est un concert interactif unique qui fait découvrir aux enfants la richesse du patrimoine musical arabe. À travers des chansons traditionnelles, des comptines ancestrales et des mélodies intemporelles, les jeunes spectateurs sont invités à participer activement à cette célébration musicale.
-                </p>
-                <p className="card-text">
-                  Nos trois artistes talentueux guident les enfants dans un voyage sonore captivant, où chaque mélodie raconte une histoire, chaque rythme éveille une émotion, et chaque participation renforce le lien avec cette culture musicale précieuse.
-                </p>
-                <p className="card-text">
-                  Cette adaptation respectueuse du patrimoine musical arabe met en scène la poésie des traditions dans un spectacle visuel et musical enchanteur, accessible aux enfants tout en touchant le cœur des adultes.
-                </p>
+                <p>Plongez dans l'univers fascinant du patrimoine marocain avec "Mirath Atfal" ! Ce spectacle unique fait découvrir aux enfants les trésors de notre culture à travers des contes, des traditions et des légendes transmises de génération en génération.</p>
+                
+                <p>Les jeunes spectateurs voyagent à travers les différentes régions du Maroc, découvrant l'artisanat, la musique, la poésie et les valeurs qui font la richesse de notre identité. Un voyage initiatique qui renforce le sentiment d'appartenance et la fierté culturelle.</p>
+                
+                <p>Un spectacle éducatif et divertissant qui sensibilise les enfants à l'importance de préserver et de transmettre notre héritage culturel aux futures générations.</p>
               </div>
 
               {/* Themes Card */}
@@ -547,36 +583,36 @@ export default function SpectacleMirathAtfal() {
                 <div className="row">
                   <div className="col-md-6">
                     <div className="info-item">
+                      <i className="fas fa-mosque"></i>
+                      <span>Patrimoine architectural</span>
+                    </div>
+                    <div className="info-item">
                       <i className="fas fa-music"></i>
-                      <span>Patrimoine musical arabe</span>
+                      <span>Musique traditionnelle</span>
                     </div>
                     <div className="info-item">
-                      <i className="fas fa-heart"></i>
-                      <span>Participation active</span>
-                    </div>
-                    <div className="info-item">
-                      <i className="fas fa-globe"></i>
-                      <span>Diversité culturelle</span>
+                      <i className="fas fa-palette"></i>
+                      <span>Artisanat marocain</span>
                     </div>
                   </div>
                   <div className="col-md-6">
                     <div className="info-item">
-                      <i className="fas fa-star"></i>
-                      <span>Éveil musical</span>
-                    </div>
-                    <div className="info-item">
-                      <i className="fas fa-users"></i>
-                      <span>Interaction artistique</span>
+                      <i className="fas fa-flag"></i>
+                      <span>Identité culturelle</span>
                     </div>
                     <div className="info-item">
                       <i className="fas fa-book"></i>
-                      <span>Traditions ancestrales</span>
+                      <span>Contes et légendes</span>
+                    </div>
+                    <div className="info-item">
+                      <i className="fas fa-users"></i>
+                      <span>Transmission générationnelle</span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Reviews Section - Same as Le Petit Prince */}
+              {/* Reviews Section */}
               <div className="content-card">
                 <h2 className="card-title">
                   <i className="fas fa-star"></i>
@@ -585,46 +621,49 @@ export default function SpectacleMirathAtfal() {
                 
                 {/* Existing Reviews */}
                 <div className="reviews-list" style={{marginBottom: '2rem'}}>
-                  <div className="review-item" style={{padding: '1rem', backgroundColor: '#f8f9fa', borderRadius: '8px', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                  <div className="review-item" style={{padding: '1rem', backgroundColor: '#f8f9fa', borderRadius: '8px', marginBottom: '1rem', borderLeft: '4px solid #BDCF00'}}>
                     <div style={{display: 'flex', alignItems: 'center', marginBottom: '0.5rem'}}>
-                      <div className="stars" style={{color: 'var(--primary-color)', marginRight: '0.5rem'}}>
+                      <div className="stars" style={{color: '#BDCF00', marginRight: '0.5rem'}}>
                         <i className="fas fa-star"></i>
                         <i className="fas fa-star"></i>
                         <i className="fas fa-star"></i>
                         <i className="fas fa-star"></i>
                         <i className="fas fa-star"></i>
                       </div>
-                      <strong style={{color: '#333'}}>Fatima M.</strong>
-                      <span style={{color: '#666', marginLeft: '0.5rem', fontSize: '0.9rem'}}>École Al-Andalus</span>
+                      <strong style={{color: '#333'}}>M. Fassi</strong>
+                      <span style={{color: '#666', marginLeft: '0.5rem', fontSize: '0.9rem'}}>Collège Mohammed V</span>
                     </div>
-                    <p style={{color: '#555', margin: 0}}>"Un spectacle magnifique qui a captivé nos élèves ! La richesse du patrimoine musical arabe présentée de manière si accessible et interactive. Les enfants ont chanté pendant des jours après le spectacle."</p>
+                    <p style={{color: '#555', margin: 0}}>"Mirath Atfal a été une révélation pour nos élèves ! Ils ont redécouvert la richesse de leur patrimoine culturel avec fierté et émotion."</p>
                   </div>
                   
-                  <div className="review-item" style={{padding: '1rem', backgroundColor: '#f8f9fa', borderRadius: '8px', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                  <div className="review-item" style={{padding: '1rem', backgroundColor: '#f8f9fa', borderRadius: '8px', marginBottom: '1rem', borderLeft: '4px solid #BDCF00'}}>
                     <div style={{display: 'flex', alignItems: 'center', marginBottom: '0.5rem'}}>
-                      <div className="stars" style={{color: 'var(--primary-color)', marginRight: '0.5rem'}}>
+                      <div className="stars" style={{color: '#BDCF00', marginRight: '0.5rem'}}>
                         <i className="fas fa-star"></i>
                         <i className="fas fa-star"></i>
                         <i className="fas fa-star"></i>
                         <i className="fas fa-star"></i>
                         <i className="far fa-star"></i>
                       </div>
-                      <strong style={{color: '#333'}}>Ahmed B.</strong>
+                      <strong style={{color: '#333'}}>Nadia Z.</strong>
                       <span style={{color: '#666', marginLeft: '0.5rem', fontSize: '0.9rem'}}>Parent</span>
                     </div>
-                    <p style={{color: '#555', margin: 0}}>"Une belle découverte pour toute la famille. Mes enfants ont adoré participer et découvrir ces mélodies traditionnelles. Un moment de partage culturel précieux."</p>
+                    <p style={{color: '#555', margin: 0}}>"Mon fils est rentré à la maison en me racontant les légendes marocaines qu'il a découvertes. Il est fier de ses racines maintenant !"</p>
                   </div>
                 </div>
                 
                 {/* Review Submission Form */}
-                <div className="review-form" style={{backgroundColor: '#fff', padding: '1.5rem', border: '2px solid var(--primary-color)', borderRadius: '8px'}}>
+                <form onSubmit={handleReviewSubmit} className="review-form" style={{backgroundColor: '#fff', padding: '1.5rem', border: '2px solid #BDCF00', borderRadius: '8px'}}>
                   <h3 style={{color: '#333', marginBottom: '1rem', fontSize: '1.2rem'}}>Laissez votre avis</h3>
                   
                   <div className="form-group" style={{marginBottom: '1rem'}}>
                     <label style={{display: 'block', marginBottom: '0.5rem', color: '#333', fontWeight: 500}}>Votre nom *</label>
                     <input 
                       type="text" 
+                      value={reviewForm.name}
+                      onChange={(e) => handleReviewInputChange('name', e.target.value)}
                       placeholder="Entrez votre nom"
+                      required
                       style={{
                         width: '100%',
                         padding: '0.75rem',
@@ -639,6 +678,8 @@ export default function SpectacleMirathAtfal() {
                     <label style={{display: 'block', marginBottom: '0.5rem', color: '#333', fontWeight: 500}}>Organisation (optionnel)</label>
                     <input 
                       type="text" 
+                      value={reviewForm.organization}
+                      onChange={(e) => handleReviewInputChange('organization', e.target.value)}
                       placeholder="École, association, etc."
                       style={{
                         width: '100%',
@@ -656,15 +697,14 @@ export default function SpectacleMirathAtfal() {
                       {[1, 2, 3, 4, 5].map(star => (
                         <i 
                           key={star}
-                          className="far fa-star" 
+                          className={reviewForm.rating >= star ? 'fas fa-star' : 'far fa-star'}
+                          onClick={() => handleReviewInputChange('rating', star)}
                           style={{
                             fontSize: '1.5rem',
-                            color: 'var(--primary-color)',
+                            color: '#BDCF00',
                             cursor: 'pointer',
                             transition: 'all 0.2s'
                           }}
-                          onMouseEnter={(e) => (e.target as HTMLElement).className = 'fas fa-star'}
-                          onMouseLeave={(e) => (e.target as HTMLElement).className = 'far fa-star'}
                         ></i>
                       ))}
                     </div>
@@ -673,8 +713,11 @@ export default function SpectacleMirathAtfal() {
                   <div className="form-group" style={{marginBottom: '1.5rem'}}>
                     <label style={{display: 'block', marginBottom: '0.5rem', color: '#333', fontWeight: 500}}>Votre commentaire *</label>
                     <textarea 
+                      value={reviewForm.comment}
+                      onChange={(e) => handleReviewInputChange('comment', e.target.value)}
                       placeholder="Partagez votre expérience du spectacle..."
                       rows={4}
+                      required
                       style={{
                         width: '100%',
                         padding: '0.75rem',
@@ -688,126 +731,178 @@ export default function SpectacleMirathAtfal() {
                   
                   <button 
                     type="submit"
+                    disabled={isSubmitting}
                     style={{
-                      backgroundColor: 'var(--primary-color)',
+                      backgroundColor: isSubmitting ? '#ccc' : '#BDCF00',
                       color: 'white',
                       border: 'none',
                       padding: '0.75rem 2rem',
                       borderRadius: '4px',
                       fontSize: '1rem',
                       fontWeight: 600,
-                      cursor: 'pointer',
+                      cursor: isSubmitting ? 'not-allowed' : 'pointer',
                       transition: 'all 0.3s'
                     }}
-                    onMouseEnter={(e) => (e.target as HTMLElement).style.backgroundColor = 'var(--primary-dark)'}
-                    onMouseLeave={(e) => (e.target as HTMLElement).style.backgroundColor = 'var(--primary-color)'}
+                    onMouseEnter={(e) => {
+                      if (!isSubmitting) (e.target as HTMLElement).style.backgroundColor = '#a8b800'
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isSubmitting) (e.target as HTMLElement).style.backgroundColor = '#BDCF00'
+                    }}
                   >
-                    Publier mon avis
+                    {isSubmitting ? 'Envoi en cours...' : 'Publier mon avis'}
                   </button>
-                </div>
+                </form>
               </div>
             </div>
 
             <div className="col-lg-4">
-              {/* Sessions Card */}
+              {/* Available Sessions Card */}
               <div className="sidebar-card">
                 <h3>
                   <i className="fas fa-calendar-alt"></i>
                   Séances Disponibles
                 </h3>
-                <div className="sessions-list">
-                  <h4 style={{color: 'var(--primary-color)', fontWeight: 'bold', marginBottom: '1rem'}}>MIRATH ATFAL</h4>
-                  
-                  {/* CASABLANCA Sessions */}
-                  <h5 style={{color: '#333', fontWeight: 600, marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>CASABLANCA</h5>
-                  <h6 style={{color: '#666', fontWeight: 500, marginBottom: '0.5rem', fontFamily: 'Raleway, sans-serif'}}>THEATRE ZEFZAF</h6>
-                  <div style={{marginBottom: '1rem'}}>
-                    {/* Tout public session - show for individual users */}
-                    {(userTypeInfo.userType === 'particulier' || !userTypeInfo.userType) && (
-                      <div style={{background: '#f8f9fa', padding: '0.5rem', marginBottom: '0.25rem', borderLeft: '3px solid var(--primary-color)', fontSize: '0.85rem'}}>
-                        - Date: SAMEDI 8 NOVEMBRE, Heure: 15H00, Séance: Tout public
-                      </div>
-                    )}
+                
+                {/* Tout public sessions - show for particulier */}
+                {(userType === 'particulier' || !userType) && (
+                  <>
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mardi 26 Novembre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H00 - Rabat, Théâtre Bahnini</div>
+                      <button 
+                        onClick={handleReservation}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
                     
-                    {/* Private school sessions - show for scolaire-privee */}
-                    {userTypeInfo.professionalType === 'scolaire-privee' && (
-                      <div style={{background: '#f8f9fa', padding: '0.5rem', marginBottom: '0.25rem', borderLeft: '3px solid var(--primary-color)', fontSize: '0.85rem'}}>
-                        - Date: LUNDI 10 NOVEMBRE, Heure: 9H30, Séance: École privée
-                      </div>
-                    )}
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mercredi 27 Novembre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>10H00 - Casablanca, Complexe El Hassani</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/mirath-atfal?session=casablanca-nov-27-10h00'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
+                  </>
+                )}
+                
+                {/* Private school sessions - show for scolaire-privee */}
+                {professionalType === 'scolaire-privee' && (
+                  <>
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Lundi 25 Novembre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09H30 - Rabat, Théâtre Bahnini</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/mirath-atfal?session=rabat-nov-25-09h30'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
                     
-                    {/* Public school session - show for scolaire-publique */}
-                    {userTypeInfo.professionalType === 'scolaire-publique' && (
-                      <div style={{background: '#f8f9fa', padding: '0.5rem', marginBottom: '0.25rem', borderLeft: '3px solid var(--primary-color)', fontSize: '0.85rem'}}>
-                        - Date: LUNDI 10 NOVEMBRE, Heure: 14H30, Séance: École publique
-                      </div>
-                    )}
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Lundi 25 Novembre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Rabat, Théâtre Bahnini</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/mirath-atfal?session=rabat-nov-25-14h30'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
                     
-                    {/* Association session - show for association */}
-                    {userTypeInfo.professionalType === 'association' && (
-                      <div style={{background: '#f8f9fa', padding: '0.5rem', marginBottom: '0.25rem', borderLeft: '3px solid var(--primary-color)', fontSize: '0.85rem'}}>
-                        - Date: MARDI 11 NOVEMBRE, Heure: 14H30, Séance: Association
-                      </div>
-                    )}
-                  </div>
-
-                  {/* RABAT Sessions */}
-                  <h5 style={{color: '#333', fontWeight: 600, marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>RABAT</h5>
-                  <h6 style={{color: '#666', fontWeight: 500, marginBottom: '0.5rem', fontFamily: 'Raleway, sans-serif'}}>THEATRE BAHNINI</h6>
-                  <div style={{marginBottom: '1rem'}}>
-                    {/* Private school sessions - show for scolaire-privee */}
-                    {userTypeInfo.professionalType === 'scolaire-privee' && (
-                      <div style={{background: '#f8f9fa', padding: '0.5rem', marginBottom: '0.25rem', borderLeft: '3px solid var(--primary-color)', fontSize: '0.85rem'}}>
-                        - Date: JEUDI 13 NOVEMBRE, Heure: 09H30, Séance: École privée
-                      </div>
-                    )}
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Vendredi 28 Novembre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09H30 - Casablanca, Complexe El Hassani</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/mirath-atfal?session=casablanca-nov-28-09h30'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
                     
-                    {/* Public school session - show for scolaire-publique */}
-                    {userTypeInfo.professionalType === 'scolaire-publique' && (
-                      <div style={{background: '#f8f9fa', padding: '0.5rem', marginBottom: '0.25rem', borderLeft: '3px solid var(--primary-color)', fontSize: '0.85rem'}}>
-                        - Date: JEUDI 13 NOVEMBRE, Heure: 14H30, Séance: École publique
-                      </div>
-                    )}
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Vendredi 28 Novembre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Casablanca, Complexe El Hassani</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/mirath-atfal?session=casablanca-nov-28-14h30'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
+                  </>
+                )}
+                
+                {/* Public school sessions - show for scolaire-publique */}
+                {professionalType === 'scolaire-publique' && (
+                  <>
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mardi 26 Novembre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09H30 - Rabat, Théâtre Bahnini</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/mirath-atfal?session=rabat-nov-26-09h30'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
                     
-                    {/* Association sessions - show for association */}
-                    {userTypeInfo.professionalType === 'association' && (
-                      <>
-                        <div style={{background: '#f8f9fa', padding: '0.5rem', marginBottom: '0.25rem', borderLeft: '3px solid var(--primary-color)', fontSize: '0.85rem'}}>
-                          - Date: VENDREDI 14 NOVEMBRE, Heure: 09H30, Séance: Association
-                        </div>
-                        <div style={{background: '#f8f9fa', padding: '0.5rem', marginBottom: '0.25rem', borderLeft: '3px solid var(--primary-color)', fontSize: '0.85rem'}}>
-                          - Date: VENDREDI 14 NOVEMBRE, Heure: 14H30, Séance: Association
-                        </div>
-                      </>
-                    )}
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 27 Novembre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Casablanca, Complexe El Hassani</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/mirath-atfal?session=casablanca-nov-27-14h30'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
+                  </>
+                )}
+                
+                {/* Association sessions - show for association */}
+                {professionalType === 'association' && (
+                  <>
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mardi 26 Novembre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09H30 - Rabat, Théâtre Bahnini</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/mirath-atfal?session=rabat-nov-26-09h30'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
                     
-                    {/* Tout public session - show for individual users */}
-                    {(userTypeInfo.userType === 'particulier' || !userTypeInfo.userType) && (
-                      <div style={{background: '#f8f9fa', padding: '0.5rem', marginBottom: '0.25rem', borderLeft: '3px solid var(--primary-color)', fontSize: '0.85rem'}}>
-                        - Date: SAMEDI 15 NOVEMBRE, Heure: 15H00, Séance: Tout public
-                      </div>
-                    )}
-                  </div>
-
-                  <button 
-                    onClick={handleReservation}
-                    style={{
-                      background: 'var(--primary-color)', 
-                      color: 'white', 
-                      border: 'none', 
-                      padding: '0.75rem 1.5rem', 
-                      borderRadius: '0.5rem', 
-                      fontSize: '1rem', 
-                      fontWeight: 500, 
-                      cursor: 'pointer', 
-                      width: '100%', 
-                      marginTop: '1rem'
-                    }}
-                  >
-                    <i className="fas fa-ticket-alt" style={{marginRight: '0.5rem'}}></i>
-                    {user ? 'Réserver Maintenant' : 'Se connecter pour réserver'}
-                  </button>
-                </div>
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 27 Novembre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Casablanca, Complexe El Hassani</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/mirath-atfal?session=casablanca-nov-27-14h30'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Booking Info Card */}
@@ -818,27 +913,38 @@ export default function SpectacleMirathAtfal() {
                 </h3>
                 <div className="info-item">
                   <i className="fas fa-clock"></i>
-                  <span>Durée : 40 minutes</span>
+                  <span>Durée : 55 minutes</span>
                 </div>
                 <div className="info-item">
                   <i className="fas fa-users"></i>
-                  <span>Distribution : 3 comédiens</span>
+                  <span>Distribution : 4 comédiens</span>
                 </div>
-                <div className="info-item">
-                  <i className="fas fa-theater-masks"></i>
-                  <span>Genre : Concert interactif</span>
-                </div>
-                <div className="info-item">
-                  <i className="fas fa-child"></i>
-                  <span>{userTypeInfo.showStudyLevel ? 'Niveaux scolaires : Maternelle, Primaire' : 'Âge recommandé : 5 ans et +'}</span>
-                </div>
+                {/* Age recommendation - hidden for private schools */}
+                {professionalType !== 'scolaire-privee' && (
+                  <div className="info-item">
+                    <i className="fas fa-child"></i>
+                    <span>Âge recommandé : 8 ans et +</span>
+                  </div>
+                )}
+                
+                {/* Study level - visible only for private schools */}
+                {professionalType === 'scolaire-privee' && (
+                  <div className="info-item">
+                    <i className="fas fa-graduation-cap"></i>
+                    <span>Niveaux scolaires : CE2, CM1, CM2, Collège</span>
+                  </div>
+                )}
                 <div className="info-item">
                   <i className="fas fa-calendar"></i>
                   <span>Période : Novembre 2025</span>
                 </div>
                 <div className="info-item">
                   <i className="fas fa-language"></i>
-                  <span>Langue : Arabe/Français</span>
+                  <span>Langue : Français</span>
+                </div>
+                <div className="info-item">
+                  <i className="fas fa-heart"></i>
+                  <span>Genre : Patrimoine culturel</span>
                 </div>
               </div>
 
@@ -848,10 +954,8 @@ export default function SpectacleMirathAtfal() {
                   <i className="fas fa-ticket-alt"></i>
                   Réservation
                 </h3>
-                <p style={{ color: 'var(--text-light)', marginBottom: '1.5rem' }}>
-                  Découvrez le patrimoine musical arabe avec vos enfants !
-                </p>
-                <button className="btn-primary w-100" onClick={handleReservation}>
+                <p style={{color: 'var(--text-light)', marginBottom: '1.5rem'}}>Réservez dès maintenant vos places pour découvrir le riche patrimoine marocain avec Mirath Atfal.</p>
+                <button className="btn-primary w-100" onClick={handleReservation} style={{width: '100%'}}>
                   <i className="fas fa-ticket-alt"></i>
                   {user ? 'Réserver Maintenant' : 'Se connecter pour réserver'}
                 </button>
@@ -861,14 +965,77 @@ export default function SpectacleMirathAtfal() {
         </div>
       </section>
 
-      <VideoPopup 
-        isOpen={isVideoOpen}
-        onClose={() => setIsVideoOpen(false)}
-        videoUrl="https://youtube.com/shorts/iARC1DejKHo"
-        title="Mirath Atfal - Bande-annonce"
-      />
+      {/* Next Spectacle Card Section */}
+      <section style={{padding: '4rem 0', background: '#f8f9fa'}}>
+        <div className="container">
+          <div className="row justify-content-center">
+            <div className="col-lg-8">
+              <div className="content-card" style={{textAlign: 'center'}}>
+                <h2 className="card-title" style={{marginBottom: '2rem'}}>
+                  <i className="fas fa-forward"></i>
+                  Prochain Spectacle
+                </h2>
+                <div className="row align-items-center">
+                  <div className="col-md-4">
+                    <img 
+                      src="/assets/img/spectacles/simple-comme-bonjour.png" 
+                      alt="Simple Comme Bonjour" 
+                      style={{
+                        width: '100%',
+                        height: 'auto',
+                        borderRadius: '12px',
+                        boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
+                      }}
+                    />
+                  </div>
+                  <div className="col-md-8" style={{textAlign: 'left', paddingLeft: '2rem'}}>
+                    <h3 style={{color: '#BDCF00', fontSize: '2rem', marginBottom: '1rem'}}>Simple Comme Bonjour</h3>
+                    <p style={{color: '#666', fontSize: '1.1rem', lineHeight: '1.6', marginBottom: '1.5rem'}}>
+                      Un spectacle chaleureux qui célèbre les petits bonheurs du quotidien et l'importance des gestes simples. 
+                      Une comédie touchante sur l'humanité et la bienveillance.
+                    </p>
+                    <div style={{display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap'}}>
+                      <span style={{background: '#e3f2fd', color: '#1976d2', padding: '0.5rem 1rem', borderRadius: '20px', fontSize: '0.9rem'}}>
+                        <i className="fas fa-clock"></i> 45 min
+                      </span>
+                      <span style={{background: '#f3e5f5', color: '#7b1fa2', padding: '0.5rem 1rem', borderRadius: '20px', fontSize: '0.9rem'}}>
+                        <i className="fas fa-users"></i> 2 comédiens
+                      </span>
+                      <span style={{background: '#e8f5e8', color: '#388e3c', padding: '0.5rem 1rem', borderRadius: '20px', fontSize: '0.9rem'}}>
+                        <i className="fas fa-child"></i> 3 ans et +
+                      </span>
+                    </div>
+                    <button 
+                      className="btn-primary"
+                      onClick={() => window.location.href = '/spectacle/simple-comme-bonjour'}
+                      style={{
+                        padding: '0.75rem 2rem', 
+                        fontSize: '1rem',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.5rem'
+                      }}
+                      onMouseEnter={(e) => {
+                        (e.target as HTMLElement).style.background = '#a8b800';
+                        (e.target as HTMLElement).style.transform = 'translateY(-2px)';
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.target as HTMLElement).style.background = '#BDCF00';
+                        (e.target as HTMLElement).style.transform = 'translateY(0)';
+                      }}
+                    >
+                      <i className="fas fa-eye"></i>
+                      Découvrir Simple Comme Bonjour
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-      {/* Footer - Same as Le Petit Prince */}
+      {/* Footer */}
       <footer style={{background: '#000', color: 'white', padding: '60px 0 20px 0'}}>
         <div style={{maxWidth: '1200px', margin: '0 auto', padding: '0 20px'}}>
           <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '40px', marginBottom: '40px'}}>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -11,6 +11,7 @@ import { getUserTypeSessions } from '@/data/sessions';
 
 const ReservationFlow = () => {
   const { spectacleId } = useParams();
+  const [searchParams] = useSearchParams();
   const { user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -51,8 +52,17 @@ const ReservationFlow = () => {
       return;
     }
 
+    // Check if a specific session was selected from spectacle page
+    const sessionParam = searchParams.get('session');
+    const userTypeParam = searchParams.get('userType');
+    
+    if (sessionParam && !selectedSession) {
+      setSelectedSession(sessionParam);
+      setStep(3); // Skip session selection, go directly to form
+    }
+
     // Pre-populate form data for logged-in users and skip organization type selection
-    if (user) {
+    if (user && !userType) {
       setFormData(prev => ({
         ...prev,
         firstName: user.user_metadata?.first_name || user.user_metadata?.name?.split(' ')[0] || '',
@@ -63,38 +73,47 @@ const ReservationFlow = () => {
         organizationType: user.user_metadata?.role || ''
       }));
       
-      // Auto-detect user type from profile and skip directly to session selection (step 2)
-      const role = user.user_metadata?.role;
-      if (role) {
-        // Map user roles to reservation types
-        let mappedUserType = '';
-        switch (role) {
-          case 'private_school':
-          case 'private_school_teacher':
-            mappedUserType = 'scolaire-privee';
-            break;
-          case 'public_school':
-          case 'public_school_teacher':
-            mappedUserType = 'scolaire-publique';
-            break;
-          case 'association':
-          case 'association_member':
-            mappedUserType = 'association';
-            break;
-          case 'b2c':
-          case 'b2c_user':
-          case 'individual':
-            mappedUserType = 'particulier';
-            break;
-          default:
-            mappedUserType = role;
+      // Use URL parameter user type if provided, otherwise auto-detect from profile
+      let mappedUserType = '';
+      if (userTypeParam) {
+        mappedUserType = userTypeParam;
+      } else {
+        const role = user.user_metadata?.role;
+        if (role) {
+          // Map user roles to reservation types
+          switch (role) {
+            case 'private_school':
+            case 'private_school_teacher':
+              mappedUserType = 'scolaire-privee';
+              break;
+            case 'public_school':
+            case 'public_school_teacher':
+              mappedUserType = 'scolaire-publique';
+              break;
+            case 'association':
+            case 'association_member':
+              mappedUserType = 'association';
+              break;
+            case 'b2c':
+            case 'b2c_user':
+            case 'individual':
+              mappedUserType = 'particulier';
+              break;
+            default:
+              mappedUserType = role;
+          }
         }
-        
-        setUserType(mappedUserType);
-        setStep(2); // Skip organization type selection, go directly to session selection
+      }
+      
+      console.log('Setting userType:', mappedUserType);
+      setUserType(mappedUserType);
+      
+      // If no specific session was selected, show session selection
+      if (!sessionParam) {
+        setStep(2);
       }
     }
-  }, [user, spectacle, navigate]);
+  }, [user, spectacle, navigate, searchParams, selectedSession, userType]);
 
   const handleInputChange = (field: string, value: string | number) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -126,8 +145,13 @@ const ReservationFlow = () => {
   const getAvailableSessions = () => {
     if (!spectacleId) return [];
     
+    // Check URL parameter first, then user profile
+    const userTypeParam = searchParams.get('userType');
     let userTypeForSessions = '';
-    if (user && userType) {
+    
+    if (userTypeParam) {
+      userTypeForSessions = userTypeParam;
+    } else if (user && userType) {
       userTypeForSessions = userType;
     } else if (isGuest) {
       userTypeForSessions = '';
@@ -136,7 +160,18 @@ const ReservationFlow = () => {
     // Get user's city from profile - ensure we always pass a city for filtering
     const userCity = user?.user_metadata?.city || user?.user_metadata?.location || 'rabat'; // Default to rabat if no city
     
-    return getUserTypeSessions(spectacleId, userTypeForSessions, userCity);
+    const sessions = getUserTypeSessions(spectacleId, userTypeForSessions, userCity);
+    console.log('Debug - Available sessions:', {
+      spectacleId,
+      userTypeForSessions,
+      userTypeParam,
+      userType,
+      userCity,
+      sessionsCount: sessions.length,
+      sessions: sessions.map(s => ({ id: s.id, audienceType: s.audienceType, date: s.date, location: s.location }))
+    });
+    
+    return sessions;
   };
 
   if (!spectacle) {
@@ -196,7 +231,13 @@ const ReservationFlow = () => {
                 </div>
                 
                 <div className="grid gap-4 max-h-96 overflow-y-auto">
-                  {getAvailableSessions().map((session) => (
+                  {getAvailableSessions().length === 0 ? (
+                    <div className="text-center py-8">
+                      <p className="text-muted-foreground">Aucune session disponible pour ce spectacle.</p>
+                      <p className="text-sm text-muted-foreground mt-2">Veuillez contacter l'administration pour plus d'informations.</p>
+                    </div>
+                  ) : (
+                    getAvailableSessions().map((session) => (
                     <div
                       key={session.id}
                       onClick={() => setSelectedSession(session.id)}
@@ -225,7 +266,8 @@ const ReservationFlow = () => {
                         </div>
                       </div>
                     </div>
-                  ))}
+                  ))
+                  )}
                 </div>
                 
                 <div className="flex space-x-4">
@@ -261,6 +303,43 @@ const ReservationFlow = () => {
                     {user ? 'Complétez les informations pour votre réservation' : 'Complétez les informations pour votre réservation'}
                   </p>
                 </div>
+
+                {/* Selected Session Display */}
+                {selectedSession && (
+                  <div className="bg-primary/10 border border-primary/30 rounded-lg p-4 mb-6">
+                    <div className="flex items-center gap-2 text-primary mb-2">
+                      <Calendar className="h-5 w-5" />
+                      <span className="font-medium">Séance sélectionnée</span>
+                    </div>
+                    <div className="text-sm">
+                      {(() => {
+                        const sessions = getAvailableSessions();
+                        const session = sessions.find(s => s.id === selectedSession);
+                        if (session) {
+                          return (
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <div className="font-medium">{new Date(session.date).toLocaleDateString('fr-FR')}</div>
+                                <div className="text-muted-foreground flex items-center">
+                                  <Clock className="h-4 w-4 mr-1" />
+                                  {session.time}
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <div className="text-primary font-medium">
+                                  <MapPin className="h-4 w-4 inline mr-1" />
+                                  {session.location}
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        }
+                        return <p>Session: {selectedSession}</p>;
+                      })()}
+                    </div>
+                  </div>
+                )}
+
                 
                 <div className="grid gap-4">
                   {!user && (
@@ -302,19 +381,6 @@ const ReservationFlow = () => {
                     </>
                   )}
                   
-                  {user && (
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
-                      <div className="flex items-center gap-2 text-green-700 mb-2">
-                        <UserCheck className="h-5 w-5" />
-                        <span className="font-medium">Informations utilisateur</span>
-                      </div>
-                      <div className="text-sm text-green-600">
-                        <p><strong>Nom:</strong> {formData.firstName} {formData.lastName}</p>
-                        <p><strong>Email:</strong> {formData.email}</p>
-                        {formData.organizationName && <p><strong>Organisation:</strong> {formData.organizationName}</p>}
-                      </div>
-                    </div>
-                  )}
                   
                   <div className="space-y-2">
                     <Label htmlFor="phone">Téléphone</Label>
@@ -327,63 +393,46 @@ const ReservationFlow = () => {
                     />
                   </div>
 
-                  {(userType === 'scolaire-privee' || userType === 'scolaire-publique' || userType === 'association') && (
-                    <>
-                      <div className="space-y-2">
-                        <Label htmlFor="organizationName">Nom de l'organisation</Label>
-                        <Input
-                          id="organizationName"
-                          value={formData.organizationName}
-                          onChange={(e) => handleInputChange('organizationName', e.target.value)}
-                          className="h-12 bg-primary/5 border-2 border-primary/20 focus:border-primary/50"
-                          placeholder="École, association..."
-                        />
-                      </div>
-                    </>
-                  )}
+                  {/* Organization name is automatically populated from user profile - no need to ask again */}
                   
-                  {(userType === 'scolaire-privee' || userType === 'scolaire-publique' || userType === 'association') ? (
-                    <>
-                      <div className="space-y-2">
-                        <Label htmlFor="childrenCount">Nombre d'enfants</Label>
-                        <Input
-                          id="childrenCount"
-                          type="number"
-                          min="1"
-                          value={formData.childrenCount || ''}
-                          onChange={(e) => handleInputChange('childrenCount', parseInt(e.target.value) || 0)}
-                          className="h-12 bg-primary/5 border-2 border-primary/20 focus:border-primary/50"
-                        />
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="accompaniersCount">Nombre d'accompagnateurs</Label>
-                        <Input
-                          id="accompaniersCount"
-                          type="number"
-                          min="0"
-                          value={formData.accompaniersCount || ''}
-                          onChange={(e) => handleInputChange('accompaniersCount', parseInt(e.target.value) || 0)}
-                          className="h-12 bg-primary/5 border-2 border-primary/20 focus:border-primary/50"
-                        />
-                        <p className="text-sm text-muted-foreground italic">
-                          Merci de ne pas dépasser 3 accompagnateurs par groupe de 30 enfants
-                        </p>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="space-y-2">
-                      <Label htmlFor="participantCount">Nombre de participants</Label>
-                      <Input
-                        id="participantCount"
-                        type="number"
-                        min="1"
-                        value={formData.participantCount}
-                        onChange={(e) => handleInputChange('participantCount', parseInt(e.target.value) || 1)}
-                        className="h-12 bg-primary/5 border-2 border-primary/20 focus:border-primary/50"
-                      />
-                    </div>
-                  )}
+                  {/* Always show children and accompaniers count fields */}
+                  <div className="space-y-2">
+                    <Label htmlFor="childrenCount">Nombre d'enfants</Label>
+                    <Input
+                      id="childrenCount"
+                      type="number"
+                      min="1"
+                      value={formData.childrenCount || ''}
+                      onChange={(e) => handleInputChange('childrenCount', parseInt(e.target.value) || 0)}
+                      className="h-12 bg-primary/5 border-2 border-primary/20 focus:border-primary/50"
+                      placeholder="Nombre d'enfants participants"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="accompaniersCount">Nombre d'accompagnateurs</Label>
+                    <Input
+                      id="accompaniersCount"
+                      type="number"
+                      min="0"
+                      max={Math.ceil((formData.childrenCount || 0) / 30) * 3}
+                      value={formData.accompaniersCount || ''}
+                      onChange={(e) => {
+                        const value = parseInt(e.target.value) || 0;
+                        const maxAllowed = Math.ceil((formData.childrenCount || 0) / 30) * 3;
+                        if (value <= maxAllowed) {
+                          handleInputChange('accompaniersCount', value);
+                        }
+                      }}
+                      className="h-12 bg-primary/5 border-2 border-primary/20 focus:border-primary/50"
+                      placeholder="Nombre d'accompagnateurs adultes"
+                    />
+                    <p className="text-sm text-muted-foreground italic">
+                      Maximum autorisé: {Math.ceil((formData.childrenCount || 0) / 30) * 3} accompagnateurs 
+                      (3 par groupe de 30 enfants)
+                    </p>
+                  </div>
+
                 </div>
                 
                 <div className="flex space-x-4">
@@ -424,83 +473,28 @@ const ReservationFlow = () => {
                       <span className="font-medium">{spectacle.title}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Participants:</span>
-                      <span className="font-medium">{formData.participantCount}</span>
+                      <span className="text-muted-foreground">Enfants:</span>
+                      <span className="font-medium">{formData.childrenCount || 0}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Accompagnateurs:</span>
+                      <span className="font-medium">{formData.accompaniersCount || 0}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Total participants:</span>
+                      <span className="font-medium">{(formData.childrenCount || 0) + (formData.accompaniersCount || 0)}</span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-muted-foreground">Prix unitaire:</span>
-                      <span className="font-medium">60 MAD</span>
+                      <span className="font-medium">{userType === 'scolaire-privee' ? '100' : '80'} MAD</span>
                     </div>
                     <div className="border-t pt-2 flex justify-between font-semibold">
                       <span>Total:</span>
-                      <span className="text-primary">{formData.participantCount * 60} MAD</span>
+                      <span className="text-primary">{((formData.childrenCount || 0) + (formData.accompaniersCount || 0)) * (userType === 'scolaire-privee' ? 100 : 80)} MAD</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Payment Methods */}
-                <div className="space-y-4">
-                  {(userType === 'scolaire-privee' || userType === 'scolaire-publique' || userType === 'association') ? (
-                    // Professional users - Bank Transfer
-                    <div className="p-6 border-2 border-primary/20 rounded-lg bg-primary/5">
-                      <div className="flex items-center space-x-4 mb-4">
-                        <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
-                          <span className="text-primary font-bold">🏦</span>
-                        </div>
-                        <div>
-                          <h4 className="font-semibold text-lg">Virement bancaire</h4>
-                          <p className="text-sm text-muted-foreground">Mode de paiement pour les professionnels</p>
-                        </div>
-                      </div>
-                      
-                      <div className="bg-white/50 p-4 rounded-lg space-y-2 text-sm">
-                        <div><strong>Bénéficiaire:</strong> École du Jeune Spectateur</div>
-                        <div><strong>IBAN:</strong> MA64 011 780 0000001234567890</div>
-                        <div><strong>RIB:</strong> 011 780 0000001234567890 23</div>
-                        <div><strong>Référence:</strong> EDJS-{Date.now().toString().slice(-6)}</div>
-                      </div>
-                      
-                      <p className="text-xs text-muted-foreground mt-4">
-                        Veuillez effectuer le virement et nous envoyer le justificatif par email à inscription@edjs.ma
-                      </p>
-                    </div>
-                  ) : (
-                    // Individual users - Card Payment
-                    <div className="space-y-4">
-                      <div className="p-6 border-2 border-primary/20 rounded-lg bg-primary/5">
-                        <div className="flex items-center space-x-4 mb-4">
-                          <div className="w-12 h-12 bg-primary/20 rounded-full flex items-center justify-center">
-                            <span className="text-primary font-bold">💳</span>
-                          </div>
-                          <div>
-                            <h4 className="font-semibold text-lg">Paiement par carte</h4>
-                            <p className="text-sm text-muted-foreground">Paiement sécurisé CMI</p>
-                          </div>
-                        </div>
-                        
-                        <div className="bg-white/50 p-4 rounded-lg">
-                          <p className="text-sm text-center text-muted-foreground">
-                            🔒 Paiement sécurisé via CMI<br/>
-                            Vous serez redirigé vers la plateforme de paiement
-                          </p>
-                        </div>
-                      </div>
-                      
-                      <div className="p-4 border border-orange-200 rounded-lg bg-orange-50">
-                        <div className="flex items-center space-x-2">
-                          <span className="text-orange-600">⚠️</span>
-                          <div>
-                            <p className="text-sm font-medium text-orange-800">Confirmation manuelle requise</p>
-                            <p className="text-xs text-orange-700">
-                              Après paiement, votre réservation sera confirmée manuellement sous 24h
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                
                 <div className="flex space-x-4">
                   <Button 
                     onClick={() => setStep(3)}
@@ -508,16 +502,27 @@ const ReservationFlow = () => {
                     size="xl"
                     className="flex-1"
                   >
-                    Modifier
+                    Retour
                   </Button>
                   <Button 
-                    onClick={handleSubmit}
-                    disabled={loading}
+                    onClick={() => {
+                      // Save reservation data and redirect to payment method selection
+                      const reservationData = {
+                        ...formData,
+                        spectacle: spectacle.title,
+                        spectacleId,
+                        userType,
+                        selectedSession,
+                        totalAmount: ((formData.childrenCount || 0) + (formData.accompaniersCount || 0)) * (userType === 'scolaire-privee' ? 100 : 80)
+                      };
+                      sessionStorage.setItem('reservationData', JSON.stringify(reservationData));
+                      navigate('/payment-method-selection');
+                    }}
                     variant="glow"
                     size="xl"
                     className="flex-1"
                   >
-                    {loading ? 'Traitement...' : (userType === 'scolaire-privee' || userType === 'scolaire-publique' || userType === 'association') ? 'Confirmer la réservation' : 'Procéder au paiement'}
+                    Confirmer la réservation
                   </Button>
                 </div>
               </div>

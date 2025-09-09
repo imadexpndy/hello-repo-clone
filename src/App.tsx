@@ -65,11 +65,15 @@ import SpectacleCharlotte from "./pages/SpectacleCharlotte";
 import SpectacleAliceChezLesMerveilles from "./pages/SpectacleAliceChezLesMerveilles";
 import SpectacleMirathAtfal from "./pages/SpectacleMirathAtfal";
 import SpectacleSimpleCommeBonjour from "./pages/SpectacleSimpleCommeBonjour";
-import SpectacleLenfantDeLarbre from "./pages/SpectacleLenfantDeLarbre";
+import SpectacleFlash from "./pages/SpectacleFlash";
 import SpectacleAntigone from "./pages/SpectacleAntigone";
 import SpectacleLeauLa from "./pages/SpectacleLeauLa";
+import SpectacleTemplate from "./pages/SpectacleTemplate";
 import MyReservations from "./pages/MyReservations";
 import Payment from "./pages/Payment";
+import PaymentMethodSelection from "./pages/PaymentMethodSelection";
+import PaymentInstructions from "./pages/PaymentInstructions";
+import PaymentConfirmation from "./pages/PaymentConfirmation";
 
 const queryClient = new QueryClient();
 
@@ -118,6 +122,9 @@ const App = () => {
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/payment" element={<Payment />} />
+              <Route path="/payment-method-selection" element={<PaymentMethodSelection />} />
+              <Route path="/payment-instructions" element={<PaymentInstructions />} />
+              <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
               <Route path="/reservation/:spectacleId" element={
                 <ProtectedRoute>
                   <ReservationFlow />
@@ -132,11 +139,12 @@ const App = () => {
               <Route path="/spectacle/alice-chez-les-merveilles" element={<SpectacleAliceChezLesMerveilles />} />
               <Route path="/spectacle/mirath-atfal" element={<SpectacleMirathAtfal />} />
               <Route path="/spectacle/simple-comme-bonjour" element={<SpectacleSimpleCommeBonjour />} />
-              <Route path="/spectacle/lenfant-de-larbre" element={<SpectacleLenfantDeLarbre />} />
+              <Route path="/spectacle/flash" element={<SpectacleFlash />} />
               <Route path="/spectacle/antigone" element={<SpectacleAntigone />} />
               <Route path="/spectacle/alice-aux-pays-des-merveilles" element={<SpectacleAliceChezLesMerveilles />} />
               <Route path="/spectacle/casse-noisette" element={<SpectacleMinimal />} />
               <Route path="/spectacle/leau-la" element={<SpectacleLeauLa />} />
+              <Route path="/xjniuhguou98q3ij" element={<SpectacleTemplate />} />
 
               {/* Protected Admin Routes */}
               <Route 

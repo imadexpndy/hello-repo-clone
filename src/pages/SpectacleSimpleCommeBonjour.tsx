@@ -1,14 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import VideoPopup from '@/components/VideoPopup';
-import SessionsDisplay from '@/components/SessionsDisplay';
-import SpectacleFooter from '@/components/SpectacleFooter';
-import { getUserTypeInfo, getStudyLevelForSpectacle } from '@/utils/userTypeUtils';
 
 export default function SpectacleSimpleCommeBonjour() {
   const { user } = useAuth();
   const [isVideoOpen, setIsVideoOpen] = useState(false);
-  const [userTypeInfo, setUserTypeInfo] = useState(getUserTypeInfo());
+  const [userType, setUserType] = useState<string>('');
+  const [professionalType, setProfessionalType] = useState<string>('');
+  
+  // Review form state
+  const [reviewForm, setReviewForm] = useState({
+    name: '',
+    organization: '',
+    rating: 0,
+    comment: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     // Load external stylesheets
@@ -24,34 +31,99 @@ export default function SpectacleSimpleCommeBonjour() {
     loadStylesheet('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Raleway:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Kalam:wght@300;400;700&display=swap');
     loadStylesheet('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
     loadStylesheet('https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css');
+
+    // Check user type on component mount and set up listeners
+    const checkUserType = () => {
+      const storedUserType = sessionStorage.getItem('userType') || localStorage.getItem('userType');
+      const storedProfessionalType = sessionStorage.getItem('professionalType') || localStorage.getItem('professionalType');
+      
+      console.log('Debug - User Type:', storedUserType);
+      console.log('Debug - Professional Type:', storedProfessionalType);
+      
+      setUserType(storedUserType || '');
+      setProfessionalType(storedProfessionalType || '');
+    };
+
+    // Initial check
+    checkUserType();
+    
+    // Set up event listeners
+    const handleStorageChange = () => checkUserType();
+    const handleUserTypeChange = () => checkUserType();
+    
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('userTypeChanged', handleUserTypeChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('userTypeChanged', handleUserTypeChange);
+    };
   }, []);
 
   const handleReservation = () => {
     if (user) {
-      window.location.href = '/reservation/simple-comme-bonjour';
+      // Pass user type as parameter to show only relevant sessions
+      const userTypeParam = professionalType || userType || '';
+      window.location.href = `/reservation/simple-comme-bonjour?userType=${userTypeParam}`;
     } else {
       const returnUrl = encodeURIComponent(window.location.href);
       window.location.href = `/auth?return_url=${returnUrl}`;
     }
   };
 
-  useEffect(() => {
-    // Expose handleReservation to window object for inline event handlers
-    (window as any).handleReservation = handleReservation;
-    // Expose video popup handler
-    (window as any).openVideoPopup = () => setIsVideoOpen(true);
-    
-    // Listen for user type changes
-    const handleUserTypeChange = () => {
-      setUserTypeInfo(getUserTypeInfo());
-    };
-    
-    window.addEventListener('userTypeChanged', handleUserTypeChange);
-    
-    return () => {
-      window.removeEventListener('userTypeChanged', handleUserTypeChange);
-    };
-  }, [user]);
+  const getUserTypeDisplay = () => {
+    if (userType === 'professional' && professionalType) {
+      const typeLabels = {
+        'scolaire-privee': { label: 'École Privée', icon: 'fas fa-graduation-cap' },
+        'scolaire-publique': { label: 'École Publique', icon: 'fas fa-school' },
+        'association': { label: 'Association', icon: 'fas fa-users' }
+      };
+      return typeLabels[professionalType as keyof typeof typeLabels] || { label: professionalType, icon: 'fas fa-building' };
+    } else if (userType === 'particulier') {
+      return { label: 'Particulier', icon: 'fas fa-eye' };
+    }
+    return null;
+  };
+
+  const goBackToSelection = () => {
+    window.location.href = '/user-type-selection';
+  };
+
+  // Review form handlers
+  const handleReviewInputChange = (field: string, value: string | number) => {
+    setReviewForm(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reviewForm.name || !reviewForm.comment || reviewForm.rating === 0) {
+      alert('Veuillez remplir tous les champs obligatoires.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      // Here you would typically send the review to your backend
+      console.log('Review submitted:', reviewForm);
+      
+      // Reset form after successful submission
+      setReviewForm({
+        name: '',
+        organization: '',
+        rating: 0,
+        comment: ''
+      });
+      
+      alert('Merci pour votre avis !');
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      alert('Une erreur est survenue. Veuillez réessayer.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const userTypeDisplay = getUserTypeDisplay();
 
   return (
     <>
@@ -471,7 +543,7 @@ export default function SpectacleSimpleCommeBonjour() {
                   </span>
                   <span className="info-pill">
                     <i className="fas fa-child"></i>
-                    {userTypeInfo.showStudyLevel ? 'PS, MS' : '3 ans et +'}
+                    {userType === 'professional' && professionalType === 'scolaire-privee' ? 'PS, MS' : '3 ans et +'}
                   </span>
                   <span className="info-pill">
                     <i className="fas fa-theater-masks"></i>Théâtre interactif
@@ -480,7 +552,7 @@ export default function SpectacleSimpleCommeBonjour() {
                 <div className="hero-buttons">
                   <button className="btn-primary" onClick={handleReservation}>
                     <i className="fas fa-ticket-alt"></i>
-                    Se connecter pour réserver
+                    {user ? 'Réserver Maintenant' : 'Se connecter pour réserver'}
                   </button>
                 </div>
               </div>
@@ -521,8 +593,8 @@ export default function SpectacleSimpleCommeBonjour() {
                   L'Histoire
                 </h2>
                 <p className="card-text">
-                  "Simple comme bonjour" est un spectacle musical qui célèbre les petits bonheurs du quotidien. 
-                  À travers des chansons entraînantes et des mélodies joyeuses, nos trois comédiens invitent les enfants 
+                  "Simple comme bonjour" est l'histoire émouvante d'une jeune fille qui découvre la force de l'amitié et du courage. 
+                  Un spectacle touchant sur la croissance et l'acceptation de soi. À travers des chansons entraînantes et des mélodies joyeuses, nos trois comédiens invitent les enfants 
                   à découvrir que les plus belles choses de la vie sont souvent les plus simples.
                 </p>
                 <p className="card-text">
@@ -793,7 +865,133 @@ export default function SpectacleSimpleCommeBonjour() {
                   <i className="fas fa-calendar-alt" style={{color: 'var(--primary-color)'}}></i>
                   Séances Disponibles
                 </h3>
-                <SessionsDisplay spectacleId="simple-comme-bonjour" onReservation={handleReservation} />
+                {/* Tout public sessions - show for particulier */}
+                {(userType === 'particulier' || !userType) && (
+                  <>
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Samedi 7 Décembre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>10H00 - Rabat, Théâtre Bahnini</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/simple-comme-bonjour?session=rabat-dec-7-10h00'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
+                  </>
+                )}
+                
+                {/* Private school sessions - show for scolaire-privee */}
+                {professionalType === 'scolaire-privee' && (
+                  <>
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Lundi 9 Décembre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09H30 - Rabat, Théâtre Bahnini</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/simple-comme-bonjour?session=rabat-dec-9-09h30'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
+                    
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Lundi 9 Décembre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Rabat, Théâtre Bahnini</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/simple-comme-bonjour?session=rabat-dec-9-14h30'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
+                    
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Vendredi 12 Décembre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09H30 - Casablanca, Complexe El Hassani</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/simple-comme-bonjour?session=casablanca-dec-12-09h30'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
+                    
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Vendredi 12 Décembre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Casablanca, Complexe El Hassani</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/simple-comme-bonjour?session=casablanca-dec-12-14h30'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
+                  </>
+                )}
+                
+                {/* Public school sessions - show for scolaire-publique */}
+                {professionalType === 'scolaire-publique' && (
+                  <>
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mardi 10 Décembre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Rabat, Théâtre Bahnini</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/simple-comme-bonjour?session=rabat-dec-10-14h30'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
+                    
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 11 Décembre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09H30 - Casablanca, Complexe El Hassani</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/simple-comme-bonjour?session=casablanca-dec-11-09h30'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
+                  </>
+                )}
+                
+                {/* Association sessions - show for association */}
+                {professionalType === 'association' && (
+                  <>
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mardi 10 Décembre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Rabat, Théâtre Bahnini</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/simple-comme-bonjour?session=rabat-dec-10-14h30'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
+                    
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 11 Décembre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Casablanca, Complexe El Hassani</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/simple-comme-bonjour?session=casablanca-dec-11-14h30'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
               
               <div style={{
@@ -825,7 +1023,7 @@ export default function SpectacleSimpleCommeBonjour() {
                 </div>
                 <div className="info-item">
                   <i className="fas fa-child"></i>
-                  <span><strong>Âge :</strong> {userTypeInfo.showStudyLevel ? 'PS, MS' : '3 ans et +'}</span>
+                  <span><strong>Âge :</strong> {userType === 'professional' && professionalType === 'scolaire-privee' ? 'PS, MS' : '3 ans et +'}</span>
                 </div>
                 <div className="info-item">
                   <i className="fas fa-theater-masks"></i>
@@ -840,7 +1038,7 @@ export default function SpectacleSimpleCommeBonjour() {
       <VideoPopup 
         isOpen={isVideoOpen}
         onClose={() => setIsVideoOpen(false)}
-        videoUrl="https://www.youtube.com/embed/iARC1DejKHo"
+        videoUrl="https://youtube.com/shorts/iARC1DejKHo?feature=share"
         title="Simple comme bonjour - Bande-annonce"
       />
 

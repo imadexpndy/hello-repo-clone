@@ -1,14 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
-import SpectacleFooter from '@/components/SpectacleFooter';
 import VideoPopup from '@/components/VideoPopup';
-import SessionsDisplay from '@/components/SessionsDisplay';
-import { getUserTypeInfo, getStudyLevelForSpectacle } from '@/utils/userTypeUtils';
 
 export default function SpectacleLenfantDeLarbre() {
   const { user } = useAuth();
   const [isVideoOpen, setIsVideoOpen] = useState(false);
-  const [userTypeInfo, setUserTypeInfo] = useState(getUserTypeInfo());
+  const [userType, setUserType] = useState<string>('');
+  const [professionalType, setProfessionalType] = useState<string>('');
+  
+  // Review form state
+  const [reviewForm, setReviewForm] = useState({
+    name: '',
+    organization: '',
+    rating: 0,
+    comment: ''
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     // Load external stylesheets
@@ -24,637 +31,1093 @@ export default function SpectacleLenfantDeLarbre() {
     loadStylesheet('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Raleway:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Kalam:wght@300;400;700&display=swap');
     loadStylesheet('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
     loadStylesheet('https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css');
+
+    // Check user type on component mount and set up listeners
+    const checkUserType = () => {
+      const storedUserType = sessionStorage.getItem('userType') || localStorage.getItem('userType');
+      const storedProfessionalType = sessionStorage.getItem('professionalType') || localStorage.getItem('professionalType');
+      
+      console.log('Debug - User Type:', storedUserType);
+      console.log('Debug - Professional Type:', storedProfessionalType);
+      
+      setUserType(storedUserType || '');
+      setProfessionalType(storedProfessionalType || '');
+    };
+
+    // Initial check
+    checkUserType();
+    
+    // Set up event listeners
+    const handleStorageChange = () => checkUserType();
+    const handleUserTypeChange = () => checkUserType();
+    
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('userTypeChanged', handleUserTypeChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('userTypeChanged', handleUserTypeChange);
+    };
   }, []);
 
   const handleReservation = () => {
     if (user) {
-      window.location.href = '/reservation/lenfant-de-larbre';
+      // Pass user type as parameter to show only relevant sessions
+      const userTypeParam = professionalType || userType || '';
+      window.location.href = `/reservation/lenfant-de-larbre?userType=${userTypeParam}`;
     } else {
       const returnUrl = encodeURIComponent(window.location.href);
       window.location.href = `/auth?return_url=${returnUrl}`;
     }
   };
 
-  useEffect(() => {
-    // Expose handleReservation to window object for inline event handlers
-    (window as any).handleReservation = handleReservation;
-    // Expose video popup handler
-    (window as any).openVideoPopup = () => setIsVideoOpen(true);
-    
-    // Listen for user type changes
-    const handleUserTypeChange = () => {
-      setUserTypeInfo(getUserTypeInfo());
-    };
-    
-    window.addEventListener('userTypeChanged', handleUserTypeChange);
-    
-    return () => {
-      window.removeEventListener('userTypeChanged', handleUserTypeChange);
-    };
-  }, [user]);
+  const getUserTypeDisplay = () => {
+    if (userType === 'professional' && professionalType) {
+      const typeLabels = {
+        'scolaire-privee': { label: 'École Privée', icon: 'fas fa-graduation-cap' },
+        'scolaire-publique': { label: 'École Publique', icon: 'fas fa-school' },
+        'association': { label: 'Association', icon: 'fas fa-users' }
+      };
+      return typeLabels[professionalType as keyof typeof typeLabels] || { label: professionalType, icon: 'fas fa-building' };
+    } else if (userType === 'particulier') {
+      return { label: 'Particulier', icon: 'fas fa-eye' };
+    }
+    return null;
+  };
+
+  const goBackToSelection = () => {
+    window.location.href = '/user-type-selection';
+  };
+
+  // Review form handlers
+  const handleReviewInputChange = (field: string, value: string | number) => {
+    setReviewForm(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleReviewSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!reviewForm.name || !reviewForm.comment || reviewForm.rating === 0) {
+      alert('Veuillez remplir tous les champs obligatoires.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      alert('Merci pour votre avis ! Il sera publié après modération.');
+      setReviewForm({ name: '', organization: '', rating: 0, comment: '' });
+    } catch (error) {
+      alert('Erreur lors de l\'envoi de votre avis. Veuillez réessayer.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const userTypeDisplay = getUserTypeDisplay();
 
   return (
     <>
-    <div dangerouslySetInnerHTML={{
-      __html: `
-        <style>
-          :root {
-            --primary-color: #28a745;
-            --text-dark: #2c3e50;
-            --text-light: #6c757d;
-            --bg-light: #f8f9fa;
-            --border-light: #e9ecef;
-            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --shadow-hover: 0 8px 25px rgba(0,0,0,0.15);
-          }
+      <style>{`
+        :root {
+          --primary-color: #27AE60;
+          --text-dark: #2c3e50;
+          --text-light: #6c757d;
+          --bg-light: #f8f9fa;
+          --border-light: #e9ecef;
+          --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+          --shadow-hover: 0 8px 25px rgba(0,0,0,0.15);
+        }
 
-          body { 
-            background-color: #f8f9fa; 
-            font-family: 'Raleway', sans-serif; 
-            margin: 0;
-            padding: 0;
-          }
+        body { 
+          background-color: #f8f9fa; 
+          font-family: 'Raleway', sans-serif; 
+          margin: 0;
+          padding: 0;
+        }
 
-          .spectacle-hero {
-            position: relative;
-            min-height: 70vh;
-            display: flex;
-            align-items: center;
-            overflow: hidden;
-            padding: 0;
-            background: url('https://edjs.art/assets/img/Asset 9@4x.png') center/cover, linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            background-size: cover, cover;
-          }
+        .spectacle-hero {
+          position: relative;
+          min-height: 70vh;
+          display: flex;
+          align-items: center;
+          overflow: hidden;
+          padding: 0;
+          background: url('https://edjs.art/assets/img/Asset 9@4x.png') center/cover, linear-gradient(135deg, #27AE60 0%, #2ECC71 100%);
+          background-size: cover, cover;
+        }
 
+        .hero-container {
+          width: 100%;
+          height: 100%;
+          margin: 0;
+          position: relative;
+          z-index: 10;
+          display: flex;
+        }
+
+        .hero-left {
+          flex: 1;
+          padding: 4rem 2rem 4rem 6rem;
+          display: flex;
+          align-items: center;
+          color: white;
+          margin-left: 5%;
+        }
+
+        .hero-right {
+          flex: 1;
+          position: relative;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .vintage-tv-container {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100%;
+          padding: 2rem;
+          width: 100%;
+          max-width: 400px;
+        }
+
+        .tv-frame {
+          background: linear-gradient(145deg, #27AE60, #2ECC71);
+          border-radius: 20px;
+          padding: 40px 35px 50px 35px;
+          box-shadow: 
+            0 0 30px rgba(0,0,0,0.3),
+            inset 0 0 20px rgba(0,0,0,0.2),
+            inset 0 2px 5px rgba(255,255,255,0.1);
+          position: relative;
+          max-width: 750px;
+          width: 100%;
+          margin: 0 auto;
+        }
+
+        .tv-screen {
+          background: #000;
+          border-radius: 15px;
+          padding: 15px;
+          position: relative;
+          overflow: hidden;
+          box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
+          width: 100%;
+          height: calc(100% - 60px);
+          aspect-ratio: 16/9;
+        }
+
+        .hero-title {
+          font-size: 4rem;
+          font-weight: 700;
+          margin-bottom: 1rem;
+          font-family: 'Amatic SC', cursive;
+          color: white;
+          text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+          line-height: 1.1;
+        }
+
+        .hero-subtitle {
+          font-size: 1.2rem;
+          margin-bottom: 2rem;
+          color: rgba(255,255,255,0.9);
+          font-weight: 400;
+        }
+
+        .info-pills {
+          display: flex;
+          gap: 0.5rem;
+          margin-bottom: 2rem;
+          flex-wrap: wrap;
+        }
+
+        .info-pill {
+          background: rgba(255, 255, 255, 0.2);
+          color: white;
+          padding: 0.6rem 1.2rem;
+          border-radius: 1.5rem;
+          font-size: 1rem;
+          font-weight: 500;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          backdrop-filter: blur(10px);
+        }
+
+        .btn-primary {
+          background: #BDCF00;
+          color: white;
+          border: none;
+          padding: 1rem 2rem;
+          border-radius: 2rem;
+          font-weight: 600;
+          font-size: 1.1rem;
+          text-decoration: none;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.75rem;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+          cursor: pointer;
+        }
+
+        .btn-primary:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+          color: white;
+          background: #a8b800;
+        }
+
+        .content-section {
+          padding: 4rem 0;
+          background: var(--bg-light);
+        }
+
+        .content-card {
+          background: white;
+          border-radius: 1rem;
+          padding: 2rem;
+          margin-bottom: 2rem;
+          box-shadow: var(--shadow);
+          transition: all 0.3s ease;
+          border: 1px solid var(--border-light);
+        }
+
+        .content-card:hover {
+          box-shadow: var(--shadow-hover);
+          transform: translateY(-2px);
+        }
+
+        .card-title {
+          color: var(--text-dark);
+          font-size: 1.5rem;
+          font-weight: 600;
+          margin-bottom: 1rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-family: 'Raleway', sans-serif;
+        }
+
+        .card-title i {
+          color: var(--primary-color);
+        }
+
+        .sidebar-card {
+          background: white;
+          border-radius: 1rem;
+          padding: 1.5rem;
+          margin-bottom: 1.5rem;
+          box-shadow: var(--shadow);
+          border: 1px solid var(--border-light);
+        }
+
+        .sidebar-card h3 {
+          color: var(--text-dark);
+          font-size: 1.25rem;
+          font-weight: 600;
+          margin-bottom: 1rem;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-family: 'Raleway', sans-serif;
+        }
+
+        .sidebar-card h3 i {
+          color: var(--primary-color);
+        }
+
+        .info-item {
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          padding: 0.5rem 0;
+          color: var(--text-light);
+          font-family: 'Raleway', sans-serif;
+        }
+
+        .info-item i {
+          color: var(--primary-color);
+          width: 20px;
+        }
+
+        @media (max-width: 768px) {
           .hero-container {
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            position: relative;
-            z-index: 10;
-            display: flex;
+            flex-direction: column;
           }
-
-          .hero-left {
-            flex: 1;
-            padding: 4rem 2rem 4rem 6rem;
-            display: flex;
-            align-items: center;
-            color: white;
-            margin-left: 5%;
-          }
-
-          .hero-right {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding-left: 2rem;
-          }
-
-          .vintage-tv-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            max-width: 400px;
-          }
-
-          .tv-frame {
-            background: linear-gradient(145deg, #8BC34A, #689F38);
-            border-radius: 20px;
-            padding: 30px 25px 40px 25px;
-            box-shadow: 0 0 30px rgba(0,0,0,0.3), inset 0 0 20px rgba(0,0,0,0.2), inset 0 2px 5px rgba(255,255,255,0.1);
-            position: relative;
-            width: 400px;
-            height: 400px;
-          }
-
-          .tv-screen {
-            background: #000;
-            border-radius: 15px;
-            padding: 15px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
-            width: 100%;
-            height: calc(100% - 60px);
-          }
-
-          .tv-video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 10px;
-            display: block;
-          }
-
-          .play-button-overlay {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            right: 15px;
-            bottom: 15px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: rgba(0,0,0,0.3);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-radius: 10px;
-          }
-
-          .play-button-overlay:hover {
-            background: rgba(0,0,0,0.5);
-          }
-
-          .play-button {
-            background: rgba(255,255,255,0.9);
-            border-radius: 50%;
-            width: 80px;
-            height: 80px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2rem;
-            color: #333;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            transition: all 0.3s ease;
-          }
-
-          .play-button:hover {
-            transform: scale(1.1);
-            background: white;
-          }
-
-          .play-button i {
-            margin-left: 4px;
-          }
-
-          .tv-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 20px;
-            padding: 0 20px;
-          }
-
-          .tv-knob {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: linear-gradient(145deg, #C0C0C0, #808080);
-            box-shadow: inset 0 2px 4px rgba(255,255,255,0.3), inset 0 -2px 4px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.2);
-            position: relative;
-          }
-
-          .tv-knob::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 8px;
-            height: 8px;
-            background: #333;
-            border-radius: 50%;
-          }
-
-          .tv-brand {
-            color: #333;
-            font-weight: bold;
-            font-size: 1.2rem;
-            text-shadow: 0 1px 2px rgba(255,255,255,0.5);
-            font-family: 'Amatic SC', cursive;
-          }
-
-          .floating-character {
-            position: absolute;
-            animation: float 6s ease-in-out infinite;
-            z-index: 5;
-          }
-
-          @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(2deg); }
-          }
-
-          .hero-title {
-            font-size: 4rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            font-family: 'Amatic SC', cursive;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            line-height: 1.1;
-          }
-
-          .hero-subtitle {
-            font-size: 1.2rem;
-            margin-bottom: 2rem;
-            color: rgba(255,255,255,0.9);
-          }
-
-          .vintage-tv-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            padding: 2rem;
-            width: 100%;
-            max-width: 400px;
-          }
-
-          .tv-frame {
-            background: linear-gradient(145deg, #8BC34A, #689F38);
-            border-radius: 20px;
-            padding: 30px 25px 40px 25px;
-            box-shadow: 0 0 30px rgba(0,0,0,0.3), inset 0 0 20px rgba(0,0,0,0.2), inset 0 2px 5px rgba(255,255,255,0.1);
-            position: relative;
-            width: 400px;
-            height: 400px;
-            margin: 0 auto;
-          }
-
-          .tv-screen {
-            background: #000;
-            border-radius: 15px;
-            padding: 15px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
-            width: 100%;
-            height: calc(100% - 60px);
-            aspect-ratio: 1;
-          }
-
-          .info-pills {
-            display: flex;
-            gap: 0.5rem;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
-          }
-
-          .info-pill {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            padding: 0.6rem 1.2rem;
-            border-radius: 1.5rem;
-            font-size: 1rem;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            backdrop-filter: blur(10px);
-          }
-
-          .cta-buttons {
-            display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
-          }
-
-          .hero-buttons {
-            display: flex;
-            gap: 1rem;
-            margin-top: 2rem;
-          }
-
-          .btn-primary {
-            background: linear-gradient(135deg, #6f42c1 0%, #8e44ad 100%);
-            color: white;
-            border: none;
-            padding: 1rem 2rem;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(111, 66, 193, 0.3);
-            text-decoration: none;
-            cursor: pointer;
-          }
-
-          .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(111, 66, 193, 0.4);
-            color: white;
-          }
-
-          .btn-primary-custom {
-            background: var(--primary-color);
-            color: white;
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
-            box-shadow: var(--shadow);
-          }
-
-          .btn-primary-custom:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--shadow-hover);
-            color: white;
-          }
-
-          .btn-secondary-custom {
-            background: transparent;
-            color: white;
-            padding: 1rem 2rem;
-            border: 2px solid white;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.3s ease;
-          }
-
-          .btn-secondary-custom:hover {
-            background: white;
-            color: var(--primary-color);
-            transform: translateY(-2px);
-          }
-
-          .content-section {
-            padding: 5rem 0;
-            background: white;
-          }
-
-          .section-title {
-            font-family: 'Amatic SC', cursive;
-            font-size: 3rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            text-align: center;
-            margin-bottom: 3rem;
-          }
-
-          .story-card, .educational-card {
-            background: white;
-            border-radius: 20px;
-            padding: 2.5rem;
-            box-shadow: var(--shadow);
-            margin-bottom: 2rem;
-            border-left: 5px solid var(--primary-color);
-          }
-
-          .card-title {
-            font-family: 'Amatic SC', cursive;
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: var(--primary-color);
-            margin-bottom: 1rem;
-          }
-
-          .card-text {
-            font-size: 1.1rem;
-            line-height: 1.7;
-            color: var(--text-dark);
-            margin-bottom: 1.5rem;
-          }
-
-          .themes-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1rem;
-            margin-top: 1.5rem;
-          }
-
-          .theme-item {
-            background: var(--bg-light);
-            padding: 1rem;
-            border-radius: 10px;
-            border-left: 3px solid var(--primary-color);
-          }
-
-          .sidebar-card {
-            background: white;
-            border-radius: 15px;
-            padding: 2rem;
-            box-shadow: var(--shadow);
-            margin-bottom: 2rem;
-            border-top: 4px solid var(--primary-color);
-          }
-
-          .sidebar-title {
-            font-family: 'Amatic SC', cursive;
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 1.5rem;
-            text-align: center;
-          }
-
-          @media (max-width: 768px) {
-            .hero-container {
-              flex-direction: column;
-            }
-            
-            .hero-left {
-              padding: 3rem 1.5rem 2rem;
-              text-align: center;
-            }
-            
-            .spectacle-title {
-              font-size: 3rem;
-            }
-            
-            .spectacle-info {
-              justify-content: center;
-            }
-            
-            .cta-buttons {
-              justify-content: center;
-            }
-          }
-        </style>
-
-        <!-- Hero Section -->
-        <section class="spectacle-hero">
-          <div class="hero-container">
-            <div class="hero-left">
-              <div class="hero-content">
-                <h1 class="hero-title">L'Enfant de l'Arbre</h1>
-                <p class="hero-subtitle">Une pièce théâtrale profonde sur la croissance et l'enracinement</p>
-                <div class="info-pills">
-                  <span class="info-pill">
-                    <i class="fas fa-clock"></i>50 minutes
-                  </span>
-                  <span class="info-pill">
-                    <i class="fas fa-users"></i>4 comédiens
-                  </span>
-                  <span class="info-pill" id="age-level-pill">
-                    <i class="fas fa-child"></i><span id="age-level-text">GS, CP, CE1, CE2</span>
-                  </span>
-                  <span class="info-pill">
-                    <i class="fas fa-theater-masks"></i>Conte poétique
-                  </span>
-                </div>
-                <div class="hero-buttons">
-                  <button class="btn-primary" onclick="window.handleReservation()">
-                    <i class="fas fa-ticket-alt"></i>
-                    Se connecter pour réserver
-                  </button>
-                </div>
-              </div>
-            </div>
-            
-            <div class="hero-right">
-              <div class="vintage-tv-container">
-                <div class="tv-frame">
-                  <div class="tv-screen">
-                    <img src="https://edjs.art/assets/img/spectacles/lenfant-de-larbre.png" alt="L'Enfant de l'Arbre Affiche" class="tv-video">
-                    <div class="play-button-overlay" onclick="openVideoPopup()">
-                      <div class="play-button">
-                        <i class="fas fa-play"></i>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="tv-controls">
-                    <div class="tv-knob"></div>
-                    <div class="tv-brand">EDJS</div>
-                    <div class="tv-knob"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Content Section -->
-        <section class="content-section">
-          <div class="container">
-            <div class="row">
-              <div class="col-lg-8">
-                <h2 class="section-title">L'Histoire</h2>
-                
-                <div class="story-card">
-                  <h3 class="card-title">Une Métaphore de la Croissance</h3>
-                  <p class="card-text">
-                    "L'enfant de l'arbre" raconte l'histoire poétique d'un enfant qui grandit en symbiose avec un arbre. 
-                    Cette pièce théâtrale explore les thèmes de l'enracinement, de la croissance et de la connexion 
-                    profonde entre l'être humain et la nature.
-                  </p>
-                  <p class="card-text">
-                    À travers quatre comédiens talentueux, cette œuvre nous invite à réfléchir sur notre place dans le monde, 
-                    sur l'importance de nos racines et sur la beauté de grandir en harmonie avec notre environnement. 
-                    Une expérience théâtrale riche en émotions et en enseignements.
-                  </p>
-                </div>
-
-                <div class="educational-card">
-                  <h3 class="card-title">Valeurs Pédagogiques</h3>
-                  <p class="card-text">
-                    Ce spectacle offre une réflexion profonde sur la croissance personnelle, 
-                    l'écologie et l'importance de nos origines dans la construction de notre identité.
-                  </p>
-                  
-                  <div class="themes-list">
-                    <div class="theme-item">
-                      <strong>Écologie</strong><br>
-                      Respect et protection de la nature
-                    </div>
-                    <div class="theme-item">
-                      <strong>Croissance personnelle</strong><br>
-                      Développement de l'identité
-                    </div>
-                    <div class="theme-item">
-                      <strong>Enracinement</strong><br>
-                      Importance des origines et traditions
-                    </div>
-                    <div class="theme-item">
-                      <strong>Philosophie</strong><br>
-                      Réflexion sur la condition humaine
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div class="col-lg-4">
-                <div class="sidebar-card">
-                  <h3 class="sidebar-title">Séances Disponibles</h3>
-                  <SessionsDisplay spectacleId="lenfant-de-larbre" onReservation={handleReservation} />
-                </div>
-                
-                <div class="sidebar-card">
-                  <h3 class="sidebar-title">Informations Pratiques</h3>
-                  <div style="space-y: 1rem;">
-                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
-                      <i class="fas fa-clock" style="color: var(--primary-color); width: 20px;"></i>
-                      <span><strong>Durée :</strong> 65 minutes</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
-                      <i class="fas fa-users" style="color: var(--primary-color); width: 20px;"></i>
-                      <span><strong>Distribution :</strong> 4 comédiens</span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
-                      <i class="fas fa-child" style="color: var(--primary-color); width: 20px;"></i>
-                      <span><strong>Âge :</strong> <span class="age-display">10 ans et +</span></span>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
-                      <i class="fas fa-theater-masks" style="color: var(--primary-color); width: 20px;"></i>
-                      <span><strong>Genre :</strong> Théâtre</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <script>
-          // Update age display based on user type
-          function updateAgeDisplay() {
-            const userType = sessionStorage.getItem('userType');
-            const professionalType = sessionStorage.getItem('professionalType');
-            const ageElements = document.querySelectorAll('.age-display');
-            
-            let displayText = '10 ans et +';
-            if (userType === 'professional' && professionalType === 'scolaire-privee') {
-              displayText = 'CM1, CM2, Collège';
-            }
-            
-            ageElements.forEach(el => {
-              el.textContent = displayText;
-            });
-          }
-
-          // Update on page load
-          updateAgeDisplay();
           
-          // Listen for user type changes
-          window.addEventListener('userTypeChanged', updateAgeDisplay);
-          window.addEventListener('storage', updateAgeDisplay);
-        </script>
-      `
-    }} />
+          .hero-left, .hero-right {
+            flex: none;
+            width: 100%;
+          }
+          
+          .hero-left {
+            padding: 2rem 1.5rem;
+          }
+          
+          .hero-right {
+            height: 50vh;
+          }
+          
+          .hero-title {
+            font-size: 2.5rem;
+          }
+        }
+      `}</style>
 
-    <div style={{ marginTop: '2rem' }}>
-      <SessionsDisplay 
-        spectacleId="lenfant-de-larbre" 
-        onReservation={handleReservation}
+      <VideoPopup 
+        isOpen={isVideoOpen} 
+        onClose={() => setIsVideoOpen(false)} 
+        videoUrl="https://youtube.com/shorts/iARC1DejKHo?feature=share" 
       />
-    </div>
+      
+      {userTypeDisplay && (
+        <div style={{
+          background: 'rgba(189, 207, 0, 0.05)',
+          borderBottom: '1px solid rgba(189, 207, 0, 0.1)',
+          padding: '12px 0'
+        }}>
+          <div style={{
+            maxWidth: '700px',
+            margin: '0 auto',
+            padding: '0 20px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px'
+            }}>
+              <i className={userTypeDisplay.icon} style={{color: '#BDCF00', fontSize: '18px'}}></i>
+              <div>
+                <span style={{
+                  fontWeight: 600,
+                  color: '#333',
+                  fontSize: '16px'
+                }}>{userTypeDisplay.label}</span>
+                <span style={{
+                  color: '#666',
+                  marginLeft: '8px',
+                  fontSize: '14px'
+                }}>• Rabat - Casablanca</span>
+              </div>
+            </div>
+            <button 
+              onClick={goBackToSelection}
+              style={{
+                background: 'transparent',
+                border: '1px solid #ccc',
+                color: '#666',
+                padding: '8px 16px',
+                borderRadius: '6px',
+                fontSize: '14px',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px'
+              }}
+            >
+              <i className="fas fa-arrow-left"></i>
+              Changer de profil
+            </button>
+          </div>
+        </div>
+      )}
 
-    <VideoPopup 
-      isOpen={isVideoOpen}
-      onClose={() => setIsVideoOpen(false)}
-      videoUrl="https://www.youtube.com/embed/dQw4w9WgXcQ"
-      title="L'enfant de l'arbre - Bande-annonce"
-    />
+      {/* Hero Section */}
+      <section className="spectacle-hero">
+        <div className="hero-container">
+          <div className="hero-left">
+            <div className="hero-content">
+              <h1 className="hero-title">L'enfant de l'arbre</h1>
+              <p className="hero-subtitle">Une histoire magique sur la nature et l'importance de préserver notre environnement</p>
+              <div className="info-pills">
+                <span className="info-pill">
+                  <i className="fas fa-clock"></i>50 minutes
+                </span>
+                <span className="info-pill">
+                  <i className="fas fa-users"></i>3 comédiens
+                </span>
+                {/* Debug conditional rendering */}
+                {/* Show study levels only for private schools */}
+                {userType === 'professional' && professionalType === 'scolaire-privee' && (
+                  <span className="info-pill">
+                    <i className="fas fa-child"></i>CE1, CE2, CM1
+                  </span>
+                )}
+                {/* Show age ranges for public schools, associations, and particulier */}
+                {(userType === 'particulier' || 
+                  (userType === 'professional' && professionalType === 'scolaire-publique') ||
+                  (userType === 'professional' && professionalType === 'association')) && (
+                  <span className="info-pill">
+                    <i className="fas fa-child"></i>6 ans et +
+                  </span>
+                )}
+                <span className="info-pill">
+                  <i className="fas fa-theater-masks"></i>Conte écologique
+                </span>
+              </div>
+              <div className="hero-buttons">
+                <button className="btn-primary" onClick={handleReservation}>
+                  <i className="fas fa-ticket-alt"></i>
+                  {user ? 'Réserver Maintenant' : 'Se connecter pour réserver'}
+                </button>
+              </div>
+            </div>
+          </div>
+          
+          <div className="hero-right">
+            <div className="vintage-tv-container" style={{
+              position: 'relative',
+              maxWidth: '750px',
+              margin: '0 auto'
+            }}>
+              <div className="tv-frame">
+                <div className="tv-screen">
+                  <img 
+                    src="/public/lovable-uploads/lenfant-de-larbre-poster.jpg" 
+                    alt="L'enfant de l'arbre Affiche" 
+                    style={{
+                      width: '100%', 
+                      height: 'auto', 
+                      borderRadius: '10px', 
+                      display: 'block'
+                    }}
+                  />
+                  <div 
+                    onClick={() => setIsVideoOpen(true)}
+                    style={{
+                      position: 'absolute', 
+                      top: 0, 
+                      left: 0, 
+                      right: 0, 
+                      bottom: 0, 
+                      display: 'flex', 
+                      justifyContent: 'center', 
+                      alignItems: 'center', 
+                      background: 'rgba(0,0,0,0.3)', 
+                      cursor: 'pointer', 
+                      transition: 'all 0.3s ease'
+                    }}
+                  >
+                    <div style={{
+                      background: 'rgba(255,255,255,0.9)', 
+                      borderRadius: '50%', 
+                      width: '80px', 
+                      height: '80px', 
+                      display: 'flex', 
+                      justifyContent: 'center', 
+                      alignItems: 'center', 
+                      fontSize: '2rem', 
+                      color: '#333', 
+                      boxShadow: '0 4px 15px rgba(0,0,0,0.3)', 
+                      transition: 'all 0.3s ease'
+                    }}>
+                      <i className="fas fa-play" style={{marginLeft: '4px'}}></i>
+                    </div>
+                  </div>
+                </div>
+                <div style={{
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'center', 
+                  marginTop: '20px', 
+                  padding: '0 20px'
+                }}>
+                  <div style={{
+                    width: '40px', 
+                    height: '40px', 
+                    borderRadius: '50%', 
+                    background: 'linear-gradient(145deg, #C0C0C0, #808080)', 
+                    boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.3), inset 0 -2px 4px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.2)'
+                  }}></div>
+                  <div style={{
+                    color: '#FFD700', 
+                    fontWeight: 'bold', 
+                    fontSize: '1.2rem', 
+                    textShadow: '2px 2px 4px rgba(0,0,0,0.5)', 
+                    letterSpacing: '2px'
+                  }}>EDJS</div>
+                  <div style={{
+                    width: '40px', 
+                    height: '40px', 
+                    borderRadius: '50%', 
+                    background: 'linear-gradient(145deg, #C0C0C0, #808080)', 
+                    boxShadow: 'inset 0 2px 4px rgba(255,255,255,0.3), inset 0 -2px 4px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.2)'
+                  }}></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
-    <SpectacleFooter />
+      {/* Main Content */}
+      <section className="content-section">
+        <div className="container">
+          <div className="row">
+            <div className="col-lg-8">
+              {/* Story & Synopsis Card */}
+              <div className="content-card">
+                <h2 className="card-title">
+                  <i className="fas fa-book-open"></i>
+                  Synopsis
+                </h2>
+                <p>Découvrez l'histoire touchante d'un enfant qui grandit au cœur d'un arbre magique. Une fable poétique qui nous enseigne l'importance de respecter et de protéger la nature qui nous entoure.</p>
+                
+                <p>Suivez ce petit héros dans son voyage à travers les saisons, où il apprend à comprendre les secrets de la forêt et l'importance de chaque être vivant. Une histoire qui sensibilise les enfants à l'écologie de manière poétique et accessible.</p>
+                
+                <p>Un spectacle qui éveille la conscience environnementale des jeunes spectateurs tout en les transportant dans un univers féerique plein de magie et d'émotions.</p>
+              </div>
+
+              {/* Themes Card */}
+              <div className="content-card">
+                <h2 className="card-title">
+                  <i className="fas fa-lightbulb"></i>
+                  Thèmes abordés
+                </h2>
+                <div className="row">
+                  <div className="col-md-6">
+                    <div className="info-item">
+                      <i className="fas fa-tree"></i>
+                      <span>Respect de la nature</span>
+                    </div>
+                    <div className="info-item">
+                      <i className="fas fa-seedling"></i>
+                      <span>Croissance et développement</span>
+                    </div>
+                    <div className="info-item">
+                      <i className="fas fa-leaf"></i>
+                      <span>Protection environnementale</span>
+                    </div>
+                  </div>
+                  <div className="col-md-6">
+                    <div className="info-item">
+                      <i className="fas fa-magic"></i>
+                      <span>Magie de la nature</span>
+                    </div>
+                    <div className="info-item">
+                      <i className="fas fa-sun"></i>
+                      <span>Cycle des saisons</span>
+                    </div>
+                    <div className="info-item">
+                      <i className="fas fa-heart"></i>
+                      <span>Connexion avec la nature</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Reviews Section */}
+              <div className="content-card">
+                <h2 className="card-title">
+                  <i className="fas fa-star"></i>
+                  Avis et commentaires
+                </h2>
+                
+                {/* Existing Reviews */}
+                <div className="reviews-list" style={{marginBottom: '2rem'}}>
+                  <div className="review-item" style={{padding: '1rem', backgroundColor: '#f8f9fa', borderRadius: '8px', marginBottom: '1rem', borderLeft: '4px solid #BDCF00'}}>
+                    <div style={{display: 'flex', alignItems: 'center', marginBottom: '0.5rem'}}>
+                      <div className="stars" style={{color: '#BDCF00', marginRight: '0.5rem'}}>
+                        <i className="fas fa-star"></i>
+                        <i className="fas fa-star"></i>
+                        <i className="fas fa-star"></i>
+                        <i className="fas fa-star"></i>
+                        <i className="fas fa-star"></i>
+                      </div>
+                      <strong style={{color: '#333'}}>Mme Chakir</strong>
+                      <span style={{color: '#666', marginLeft: '0.5rem', fontSize: '0.9rem'}}>École Primaire La Forêt</span>
+                    </div>
+                    <p style={{color: '#555', margin: 0}}>"L'enfant de l'arbre a émerveillé nos élèves ! Ils ont découvert l'importance de protéger la nature de manière poétique et touchante."</p>
+                  </div>
+                  
+                  <div className="review-item" style={{padding: '1rem', backgroundColor: '#f8f9fa', borderRadius: '8px', marginBottom: '1rem', borderLeft: '4px solid #BDCF00'}}>
+                    <div style={{display: 'flex', alignItems: 'center', marginBottom: '0.5rem'}}>
+                      <div className="stars" style={{color: '#BDCF00', marginRight: '0.5rem'}}>
+                        <i className="fas fa-star"></i>
+                        <i className="fas fa-star"></i>
+                        <i className="fas fa-star"></i>
+                        <i className="fas fa-star"></i>
+                        <i className="far fa-star"></i>
+                      </div>
+                      <strong style={{color: '#333'}}>Hassan M.</strong>
+                      <span style={{color: '#666', marginLeft: '0.5rem', fontSize: '0.9rem'}}>Parent</span>
+                    </div>
+                    <p style={{color: '#555', margin: 0}}>"Mes enfants sont revenus enchantés de ce spectacle ! Ils me parlent maintenant des arbres et des forêts avec tant de passion. Magnifique !"</p>
+                  </div>
+                </div>
+                
+                {/* Review Submission Form */}
+                <form onSubmit={handleReviewSubmit} className="review-form" style={{backgroundColor: '#fff', padding: '1.5rem', border: '2px solid #BDCF00', borderRadius: '8px'}}>
+                  <h3 style={{color: '#333', marginBottom: '1rem', fontSize: '1.2rem'}}>Laissez votre avis</h3>
+                  
+                  <div className="form-group" style={{marginBottom: '1rem'}}>
+                    <label style={{display: 'block', marginBottom: '0.5rem', color: '#333', fontWeight: 500}}>Votre nom *</label>
+                    <input 
+                      type="text" 
+                      value={reviewForm.name}
+                      onChange={(e) => handleReviewInputChange('name', e.target.value)}
+                      placeholder="Entrez votre nom"
+                      required
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem',
+                        border: '1px solid #ddd',
+                        borderRadius: '4px',
+                        fontSize: '1rem'
+                      }}
+                    />
+                  </div>
+                  
+                  <div className="form-group" style={{marginBottom: '1rem'}}>
+                    <label style={{display: 'block', marginBottom: '0.5rem', color: '#333', fontWeight: 500}}>Organisation (optionnel)</label>
+                    <input 
+                      type="text" 
+                      value={reviewForm.organization}
+                      onChange={(e) => handleReviewInputChange('organization', e.target.value)}
+                      placeholder="École, association, etc."
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem',
+                        border: '1px solid #ddd',
+                        borderRadius: '4px',
+                        fontSize: '1rem'
+                      }}
+                    />
+                  </div>
+                  
+                  <div className="form-group" style={{marginBottom: '1rem'}}>
+                    <label style={{display: 'block', marginBottom: '0.5rem', color: '#333', fontWeight: 500}}>Note *</label>
+                    <div className="star-rating" style={{display: 'flex', gap: '0.25rem', marginBottom: '0.5rem'}}>
+                      {[1, 2, 3, 4, 5].map(star => (
+                        <i 
+                          key={star}
+                          className={reviewForm.rating >= star ? 'fas fa-star' : 'far fa-star'}
+                          onClick={() => handleReviewInputChange('rating', star)}
+                          style={{
+                            fontSize: '1.5rem',
+                            color: '#BDCF00',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s'
+                          }}
+                        ></i>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <div className="form-group" style={{marginBottom: '1.5rem'}}>
+                    <label style={{display: 'block', marginBottom: '0.5rem', color: '#333', fontWeight: 500}}>Votre commentaire *</label>
+                    <textarea 
+                      value={reviewForm.comment}
+                      onChange={(e) => handleReviewInputChange('comment', e.target.value)}
+                      placeholder="Partagez votre expérience du spectacle..."
+                      rows={4}
+                      required
+                      style={{
+                        width: '100%',
+                        padding: '0.75rem',
+                        border: '1px solid #ddd',
+                        borderRadius: '4px',
+                        fontSize: '1rem',
+                        resize: 'vertical'
+                      }}
+                    ></textarea>
+                  </div>
+                  
+                  <button 
+                    type="submit"
+                    disabled={isSubmitting}
+                    style={{
+                      backgroundColor: isSubmitting ? '#ccc' : '#BDCF00',
+                      color: 'white',
+                      border: 'none',
+                      padding: '0.75rem 2rem',
+                      borderRadius: '4px',
+                      fontSize: '1rem',
+                      fontWeight: 600,
+                      cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                      transition: 'all 0.3s'
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!isSubmitting) (e.target as HTMLElement).style.backgroundColor = '#a8b800'
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!isSubmitting) (e.target as HTMLElement).style.backgroundColor = '#BDCF00'
+                    }}
+                  >
+                    {isSubmitting ? 'Envoi en cours...' : 'Publier mon avis'}
+                  </button>
+                </form>
+              </div>
+            </div>
+
+            <div className="col-lg-4">
+              {/* Available Sessions Card */}
+              <div className="sidebar-card">
+                <h3>
+                  <i className="fas fa-calendar-alt"></i>
+                  Séances Disponibles
+                </h3>
+                
+                {/* Tout public sessions - show for particulier */}
+                {(userType === 'particulier' || !userType) && (
+                  <>
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 24 Avril 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H00 - Rabat, Théâtre Bahnini</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/lenfant-de-larbre?session=rabat-avril-24-14h00'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
+                    
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Vendredi 25 Avril 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>10H00 - Casablanca, Complexe El Hassani</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/lenfant-de-larbre?session=casablanca-avril-25-10h00'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
+                  </>
+                )}
+                
+                {/* Private school sessions - show for scolaire-privee */}
+                {professionalType === 'scolaire-privee' && (
+                  <>
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Lundi 6 Octobre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09H30 - Rabat, Théâtre Bahnini</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/le-petit-prince?session=rabat-oct-6-09h30'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
+                    
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Lundi 6 Octobre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Rabat, Théâtre Bahnini</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/le-petit-prince?session=rabat-oct-6-14h30'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
+                    
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Vendredi 10 Octobre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09H30 - Casablanca, Complexe El Hassani</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/le-petit-prince?session=casablanca-oct-10-09h30'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
+                    
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Vendredi 10 Octobre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Casablanca, Complexe El Hassani</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/le-petit-prince?session=casablanca-oct-10-14h30'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
+                  </>
+                )}
+                
+                {/* Public school sessions - show for scolaire-publique */}
+                {professionalType === 'scolaire-publique' && (
+                  <>
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mardi 7 Octobre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Rabat, Théâtre Bahnini</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/le-petit-prince?session=rabat-oct-7-14h30'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
+                    
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 9 Octobre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09H30 - Casablanca, Complexe El Hassani</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/le-petit-prince?session=casablanca-oct-9-09h30'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
+                  </>
+                )}
+                
+                {/* Association sessions - show for association */}
+                {professionalType === 'association' && (
+                  <>
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mardi 7 Octobre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Rabat, Théâtre Bahnini</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/le-petit-prince?session=rabat-oct-7-14h30'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
+                    
+                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 9 Octobre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Casablanca, Complexe El Hassani</div>
+                      <button 
+                        onClick={() => window.location.href = '/reservation/le-petit-prince?session=casablanca-oct-9-14h30'}
+                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
+                      >
+                        <i className="fas fa-ticket-alt"></i>
+                        Réserver
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Booking Info Card */}
+              <div className="sidebar-card">
+                <h3>
+                  <i className="fas fa-info-circle"></i>
+                  Informations pratiques
+                </h3>
+                <div className="info-item">
+                  <i className="fas fa-clock"></i>
+                  <span>Durée : 50 minutes</span>
+                </div>
+                <div className="info-item">
+                  <i className="fas fa-users"></i>
+                  <span>Distribution : 3 comédiens</span>
+                </div>
+                {/* Age recommendation - hidden for private schools */}
+                {professionalType !== 'scolaire-privee' && (
+                  <div className="info-item">
+                    <i className="fas fa-child"></i>
+                    <span>Âge recommandé : 6 ans et +</span>
+                  </div>
+                )}
+                
+                {/* Study level - visible only for private schools */}
+                {professionalType === 'scolaire-privee' && (
+                  <div className="info-item">
+                    <i className="fas fa-graduation-cap"></i>
+                    <span>Niveaux scolaires : Primaire (CE1-CM1)</span>
+                  </div>
+                )}
+                <div className="info-item">
+                  <i className="fas fa-calendar"></i>
+                  <span>Période : Avril 2025</span>
+                </div>
+                <div className="info-item">
+                  <i className="fas fa-language"></i>
+                  <span>Langue : Français</span>
+                </div>
+                <div className="info-item">
+                  <i className="fas fa-heart"></i>
+                  <span>Genre : Conte écologique</span>
+                </div>
+              </div>
+
+              {/* Reservation Card */}
+              <div className="sidebar-card">
+                <h3>
+                  <i className="fas fa-ticket-alt"></i>
+                  Réservation
+                </h3>
+                <p style={{color: 'var(--text-light)', marginBottom: '1.5rem'}}>Réservez dès maintenant vos places pour cette histoire magique de l'enfant de l'arbre.</p>
+                <button className="btn-primary w-100" onClick={handleReservation} style={{width: '100%'}}>
+                  <i className="fas fa-ticket-alt"></i>
+                  {user ? 'Réserver Maintenant' : 'Se connecter pour réserver'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Next Spectacle Card Section */}
+      <section style={{padding: '4rem 0', background: '#f8f9fa'}}>
+        <div className="container">
+          <div className="row justify-content-center">
+            <div className="col-lg-8">
+              <div className="content-card" style={{textAlign: 'center'}}>
+                <h2 className="card-title" style={{marginBottom: '2rem'}}>
+                  <i className="fas fa-forward"></i>
+                  Prochain Spectacle
+                </h2>
+                <div className="row align-items-center">
+                  <div className="col-md-4">
+                    <img 
+                      src="/src/assets/flash @4x.png" 
+                      alt="Flash" 
+                      style={{
+                        width: '100%',
+                        height: 'auto',
+                        borderRadius: '12px',
+                        boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
+                      }}
+                    />
+                  </div>
+                  <div className="col-md-8" style={{textAlign: 'left', paddingLeft: '2rem'}}>
+                    <h3 style={{color: '#BDCF00', fontSize: '2rem', marginBottom: '1rem'}}>Flash</h3>
+                    <p style={{color: '#666', fontSize: '1.1rem', lineHeight: '1.6', marginBottom: '1.5rem'}}>
+                      L'histoire d'un jeune papillon qui découvre qu'il est éphémère et part à la recherche du Stade de France et de ses 454 projecteurs. 
+                      Une comédie musicale touchante sur l'acceptation et la beauté de l'instant présent.
+                    </p>
+                    <div style={{display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap'}}>
+                      <span style={{background: '#e3f2fd', color: '#1976d2', padding: '0.5rem 1rem', borderRadius: '20px', fontSize: '0.9rem'}}>
+                        <i className="fas fa-clock"></i> 65 min
+                      </span>
+                      <span style={{background: '#f3e5f5', color: '#7b1fa2', padding: '0.5rem 1rem', borderRadius: '20px', fontSize: '0.9rem'}}>
+                        <i className="fas fa-users"></i> 4 comédiens
+                      </span>
+                      <span style={{background: '#e8f5e8', color: '#388e3c', padding: '0.5rem 1rem', borderRadius: '20px', fontSize: '0.9rem'}}>
+                        <i className="fas fa-child"></i> 5 ans et +
+                      </span>
+                    </div>
+                    <button 
+                      className="btn-primary"
+                      onClick={() => window.location.href = '/spectacle/flash'}
+                      style={{
+                        padding: '0.75rem 2rem', 
+                        fontSize: '1rem',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.5rem'
+                      }}
+                      onMouseEnter={(e) => {
+                        (e.target as HTMLElement).style.background = '#a8b800';
+                        (e.target as HTMLElement).style.transform = 'translateY(-2px)';
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.target as HTMLElement).style.background = '#BDCF00';
+                        (e.target as HTMLElement).style.transform = 'translateY(0)';
+                      }}
+                    >
+                      <i className="fas fa-eye"></i>
+                      Découvrir Flash
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer style={{background: '#000', color: 'white', padding: '60px 0 20px 0'}}>
+        <div style={{maxWidth: '1200px', margin: '0 auto', padding: '0 20px'}}>
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '40px', marginBottom: '40px'}}>
+            
+            {/* Logo and Description */}
+            <div style={{textAlign: 'left'}}>
+              <div style={{marginBottom: '25px'}}>
+                <img 
+                  src="https://edjs.art/assets/img/Asset 2@4x.png" 
+                  alt="L'École des jeunes spectateurs" 
+                  style={{height: '80px', width: 'auto'}}
+                />
+              </div>
+              <p style={{color: 'white', fontSize: '0.9rem', lineHeight: '1.6', marginBottom: '20px'}}>
+                Chaque élève a l'opportunité de découvrir et d'explorer la richesse des arts de la scène à travers la danse, le théâtre et la musique, qui sont au cœur de notre programme.
+              </p>
+              <div style={{display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '10px', marginBottom: '10px'}}>
+                <i className="fas fa-phone" style={{color: '#BDCF00'}}></i>
+                <span style={{color: 'white'}}>+212 6 61 52 59 02</span>
+              </div>
+              <div style={{display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: '10px'}}>
+                <i className="fas fa-envelope" style={{color: '#BDCF00'}}></i>
+                <span style={{color: 'white'}}>inscription@edjs.ma</span>
+              </div>
+            </div>
+
+            {/* Navigation */}
+            <div style={{textAlign: 'center'}}>
+              <h3 style={{color: '#cccccc', marginBottom: '20px', fontSize: '1.2rem'}}>Navigation</h3>
+              <ul style={{listStyle: 'none', padding: 0, margin: 0}}>
+                <li style={{marginBottom: '8px'}}>
+                  <a href="/" style={{color: 'white', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.3s'}} 
+                     onMouseEnter={(e) => (e.target as HTMLElement).style.color = '#BDCF00'}
+                     onMouseLeave={(e) => (e.target as HTMLElement).style.color = 'white'}>
+                    Accueil
+                  </a>
+                </li>
+                <li style={{marginBottom: '8px'}}>
+                  <a href="/spectacles" style={{color: 'white', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.3s'}}
+                     onMouseEnter={(e) => (e.target as HTMLElement).style.color = '#BDCF00'}
+                     onMouseLeave={(e) => (e.target as HTMLElement).style.color = 'white'}>
+                    Spectacles
+                  </a>
+                </li>
+                <li style={{marginBottom: '8px'}}>
+                  <a href="https://edjs.art/gallery.html" style={{color: 'white', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.3s'}}
+                     onMouseEnter={(e) => (e.target as HTMLElement).style.color = '#BDCF00'}
+                     onMouseLeave={(e) => (e.target as HTMLElement).style.color = 'white'}>
+                    Galerie
+                  </a>
+                </li>
+                <li style={{marginBottom: '8px'}}>
+                  <a href="https://edjs.art/contact.html" style={{color: 'white', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.3s'}}
+                     onMouseEnter={(e) => (e.target as HTMLElement).style.color = '#BDCF00'}
+                     onMouseLeave={(e) => (e.target as HTMLElement).style.color = 'white'}>
+                    Contact
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Footer Bottom */}
+          <div style={{borderTop: '1px solid #333', paddingTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px'}}>
+            <p style={{color: 'white', margin: 0, fontSize: '0.85rem'}}>
+              Copyright © {new Date().getFullYear()} <a href="/" style={{color: '#BDCF00', textDecoration: 'none'}}>L'École des jeunes spectateurs</a>. Tous droits réservés.
+            </p>
+            <div style={{display: 'flex', gap: '20px'}}>
+              <a href="https://edjs.art/contact.html" style={{color: 'white', textDecoration: 'none', fontSize: '0.85rem'}}
+                 onMouseEnter={(e) => (e.target as HTMLElement).style.color = '#BDCF00'}
+                 onMouseLeave={(e) => (e.target as HTMLElement).style.color = 'white'}>
+                Conditions Générales
+              </a>
+              <a href="https://edjs.art/contact.html" style={{color: 'white', textDecoration: 'none', fontSize: '0.85rem'}}
+                 onMouseEnter={(e) => (e.target as HTMLElement).style.color = '#BDCF00'}
+                 onMouseLeave={(e) => (e.target as HTMLElement).style.color = 'white'}>
+                Politique de Confidentialité
+              </a>
+            </div>
+          </div>
+        </div>
+      </footer>
     </>
   );
 }

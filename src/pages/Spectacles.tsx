@@ -193,20 +193,39 @@ export default function Spectacles() {
 
   const handleReservation = (spectacleId: string, spectacleName: string = '') => {
     console.log('handleReservation called with:', spectacleId);
-    // Check if user is authenticated first
+    
+    // Get current user type from session storage
+    const currentUserType = sessionStorage.getItem('userType');
+    const currentProfessionalType = sessionStorage.getItem('professionalType');
+    
+    // Check if user is authenticated
     if (!user) {
-      // Show guest reservation modal with user type context
-      setGuestModal({
-        isOpen: true,
-        spectacleId,
-        spectacleName
-      });
-      return;
+      // For professionals (not logged in) - redirect to auth
+      if (currentUserType === 'professional') {
+        const returnUrl = encodeURIComponent(`/reservation/${spectacleId}`);
+        window.location.href = `/auth?return_url=${returnUrl}`;
+        return;
+      }
+      
+      // For particuliers (not logged in) - show popup with options
+      if (currentUserType === 'particulier' || !currentUserType) {
+        setGuestModal({
+          isOpen: true,
+          spectacleId,
+          spectacleName
+        });
+        return;
+      }
     }
     
-    // If user is authenticated, redirect to reservation page
-
-    navigate(`/reservation/${spectacleId}`);
+    // If user is authenticated, redirect to reservation page with user type context
+    // Map professional types to the correct userType format for session filtering
+    let mappedUserType = currentUserType;
+    if (currentUserType === 'professional' && currentProfessionalType) {
+      mappedUserType = currentProfessionalType; // Use the specific professional type for filtering
+    }
+    
+    navigate(`/reservation/${spectacleId}?userType=${mappedUserType}&professionalType=${currentProfessionalType || ''}`);
   };
 
   const handleDetails = (spectacleId: string) => {
@@ -1667,7 +1686,6 @@ export default function Spectacles() {
                   <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
                     <img src="/src/assets/spectacles elements/edjs miraat@4x.png" alt="Mirath Atfal" style="width: 150%; height: 120%; object-fit: contain;" />
                     <!-- Character Image -->
-                    <img src="/src/assets/spectacles%20elements/estevanico@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
                   </div>
                   
                   <!-- Right Side: Content -->
@@ -1846,8 +1864,6 @@ export default function Spectacles() {
                   <!-- Left Side: Affiche -->
                   <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
                     <img src="/assets/img/spectacles/estevanico.png" alt="Estevanico" style="width: 150%; height: 120%; object-fit: contain;" />
-                    <!-- Character Image -->
-                    <img src="/src/assets/spectacles%20elements/estevanico@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
                   </div>
                   
                   <!-- Right Side: Content -->
@@ -1894,19 +1910,17 @@ export default function Spectacles() {
                 </div>
               </div>
 
-              <!-- L'enfant de l'arbre -->
+              <!-- Flash -->
               <div class="col-lg-6 col-md-6 spectacle-item" data-category="primaire">
                 <div class="spectacle-card fade-in-up visible" style="background: url('https://edjs.art/assets/img/Asset%209@4x.png') center/cover; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden; width: 100%; height: 400px; display: flex; transition: all 0.4s ease; position: relative; margin: 20px 0;">
                   <!-- Status Badge -->
                   <div style="position: absolute; top: 15px; right: 15px; z-index: 10;">
-                    <div class="spectacle-card__status" style="background: #28a745; color: white; padding: 6px 12px; border-radius: 15px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Disponible</div>
+                    <div class="spectacle-card__status" style="background: #ff6b35; color: white; padding: 6px 12px; border-radius: 15px; font-size: 10px; font-weight: 700; text-transform: uppercase;">Disponible</div>
                   </div>
                   
                   <!-- Left Side: Affiche -->
                   <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
-                    <img src="/assets/img/spectacles/enfant-de-larbre.png" alt="L'enfant de l'arbre" style="width: 150%; height: 120%; object-fit: contain;" />
-                    <!-- Character Image -->
-                    <img src="/src/assets/spectacles%20elements/larbre@4x.png" alt="Character" style="position: absolute; bottom: 10px; right: -30px; width: 130px; height: 130px; object-fit: contain; z-index: 5;" />
+                    <img src="/src/assets/flash @4x.png" alt="Flash" style="width: 150%; height: 120%; object-fit: contain;" />
                   </div>
                   
                   <!-- Right Side: Content -->
@@ -1918,35 +1932,35 @@ export default function Spectacles() {
                       </div>
                       
                       <!-- Title -->
-                      <h3 class="spectacle-card__title" style="font-size: 32px; font-weight: 800; margin: 15px 0; line-height: 1.2; background: white; padding: 8px 15px; border-radius: 8px; display: inline-block; color: #333;">L'ENFANT DE L'ARBRE</h3>
+                      <h3 class="spectacle-card__title" style="font-size: 32px; font-weight: 800; margin: 15px 0; line-height: 1.2; background: white; padding: 8px 15px; border-radius: 8px; display: inline-block; color: #333;">FLASH</h3>
                       
                       
                       <!-- Info Badges -->
                       <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                          <i class="fas fa-clock" style="color: #28a745;"></i>
+                          <i class="fas fa-clock" style="color: #ff6b35;"></i>
                           <span>65 minutes</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display lenfant-de-larbre-age-study" id="lenfant-de-larbre-age-study" data-age="9 ans et +" data-study-level="CM2, Collège">
-                          <i class="fas fa-child" style="color: #28a745;"></i>
-                          <span class="age-level-text">10 ans et +</span>
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display flash-age-study" id="flash-age-study" data-age="5 ans et +" data-study-level="GS, CP, CE1, CE2">
+                          <i class="fas fa-child" style="color: #ff6b35;"></i>
+                          <span class="age-level-text">5 ans et +</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                          <i class="fas fa-users" style="color: #28a745;"></i>
+                          <i class="fas fa-users" style="color: #ff6b35;"></i>
                           <span>4 comédiens</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                          <i class="fas fa-theater-masks" style="color: #28a745;"></i>
-                          <span>Théâtre</span>
+                          <i class="fas fa-music" style="color: #ff6b35;"></i>
+                          <span>Comédie musicale</span>
                         </div>
                       </div>
                       
                       <!-- Buttons -->
                       <div style="display: flex; gap: 8px; justify-content: flex-start; margin-bottom: 20px; flex-wrap: wrap;">
-                        <button class="btn-reserve spectacle-btn" onclick="window.handleReservation('lenfant-de-larbre')" style="background: #28a745; color: white; padding: 10px 16px; border-radius: 8px; border: none; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">
+                        <button class="btn-reserve spectacle-btn" onclick="window.handleReservation('flash')" style="background: #ff6b35; color: white; padding: 10px 16px; border-radius: 8px; border: none; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">
                           Réserver
                         </button>
-                        <button class="btn-details spectacle-btn" onclick="window.handleDetails('lenfant-de-larbre')" style="background: transparent; color: #28a745; padding: 10px 16px; border: 2px solid #28a745; border-radius: 8px; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">Détails</button>
+                        <button class="btn-details spectacle-btn" onclick="window.handleDetails('flash')" style="background: transparent; color: #ff6b35; padding: 10px 16px; border: 2px solid #ff6b35; border-radius: 8px; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">Détails</button>
                       </div>
                     </div>
                   </div>
@@ -2089,7 +2103,7 @@ export default function Spectacles() {
               'simple-comme-bonjour': '/spectacle/simple-comme-bonjour',
               'charlotte': '/spectacle/charlotte',
               'estevanico': '/spectacle/estevanico',
-              'lenfant-de-larbre': '/spectacle/lenfant-de-larbre',
+              'flash': '/spectacle/flash',
               'antigone': '/spectacle/antigone',
               'alice-chez-les-merveilles': '/spectacle/alice-chez-les-merveilles',
               'leau-la': '/spectacle/leau-la'
@@ -2120,7 +2134,7 @@ export default function Spectacles() {
               'simple-comme-bonjour': 'https://edjs.art/reservation-simple-comme-bonjour.html',
               'charlotte': 'https://edjs.art/reservation-charlotte.html',
               'estevanico': 'https://edjs.art/reservation-estevanico.html',
-              'lenfant-de-larbre': 'https://edjs.art/reservation-lenfant-de-larbre.html',
+              'flash': 'https://edjs.art/reservation-flash.html',
               'antigone': 'https://edjs.art/reservation-antigone.html',
               'alice-chez-les-merveilles': 'https://edjs.art/reservation-alice-chez-les-merveilles.html',
               'leau-la': 'https://edjs.art/reservation-leau-la.html'

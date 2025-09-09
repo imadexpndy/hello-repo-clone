@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import VideoPopup from '@/components/VideoPopup';
 
-export default function SpectacleEstevanico() {
+export default function SpectacleLePetitPrinceAr() {
   const { user } = useAuth();
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   const [userType, setUserType] = useState<string>('');
@@ -64,7 +64,7 @@ export default function SpectacleEstevanico() {
     if (user) {
       // Pass user type as parameter to show only relevant sessions
       const userTypeParam = professionalType || userType || '';
-      window.location.href = `/reservation/estevanico?userType=${userTypeParam}`;
+      window.location.href = `/reservation/le-petit-prince-ar?userType=${userTypeParam}`;
     } else {
       const returnUrl = encodeURIComponent(window.location.href);
       window.location.href = `/auth?return_url=${returnUrl}`;
@@ -120,7 +120,7 @@ export default function SpectacleEstevanico() {
     <>
       <style>{`
         :root {
-          --primary-color: #F39C12;
+          --primary-color: #BDCF00;
           --text-dark: #2c3e50;
           --text-light: #6c757d;
           --bg-light: #f8f9fa;
@@ -143,7 +143,7 @@ export default function SpectacleEstevanico() {
           align-items: center;
           overflow: hidden;
           padding: 0;
-          background: url('https://edjs.art/assets/img/Asset 9@4x.png') center/cover, linear-gradient(135deg, #F39C12 0%, #E67E22 100%);
+          background: url('https://edjs.art/assets/img/Asset 9@4x.png') center/cover, linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           background-size: cover, cover;
         }
 
@@ -184,7 +184,7 @@ export default function SpectacleEstevanico() {
         }
 
         .tv-frame {
-          background: linear-gradient(145deg, #F39C12, #E67E22);
+          background: linear-gradient(145deg, #BDCF00, #D4E157);
           border-radius: 20px;
           padding: 40px 35px 50px 35px;
           box-shadow: 
@@ -433,20 +433,20 @@ export default function SpectacleEstevanico() {
         <div className="hero-container">
           <div className="hero-left">
             <div className="hero-content">
-              <h1 className="hero-title">Estevanico</h1>
-              <p className="hero-subtitle">L'incroyable voyage d'un explorateur marocain à travers l'Amérique</p>
+              <h1 className="hero-title">الأمير الصغير</h1>
+              <p className="hero-subtitle">رحلة شاعرية عبر النجوم واللقاءات الاستثنائية</p>
               <div className="info-pills">
                 <span className="info-pill">
-                  <i className="fas fa-clock"></i>65 minutes
+                  <i className="fas fa-clock"></i>60 دقيقة
                 </span>
                 <span className="info-pill">
-                  <i className="fas fa-users"></i>3 comédiens
+                  <i className="fas fa-users"></i>2 ممثلين
                 </span>
                 {/* Debug conditional rendering */}
                 {/* Show study levels only for private schools */}
                 {userType === 'professional' && professionalType === 'scolaire-privee' && (
                   <span className="info-pill">
-                    <i className="fas fa-child"></i>CM2, Collège, Lycée
+                    <i className="fas fa-child"></i>الابتدائي، الإعدادي، الثانوي
                   </span>
                 )}
                 {/* Show age ranges for public schools, associations, and particulier */}
@@ -454,11 +454,11 @@ export default function SpectacleEstevanico() {
                   (userType === 'professional' && professionalType === 'scolaire-publique') ||
                   (userType === 'professional' && professionalType === 'association')) && (
                   <span className="info-pill">
-                    <i className="fas fa-child"></i>9 ans et +
+                    <i className="fas fa-child"></i>7 سنوات فما فوق
                   </span>
                 )}
                 <span className="info-pill">
-                  <i className="fas fa-theater-masks"></i>Récit historique
+                  <i className="fas fa-theater-masks"></i>حكاية / رسم على الرمل
                 </span>
               </div>
               <div className="hero-buttons">
@@ -479,8 +479,8 @@ export default function SpectacleEstevanico() {
               <div className="tv-frame">
                 <div className="tv-screen">
                   <img 
-                    src="/public/lovable-uploads/estevanico-poster.jpg" 
-                    alt="Estevanico Affiche" 
+                    src="https://edjs.art/assets/img/affiche LPP VF .jpeg" 
+                    alt="Le Petit Prince Affiche" 
                     style={{
                       width: '100%', 
                       height: 'auto', 
@@ -565,48 +565,48 @@ export default function SpectacleEstevanico() {
               <div className="content-card">
                 <h2 className="card-title">
                   <i className="fas fa-book-open"></i>
-                  Synopsis
+                  الملخص
                 </h2>
-                <p>Découvrez l'histoire fascinante d'Estevanico, ce Marocain d'Azemmour qui devint le premier Africain à explorer l'Amérique du Nord au XVIe siècle. Un récit captivant d'aventure, de courage et de découverte.</p>
+                <p>الاقتباس المسرحي لتحفة سانت إكزوبيري يأخذنا في رحلة شاعرية وفلسفية عبر عالم الأمير الصغير. هذا العمل الخالد يستكشف المواضيع العالمية للصداقة والحب والحكمة واكتشاف الذات.</p>
                 
-                <p>Suivez Estevanico dans son incroyable périple à travers les terres inconnues d'Amérique, où il devient guide, interprète et explorateur. Son histoire nous révèle un personnage exceptionnel qui a su s'adapter à des cultures différentes et surmonter d'innombrables défis.</p>
+                <p>بطلنا، طيار تحطم في الصحراء، يلتقي بصبي صغير غامض قادم من كوكب آخر. من خلال حواراتهم المؤثرة، نكتشف مغامرات الأمير الصغير الاستثنائية ولقاءاته مع شخصيات ملونة: الملك، المغرور، السكير، رجل الأعمال، مشعل المصابيح والجغرافي.</p>
                 
-                <p>Un spectacle qui met en lumière une figure méconnue de l'histoire marocaine et mondiale, parfait pour sensibiliser les jeunes à la richesse de notre patrimoine historique et à l'importance de la tolérance culturelle.</p>
+                <p>هذا الاقتباس المحترم للنص الأصلي يجسد شاعرية كلمات سانت إكزوبيري في عرض بصري وموسيقي ساحر، يمكن للأطفال الوصول إليه بينما يلمس قلوب البالغين.</p>
               </div>
 
               {/* Themes Card */}
               <div className="content-card">
                 <h2 className="card-title">
                   <i className="fas fa-lightbulb"></i>
-                  Thèmes abordés
+                  المواضيع المطروحة
                 </h2>
                 <div className="row">
                   <div className="col-md-6">
                     <div className="info-item">
-                      <i className="fas fa-globe-americas"></i>
-                      <span>Découverte et exploration</span>
+                      <i className="fas fa-heart"></i>
+                      <span>الصداقة والعلاقات الإنسانية</span>
                     </div>
                     <div className="info-item">
-                      <i className="fas fa-handshake"></i>
-                      <span>Tolérance culturelle</span>
+                      <i className="fas fa-eye"></i>
+                      <span>أهمية الرؤية بالقلب</span>
                     </div>
                     <div className="info-item">
-                      <i className="fas fa-mountain"></i>
-                      <span>Courage et persévérance</span>
+                      <i className="fas fa-seedling"></i>
+                      <span>المسؤولية والالتزام</span>
                     </div>
                   </div>
                   <div className="col-md-6">
                     <div className="info-item">
-                      <i className="fas fa-flag"></i>
-                      <span>Patrimoine marocain</span>
+                      <i className="fas fa-star"></i>
+                      <span>البحث عن المعنى والجمال</span>
                     </div>
                     <div className="info-item">
-                      <i className="fas fa-compass"></i>
-                      <span>Adaptation et survie</span>
+                      <i className="fas fa-child"></i>
+                      <span>الطفولة والبراءة</span>
                     </div>
                     <div className="info-item">
-                      <i className="fas fa-book"></i>
-                      <span>Histoire et mémoire</span>
+                      <i className="fas fa-globe"></i>
+                      <span>نقد المجتمع البالغ</span>
                     </div>
                   </div>
                 </div>
@@ -616,7 +616,7 @@ export default function SpectacleEstevanico() {
               <div className="content-card">
                 <h2 className="card-title">
                   <i className="fas fa-star"></i>
-                  Avis et commentaires
+                  الآراء والتعليقات
                 </h2>
                 
                 {/* Existing Reviews */}
@@ -630,10 +630,10 @@ export default function SpectacleEstevanico() {
                         <i className="fas fa-star"></i>
                         <i className="fas fa-star"></i>
                       </div>
-                      <strong style={{color: '#333'}}>M. Benjelloun</strong>
-                      <span style={{color: '#666', marginLeft: '0.5rem', fontSize: '0.9rem'}}>Lycée Hassan II</span>
+                      <strong style={{color: '#333'}}>فاطمة م.</strong>
+                      <span style={{color: '#666', marginLeft: '0.5rem', fontSize: '0.9rem'}}>مدرسة الأندلس</span>
                     </div>
-                    <p style={{color: '#555', margin: 0}}>"Estevanico a permis à nos élèves de découvrir une figure historique marocaine méconnue. Un spectacle éducatif qui valorise notre patrimoine culturel."</p>
+                    <p style={{color: '#555', margin: 0}}>"عرض رائع أسر طلابنا من البداية إلى النهاية. المواضيع المطروحة مناسبة تماماً لأعمارهم وجعلتهم يفكرون في الصداقة والمسؤولية."</p>
                   </div>
                   
                   <div className="review-item" style={{padding: '1rem', backgroundColor: '#f8f9fa', borderRadius: '8px', marginBottom: '1rem', borderLeft: '4px solid #BDCF00'}}>
@@ -645,24 +645,24 @@ export default function SpectacleEstevanico() {
                         <i className="fas fa-star"></i>
                         <i className="far fa-star"></i>
                       </div>
-                      <strong style={{color: '#333'}}>Aicha R.</strong>
-                      <span style={{color: '#666', marginLeft: '0.5rem', fontSize: '0.9rem'}}>Parent</span>
+                      <strong style={{color: '#333'}}>أحمد ب.</strong>
+                      <span style={{color: '#666', marginLeft: '0.5rem', fontSize: '0.9rem'}}>ولي أمر</span>
                     </div>
-                    <p style={{color: '#555', margin: 0}}>"Mes enfants ont été fascinés par l'histoire d'Estevanico. Ils sont fiers de connaître ce héros marocain et parlent encore de ses aventures !"</p>
+                    <p style={{color: '#555', margin: 0}}>"اقتباس جميل للأمير الصغير. أطفالي أحبوه ولا يزالون يتحدثون عنه في المنزل. برافو لكل الفريق!"</p>
                   </div>
                 </div>
                 
                 {/* Review Submission Form */}
                 <form onSubmit={handleReviewSubmit} className="review-form" style={{backgroundColor: '#fff', padding: '1.5rem', border: '2px solid #BDCF00', borderRadius: '8px'}}>
-                  <h3 style={{color: '#333', marginBottom: '1rem', fontSize: '1.2rem'}}>Laissez votre avis</h3>
+                  <h3 style={{color: '#333', marginBottom: '1rem', fontSize: '1.2rem'}}>اترك رأيك</h3>
                   
                   <div className="form-group" style={{marginBottom: '1rem'}}>
-                    <label style={{display: 'block', marginBottom: '0.5rem', color: '#333', fontWeight: 500}}>Votre nom *</label>
+                    <label style={{display: 'block', marginBottom: '0.5rem', color: '#333', fontWeight: 500}}>اسمك *</label>
                     <input 
                       type="text" 
                       value={reviewForm.name}
                       onChange={(e) => handleReviewInputChange('name', e.target.value)}
-                      placeholder="Entrez votre nom"
+                      placeholder="أدخل اسمك"
                       required
                       style={{
                         width: '100%',
@@ -675,12 +675,12 @@ export default function SpectacleEstevanico() {
                   </div>
                   
                   <div className="form-group" style={{marginBottom: '1rem'}}>
-                    <label style={{display: 'block', marginBottom: '0.5rem', color: '#333', fontWeight: 500}}>Organisation (optionnel)</label>
+                    <label style={{display: 'block', marginBottom: '0.5rem', color: '#333', fontWeight: 500}}>المؤسسة (اختياري)</label>
                     <input 
                       type="text" 
                       value={reviewForm.organization}
                       onChange={(e) => handleReviewInputChange('organization', e.target.value)}
-                      placeholder="École, association, etc."
+                      placeholder="مدرسة، جمعية، إلخ."
                       style={{
                         width: '100%',
                         padding: '0.75rem',
@@ -692,7 +692,7 @@ export default function SpectacleEstevanico() {
                   </div>
                   
                   <div className="form-group" style={{marginBottom: '1rem'}}>
-                    <label style={{display: 'block', marginBottom: '0.5rem', color: '#333', fontWeight: 500}}>Note *</label>
+                    <label style={{display: 'block', marginBottom: '0.5rem', color: '#333', fontWeight: 500}}>التقييم *</label>
                     <div className="star-rating" style={{display: 'flex', gap: '0.25rem', marginBottom: '0.5rem'}}>
                       {[1, 2, 3, 4, 5].map(star => (
                         <i 
@@ -711,11 +711,11 @@ export default function SpectacleEstevanico() {
                   </div>
                   
                   <div className="form-group" style={{marginBottom: '1.5rem'}}>
-                    <label style={{display: 'block', marginBottom: '0.5rem', color: '#333', fontWeight: 500}}>Votre commentaire *</label>
+                    <label style={{display: 'block', marginBottom: '0.5rem', color: '#333', fontWeight: 500}}>تعليقك *</label>
                     <textarea 
                       value={reviewForm.comment}
                       onChange={(e) => handleReviewInputChange('comment', e.target.value)}
-                      placeholder="Partagez votre expérience du spectacle..."
+                      placeholder="شارك تجربتك مع العرض..."
                       rows={4}
                       required
                       style={{
@@ -750,7 +750,7 @@ export default function SpectacleEstevanico() {
                       if (!isSubmitting) (e.target as HTMLElement).style.backgroundColor = '#BDCF00'
                     }}
                   >
-                    {isSubmitting ? 'Envoi en cours...' : 'Publier mon avis'}
+                    {isSubmitting ? 'جاري الإرسال...' : 'نشر رأيي'}
                   </button>
                 </form>
               </div>
@@ -761,33 +761,33 @@ export default function SpectacleEstevanico() {
               <div className="sidebar-card">
                 <h3>
                   <i className="fas fa-calendar-alt"></i>
-                  Séances Disponibles
+                  الجلسات المتاحة
                 </h3>
                 
                 {/* Tout public sessions - show for particulier */}
                 {(userType === 'particulier' || !userType) && (
                   <>
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Samedi 15 Février 2025</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Samedi 4 Octobre 2025</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>15H00 - Rabat, Théâtre Bahnini</div>
                       <button 
-                        onClick={handleReservation}
+                        onClick={() => window.location.href = '/reservation/le-petit-prince-ar?session=rabat-oct-4-15h00'}
                         style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
                       >
                         <i className="fas fa-ticket-alt"></i>
-                        Réserver
+احجز
                       </button>
                     </div>
                     
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Samedi 22 Février 2025</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Samedi 11 Octobre 2025</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>15H00 - Casablanca, Complexe El Hassani</div>
                       <button 
-                        onClick={() => window.location.href = '/reservation/estevanico?session=casablanca-feb-22-15h00'}
+                        onClick={() => window.location.href = '/reservation/le-petit-prince-ar?session=casablanca-oct-11-15h00'}
                         style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
                       >
                         <i className="fas fa-ticket-alt"></i>
-                        Réserver
+احجز
                       </button>
                     </div>
                   </>
@@ -797,50 +797,50 @@ export default function SpectacleEstevanico() {
                 {professionalType === 'scolaire-privee' && (
                   <>
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Lundi 17 Février 2025</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Lundi 6 Octobre 2025</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09H30 - Rabat, Théâtre Bahnini</div>
                       <button 
-                        onClick={() => window.location.href = '/reservation/estevanico?session=rabat-feb-17-09h30'}
+                        onClick={() => window.location.href = '/reservation/le-petit-prince-ar?session=rabat-oct-6-09h30'}
                         style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
                       >
                         <i className="fas fa-ticket-alt"></i>
-                        Réserver
+احجز
                       </button>
                     </div>
                     
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Lundi 17 Février 2025</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Lundi 6 Octobre 2025</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Rabat, Théâtre Bahnini</div>
                       <button 
-                        onClick={() => window.location.href = '/reservation/estevanico?session=rabat-feb-17-14h30'}
+                        onClick={() => window.location.href = '/reservation/le-petit-prince-ar?session=rabat-oct-6-14h30'}
                         style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
                       >
                         <i className="fas fa-ticket-alt"></i>
-                        Réserver
+احجز
                       </button>
                     </div>
                     
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Vendredi 21 Février 2025</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Vendredi 10 Octobre 2025</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09H30 - Casablanca, Complexe El Hassani</div>
                       <button 
-                        onClick={() => window.location.href = '/reservation/estevanico?session=casablanca-feb-21-09h30'}
+                        onClick={() => window.location.href = '/reservation/le-petit-prince-ar?session=casablanca-oct-10-09h30'}
                         style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
                       >
                         <i className="fas fa-ticket-alt"></i>
-                        Réserver
+احجز
                       </button>
                     </div>
                     
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Vendredi 21 Février 2025</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Vendredi 10 Octobre 2025</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Casablanca, Complexe El Hassani</div>
                       <button 
-                        onClick={() => window.location.href = '/reservation/estevanico?session=casablanca-feb-21-14h30'}
+                        onClick={() => window.location.href = '/reservation/le-petit-prince-ar?session=casablanca-oct-10-14h30'}
                         style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
                       >
                         <i className="fas fa-ticket-alt"></i>
-                        Réserver
+احجز
                       </button>
                     </div>
                   </>
@@ -850,26 +850,26 @@ export default function SpectacleEstevanico() {
                 {professionalType === 'scolaire-publique' && (
                   <>
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mardi 18 Février 2025</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mardi 7 Octobre 2025</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Rabat, Théâtre Bahnini</div>
                       <button 
-                        onClick={() => window.location.href = '/reservation/estevanico?session=rabat-feb-18-14h30'}
+                        onClick={() => window.location.href = '/reservation/le-petit-prince?session=rabat-oct-7-14h30'}
                         style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
                       >
                         <i className="fas fa-ticket-alt"></i>
-                        Réserver
+احجز
                       </button>
                     </div>
                     
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 20 Février 2025</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 9 Octobre 2025</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09H30 - Casablanca, Complexe El Hassani</div>
                       <button 
-                        onClick={() => window.location.href = '/reservation/estevanico?session=casablanca-feb-20-09h30'}
+                        onClick={() => window.location.href = '/reservation/le-petit-prince-ar?session=casablanca-oct-9-09h30'}
                         style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
                       >
                         <i className="fas fa-ticket-alt"></i>
-                        Réserver
+احجز
                       </button>
                     </div>
                   </>
@@ -879,26 +879,26 @@ export default function SpectacleEstevanico() {
                 {professionalType === 'association' && (
                   <>
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mardi 18 Février 2025</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mardi 7 Octobre 2025</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Rabat, Théâtre Bahnini</div>
                       <button 
-                        onClick={() => window.location.href = '/reservation/estevanico?session=rabat-feb-18-14h30'}
+                        onClick={() => window.location.href = '/reservation/le-petit-prince?session=rabat-oct-7-14h30'}
                         style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
                       >
                         <i className="fas fa-ticket-alt"></i>
-                        Réserver
+احجز
                       </button>
                     </div>
                     
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 20 Février 2025</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 9 Octobre 2025</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Casablanca, Complexe El Hassani</div>
                       <button 
-                        onClick={() => window.location.href = '/reservation/estevanico?session=casablanca-feb-20-14h30'}
+                        onClick={() => window.location.href = '/reservation/le-petit-prince-ar?session=casablanca-oct-9-14h30'}
                         style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
                       >
                         <i className="fas fa-ticket-alt"></i>
-                        Réserver
+احجز
                       </button>
                     </div>
                   </>
@@ -909,21 +909,21 @@ export default function SpectacleEstevanico() {
               <div className="sidebar-card">
                 <h3>
                   <i className="fas fa-info-circle"></i>
-                  Informations pratiques
+                  معلومات عملية
                 </h3>
                 <div className="info-item">
                   <i className="fas fa-clock"></i>
-                  <span>Durée : 65 minutes</span>
+                  <span>المدة: 60 دقيقة</span>
                 </div>
                 <div className="info-item">
                   <i className="fas fa-users"></i>
-                  <span>Distribution : 3 comédiens</span>
+                  <span>التوزيع: 2 ممثلين</span>
                 </div>
                 {/* Age recommendation - hidden for private schools */}
                 {professionalType !== 'scolaire-privee' && (
                   <div className="info-item">
                     <i className="fas fa-child"></i>
-                    <span>Âge recommandé : 9 ans et +</span>
+                    <span>العمر الموصى به: 7 سنوات فما فوق</span>
                   </div>
                 )}
                 
@@ -931,20 +931,20 @@ export default function SpectacleEstevanico() {
                 {professionalType === 'scolaire-privee' && (
                   <div className="info-item">
                     <i className="fas fa-graduation-cap"></i>
-                    <span>Niveaux scolaires : CM2, Collège, Lycée</span>
+                    <span>المستويات الدراسية: الابتدائي</span>
                   </div>
                 )}
                 <div className="info-item">
                   <i className="fas fa-calendar"></i>
-                  <span>Période : Septembre 2025</span>
+                  <span>الفترة: أكتوبر 2025</span>
                 </div>
                 <div className="info-item">
                   <i className="fas fa-language"></i>
-                  <span>Langue : Français</span>
+                  <span>اللغة: العربية</span>
                 </div>
                 <div className="info-item">
                   <i className="fas fa-heart"></i>
-                  <span>Genre : Récit historique</span>
+                  <span>النوع: حكاية / رسم على الرمل</span>
                 </div>
               </div>
 
@@ -952,9 +952,9 @@ export default function SpectacleEstevanico() {
               <div className="sidebar-card">
                 <h3>
                   <i className="fas fa-ticket-alt"></i>
-                  Réservation
+                  الحجز
                 </h3>
-                <p style={{color: 'var(--text-light)', marginBottom: '1.5rem'}}>Réservez dès maintenant vos places pour découvrir l'incroyable histoire d'Estevanico.</p>
+                <p style={{color: 'var(--text-light)', marginBottom: '1.5rem'}}>احجز مقاعدك الآن لهذا الاقتباس السحري للأمير الصغير.</p>
                 <button className="btn-primary w-100" onClick={handleReservation} style={{width: '100%'}}>
                   <i className="fas fa-ticket-alt"></i>
                   {user ? 'Réserver Maintenant' : 'Se connecter pour réserver'}
@@ -978,7 +978,7 @@ export default function SpectacleEstevanico() {
                 <div className="row align-items-center">
                   <div className="col-md-4">
                     <img 
-                      src="/src/assets/spectacles affiches/flash @4x.png" 
+                      src="/src/assets/flash @4x.png" 
                       alt="Flash" 
                       style={{
                         width: '100%',
