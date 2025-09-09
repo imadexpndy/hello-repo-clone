@@ -590,7 +590,7 @@ export default function SpectacleLeauLa() {
                   <div style="space-y: 1rem;">
                     <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
                       <i class="fas fa-clock" style="color: var(--primary-color); width: 20px;"></i>
-                      <span><strong>Durée :</strong> 55 minutes</span>
+                      <span><strong>Durée :</strong> 65 minutes</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
                       <i class="fas fa-users" style="color: var(--primary-color); width: 20px;"></i>
@@ -598,7 +598,7 @@ export default function SpectacleLeauLa() {
                     </div>
                     <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
                       <i class="fas fa-child" style="color: var(--primary-color); width: 20px;"></i>
-                      <span><strong>Âge :</strong> <span class="age-display">5 ans et +</span></span>
+                      <span><strong>Âge :</strong> <span class="age-display">8 ans et +</span></span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
                       <i class="fas fa-theater-masks" style="color: var(--primary-color); width: 20px;"></i>
@@ -618,7 +618,7 @@ export default function SpectacleLeauLa() {
             const professionalType = sessionStorage.getItem('professionalType');
             const ageElements = document.querySelectorAll('.age-display');
             
-            let displayText = '5 ans et +';
+            let displayText = '8 ans et +';
             if (userType === 'professional' && professionalType === 'private_school') {
               displayText = 'CM1, CM2, Collège, Lycée';
             }

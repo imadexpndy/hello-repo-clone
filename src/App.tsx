@@ -9,6 +9,7 @@ import { RoleBasedRouter } from "@/components/RoleBasedRouter";
 import { UserRoleFixer } from '@/components/UserRoleFixer';
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import AuthCallback from "./pages/AuthCallback";
 import Unauthorized from "./pages/Unauthorized";
 import UserTypeSelection from "./pages/UserTypeSelection";
 import ProfessionalTypeSelection from "./pages/ProfessionalTypeSelection";
@@ -110,6 +111,7 @@ const App = () => {
               <Route path="/user-type-selection" element={<UserTypeSelection />} />
               <Route path="/professional-type-selection" element={<ProfessionalTypeSelection />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="/auth-pero" element={<AuthPero />} />
               <Route path="/unauthorized" element={<Unauthorized />} />
               <Route path="/profile" element={<Profile />} />

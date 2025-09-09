@@ -113,20 +113,37 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
   const renderPaymentInfo = () => {
     if (userRole !== 'b2c_user' && paymentMethod === 'bank_transfer') {
       return (
-        <Alert>
-          <AlertDescription>
-            <div>
-              <h4 className="font-semibold mb-2">Informations de virement</h4>
-              <p><strong>Bénéficiaire:</strong> École du Jeune Spectateur</p>
-              <p><strong>IBAN:</strong> MA64 011 780 0000001234567890</p>
-              <p><strong>RIB:</strong> 011 780 0000001234567890 23</p>
-              <p><strong>Référence:</strong> EDJS-{bookingId.slice(0, 8)}</p>
-              <p className="text-sm text-muted-foreground mt-2">
-                Veuillez indiquer la référence lors du virement pour faciliter l'identification de votre paiement.
-              </p>
-            </div>
-          </AlertDescription>
-        </Alert>
+        <div className="space-y-4">
+          <Alert>
+            <AlertDescription>
+              <div>
+                <h4 className="font-semibold mb-2">Informations de virement</h4>
+                <p><strong>Bénéficiaire:</strong> École du Jeune Spectateur</p>
+                <p><strong>IBAN:</strong> MA64 011 780 0000001234567890</p>
+                <p><strong>RIB:</strong> 011 780 0000001234567890 23</p>
+                <p><strong>Référence:</strong> EDJS-{bookingId.slice(0, 8)}</p>
+                <p className="text-sm text-muted-foreground mt-2">
+                  Veuillez indiquer la référence lors du virement pour faciliter l'identification de votre paiement.
+                </p>
+              </div>
+            </AlertDescription>
+          </Alert>
+          
+          <Alert className="border-orange-200 bg-orange-50">
+            <AlertDescription>
+              <div className="flex items-start gap-2">
+                <FileText className="h-4 w-4 text-orange-600 mt-0.5" />
+                <div>
+                  <h4 className="font-semibold text-orange-800 mb-1">Délai de paiement : 72 heures</h4>
+                  <p className="text-sm text-orange-700">
+                    Vous avez 72 heures pour effectuer le virement bancaire. 
+                    Une fois le paiement effectué, cliquez sur "J'ai effectué le paiement" pour nous notifier.
+                  </p>
+                </div>
+              </div>
+            </AlertDescription>
+          </Alert>
+        </div>
       );
     }
     return null;

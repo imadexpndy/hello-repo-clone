@@ -408,7 +408,7 @@ const handleLogin = async (e: React.FormEvent) => {
         email: adminEmail,
         password: adminPassword,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth`,
+          emailRedirectTo: `${window.location.origin}/auth/callback${window.location.search}`,
           data: {
             full_name: adminFullName || 'Administrator',
             email_confirm: false // Try to bypass email confirmation

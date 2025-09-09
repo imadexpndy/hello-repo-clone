@@ -616,7 +616,7 @@ export default function SpectacleEstevanico() {
                   </div>
                   <div class="info-item">
                     <i class="fas fa-users"></i>
-                    <span>Distribution : 3 comédiens</span>
+                    <span>Distribution : 4 comédiens</span>
                   </div>
                   <div class="info-item">
                     <i class="fas fa-theater-masks"></i>
@@ -624,7 +624,7 @@ export default function SpectacleEstevanico() {
                   </div>
                   <div class="info-item">
                     <i class="fas fa-child"></i>
-                    <span>${userTypeInfo.showStudyLevel ? 'Niveau scolaire : ' + getStudyLevelForSpectacle('estevanico') : 'Âge recommandé : 10 ans et +'}</span>
+                    <span>${userTypeInfo.showStudyLevel ? 'Niveaux scolaires : ' + getStudyLevelForSpectacle('estevanico') : 'Âge recommandé : 10 ans et +'}</span>
                   </div>
                   <div class="info-item">
                     <i class="fas fa-calendar"></i>

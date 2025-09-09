@@ -101,7 +101,12 @@ export default function GuestReservationModal({
                       <h4 className="font-semibold text-lg">Se connecter</h4>
                       <p className="text-gray-600 text-sm">J'ai déjà un compte</p>
                     </div>
-                    <Button className="w-full">Connexion</Button>
+                    <Button 
+                      onClick={handleLogin}
+                      className="w-full"
+                    >
+                      Se connecter
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -135,31 +140,21 @@ export default function GuestReservationModal({
                       <h4 className="font-semibold text-lg">Créer un compte</h4>
                       <p className="text-gray-600 text-sm">Profitez de tous les avantages</p>
                     </div>
-                    <Button variant="outline" className="w-full">S'inscrire</Button>
+                    <Button 
+                      variant="outline" 
+                      className="w-full"
+                      onClick={() => {
+                        const returnUrl = encodeURIComponent(window.location.href);
+                        window.location.href = `/auth?mode=register&return_url=${returnUrl}`;
+                      }}
+                    >
+                      S'inscrire
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
             </div>
 
-            {/* Professional User Notice */}
-            {isProfessional && (
-              <Card className="bg-amber-50 border-amber-200">
-                <CardContent className="p-4">
-                  <div className="flex items-start space-x-3">
-                    <div className="bg-amber-100 p-2 rounded-full">
-                      <Shield className="h-5 w-5 text-amber-600" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-amber-800 mb-1">Réservation professionnelle</h4>
-                      <p className="text-amber-700 text-sm">
-                        Les réservations pour les écoles et associations nécessitent un compte pour la gestion administrative et la facturation. 
-                        Veuillez vous connecter ou créer un compte professionnel.
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
 
             {/* Benefits of Creating Account */}
             <Card className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200">

@@ -698,7 +698,7 @@ export default function SpectacleTaraSurLaLune() {
                 </div>
                 <div className="info-item">
                   <i className="fas fa-child"></i>
-                  <span>{userType === 'professional' && professionalType === 'scolaire-privee' ? 'Niveau scolaire : Maternelle, Primaire' : 'Âge recommandé : 5 ans et +'}</span>
+                  <span>{userType === 'professional' && professionalType === 'scolaire-privee' ? 'Niveaux scolaires : Maternelle, Primaire' : 'Âge recommandé : 5 ans et +'}</span>
                 </div>
                 <div className="info-item">
                   <i className="fas fa-calendar"></i>

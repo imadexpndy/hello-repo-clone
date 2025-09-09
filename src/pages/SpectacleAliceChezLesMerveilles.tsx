@@ -625,7 +625,7 @@ export default function SpectacleAliceChezLesMerveilles() {
                   </div>
                   <div class="info-item">
                     <i class="fas fa-child"></i>
-                    <span>${userTypeInfo.showStudyLevel ? 'Niveau scolaire : ' + getStudyLevelForSpectacle('alice-chez-les-merveilles') : 'Âge recommandé : 5 ans et +'}</span>
+                    <span>${userTypeInfo.showStudyLevel ? 'Niveaux scolaires : ' + getStudyLevelForSpectacle('alice-chez-les-merveilles') : 'Âge recommandé : 5 ans et +'}</span>
                   </div>
                   <div class="info-item">
                     <i class="fas fa-calendar"></i>

@@ -38,7 +38,7 @@ interface ReservationData {
   numberOfAccompanists: number;
   
   // Individual fields
-  numberOfTickets: number;
+  numberOfParticipants: number;
 }
 
 const spectacleNames: { [key: string]: string } = {
@@ -94,7 +94,7 @@ export default function ReservationSimple() {
     numberOfChildren: 0,
     classLevel: '',
     numberOfAccompanists: 0,
-    numberOfTickets: 1
+    numberOfParticipants: 1
   });
 
   useEffect(() => {
@@ -120,10 +120,10 @@ export default function ReservationSimple() {
         if (reservationData.profileType === 'PRO') {
           return !!(reservationData.fullName && reservationData.email && reservationData.phone && 
                    reservationData.establishmentName && reservationData.professionalEmail && 
-                   reservationData.numberOfChildren > 0 && reservationData.classLevel);
+                   reservationData.numberOfChildren > 0 && reservationData.numberOfAccompanists >= 0 && reservationData.classLevel);
         } else {
           return !!(reservationData.fullName && reservationData.email && reservationData.phone && 
-                   reservationData.professionalEmail && reservationData.numberOfTickets > 0);
+                   reservationData.professionalEmail && reservationData.numberOfParticipants > 0);
         }
       default:
         return true;
@@ -157,7 +157,7 @@ export default function ReservationSimple() {
         sessionStorage.setItem('reservationPaymentData', JSON.stringify(paymentData));
         
         // Redirect to payment
-        window.location.href = `/payment?type=particulier&spectacle=${reservationData.spectacle}&participants=${reservationData.numberOfTickets}`;
+        window.location.href = `/payment?type=particulier&spectacle=${reservationData.spectacle}&participants=${reservationData.numberOfParticipants}`;
       } else {
         // Send email for professionals (existing flow)
         const emailData = {
@@ -407,7 +407,7 @@ export default function ReservationSimple() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Nombre de participants *
+                        Nombre d'enfants *
                       </label>
                       <input
                         type="number"
@@ -517,8 +517,8 @@ export default function ReservationSimple() {
                     <input
                       type="number"
                       min="1"
-                      value={reservationData.numberOfTickets || ''}
-                      onChange={(e) => handleInputChange('numberOfTickets', parseInt(e.target.value) || 1)}
+                      value={reservationData.numberOfParticipants || ''}
+                      onChange={(e) => handleInputChange('numberOfParticipants', parseInt(e.target.value) || 0)}
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent"
                       required
                     />
@@ -548,12 +548,13 @@ export default function ReservationSimple() {
                     <>
                       <div><strong>Public :</strong> {reservationData.publicType}</div>
                       <div><strong>Établissement :</strong> {reservationData.establishmentName}</div>
-                      <div><strong>Nombre de participants :</strong> {reservationData.numberOfChildren}</div>
+                      <div><strong>Nombre d'enfants :</strong> {reservationData.numberOfChildren}</div>
+                      <div><strong>Nombre d'accompagnateurs :</strong> {reservationData.numberOfAccompanists}</div>
                       <div><strong>Niveau d'étude :</strong> {reservationData.classLevel}</div>
                     </>
                   )}
                   {reservationData.profileType === 'Particulier' && (
-                    <div><strong>Nombre de participants :</strong> {reservationData.numberOfTickets}</div>
+                    <div><strong>Nombre de participants :</strong> {reservationData.numberOfParticipants}</div>
                   )}
                   <div><strong>Contact :</strong> {reservationData.fullName} - {reservationData.email}</div>
                 </div>

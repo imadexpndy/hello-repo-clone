@@ -183,7 +183,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
         email: formData.email,
         password: formData.password,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth${getReturnUrlParam()}`,
+          emailRedirectTo: `${window.location.origin}/auth/callback${getReturnUrlParam()}`,
           data: {
             full_name: formData.fullName,
             phone: formData.phone

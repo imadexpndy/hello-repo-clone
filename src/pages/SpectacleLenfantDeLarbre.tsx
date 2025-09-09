@@ -621,8 +621,8 @@ export default function SpectacleLenfantDeLarbre() {
             const ageElements = document.querySelectorAll('.age-display');
             
             let displayText = '10 ans et +';
-            if (userType === 'professional' && professionalType === 'private_school') {
-              displayText = 'CM2, Collège';
+            if (userType === 'professional' && professionalType === 'scolaire-privee') {
+              displayText = 'CM1, CM2, Collège';
             }
             
             ageElements.forEach(el => {

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, Clock, MapPin, Users, Ticket } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { PaymentStatusButton } from '@/components/PaymentStatusButton';
 
 interface Reservation {
   id: string;
@@ -15,7 +16,9 @@ interface Reservation {
   location: string;
   participants: number;
   status: 'confirmed' | 'pending' | 'cancelled';
-  paymentStatus: 'paid' | 'pending' | 'failed';
+  paymentStatus: 'paid' | 'pending' | 'confirmed';
+  userRole: string;
+  paymentDeadline?: string;
   totalAmount: number;
   bookingDate: string;
 }
@@ -41,9 +44,10 @@ const MyReservations = () => {
           location: 'RABAT THEATRE BAHNINI',
           participants: 2,
           status: 'confirmed',
-          paymentStatus: 'paid',
+          paymentStatus: 'confirmed',
           totalAmount: 120,
-          bookingDate: '2025-01-15'
+          bookingDate: '2025-01-15',
+          userRole: 'b2c_user'
         },
         {
           id: 'res-002',
@@ -55,7 +59,9 @@ const MyReservations = () => {
           status: 'pending',
           paymentStatus: 'pending',
           totalAmount: 180,
-          bookingDate: '2025-01-20'
+          bookingDate: '2025-01-20',
+          userRole: 'teacher_private',
+          paymentDeadline: '2025-01-23'
         }
       ];
       
@@ -85,8 +91,10 @@ const MyReservations = () => {
 
   const getPaymentStatusBadge = (status: string) => {
     switch (status) {
+      case 'confirmed':
+        return <Badge className="bg-green-100 text-green-800">Confirmé</Badge>;
       case 'paid':
-        return <Badge className="bg-blue-100 text-blue-800">Payé</Badge>;
+        return <Badge className="bg-blue-100 text-blue-800">En vérification</Badge>;
       case 'pending':
         return <Badge className="bg-orange-100 text-orange-800">En attente</Badge>;
       case 'failed':
@@ -192,24 +200,41 @@ const MyReservations = () => {
                           <span className="text-sm text-muted-foreground">Montant total:</span>
                           <span className="font-semibold text-lg">{reservation.totalAmount} MAD</span>
                         </div>
+                        {reservation.paymentDeadline && reservation.paymentStatus === 'pending' && (
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-sm text-muted-foreground">Délai de paiement:</span>
+                            <span className="text-sm font-medium text-orange-600">
+                              {new Date(reservation.paymentDeadline).toLocaleDateString('fr-FR')}
+                            </span>
+                          </div>
+                        )}
                         <div className="flex justify-between items-center">
                           <span className="text-sm text-muted-foreground">Statut:</span>
                           {getPaymentStatusBadge(reservation.paymentStatus)}
                         </div>
                       </div>
 
+                      {/* Payment Status Button for Bank Transfer */}
+                      <PaymentStatusButton 
+                        bookingId={reservation.id}
+                        currentStatus={reservation.paymentStatus}
+                        userRole={reservation.userRole}
+                        onStatusUpdate={(newStatus) => {
+                          setReservations(prev => prev.map(res => 
+                            res.id === reservation.id 
+                              ? { ...res, paymentStatus: newStatus as any }
+                              : res
+                          ));
+                        }}
+                      />
+
                       <div className="flex gap-2">
-                        {reservation.paymentStatus === 'pending' && (
-                          <Button size="sm" className="flex-1">
-                            Finaliser le paiement
-                          </Button>
-                        )}
                         {reservation.status === 'confirmed' && (
                           <Button variant="outline" size="sm" className="flex-1">
                             Télécharger le billet
                           </Button>
                         )}
-                        {reservation.status !== 'cancelled' && (
+                        {reservation.status !== 'cancelled' && reservation.paymentStatus !== 'confirmed' && (
                           <Button variant="destructive" size="sm">
                             Annuler
                           </Button>

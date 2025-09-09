@@ -61,34 +61,65 @@ export default function Spectacles() {
   const updateSpectacleVisibility = () => {
     const currentUserType = sessionStorage.getItem('userType');
     const currentProfessionalType = sessionStorage.getItem('professionalType');
-    const arabicCard = document.getElementById('le-petit-prince-ar-card');
+    const frenchCard = document.getElementById('le-petit-prince-fr-card') as HTMLElement;
+    const arabicCard = document.getElementById('le-petit-prince-ar-card') as HTMLElement;
     
     console.log('=== SPECTACLE VISIBILITY DEBUG ===');
     console.log('userType:', currentUserType);
     console.log('professionalType:', currentProfessionalType);
+    console.log('frenchCard found:', !!frenchCard);
     console.log('arabicCard found:', !!arabicCard);
     
-    if (currentUserType === 'professional' && currentProfessionalType === 'scolaire-privee' && arabicCard) {
-      console.log('✅ HIDING Arabic card for private schools');
-      arabicCard.style.setProperty('display', 'none', 'important');
-      arabicCard.style.visibility = 'hidden';
-      arabicCard.style.opacity = '0';
-      arabicCard.style.height = '0';
-      arabicCard.style.overflow = 'hidden';
-      arabicCard.style.margin = '0';
-      arabicCard.style.padding = '0';
-      arabicCard.style.transform = 'scale(0)';
-      console.log('Arabic card hidden successfully');
-    } else if (arabicCard) {
-      console.log('⚠️ SHOWING Arabic card - Conditions not met for hiding');
-      arabicCard.style.removeProperty('display');
-      arabicCard.style.visibility = 'visible';
-      arabicCard.style.opacity = '1';
-      arabicCard.style.height = 'auto';
-      arabicCard.style.overflow = 'visible';
-      arabicCard.style.margin = '20px 0';
-      arabicCard.style.padding = '';
-      arabicCard.style.transform = '';
+    const isPrivateSchool = currentUserType === 'professional' && currentProfessionalType === 'scolaire-privee';
+    
+    // Handle French Le Petit Prince card - only visible for private schools
+    if (frenchCard) {
+      if (!isPrivateSchool) {
+        console.log('✅ HIDING French Le Petit Prince card for non-private school users');
+        frenchCard.style.setProperty('display', 'none', 'important');
+        frenchCard.style.visibility = 'hidden';
+        frenchCard.style.opacity = '0';
+        frenchCard.style.height = '0';
+        frenchCard.style.overflow = 'hidden';
+        frenchCard.style.margin = '0';
+        frenchCard.style.padding = '0';
+        frenchCard.style.transform = 'scale(0)';
+      } else {
+        console.log('✅ SHOWING French Le Petit Prince card for private schools');
+        frenchCard.style.removeProperty('display');
+        frenchCard.style.visibility = 'visible';
+        frenchCard.style.opacity = '1';
+        frenchCard.style.height = 'auto';
+        frenchCard.style.overflow = 'visible';
+        frenchCard.style.margin = '20px 0';
+        frenchCard.style.padding = '';
+        frenchCard.style.transform = '';
+      }
+    }
+    
+    // Handle Arabic Le Petit Prince card - hidden for private schools
+    if (arabicCard) {
+      if (isPrivateSchool) {
+        console.log('✅ HIDING Arabic Le Petit Prince card for private schools');
+        arabicCard.style.setProperty('display', 'none', 'important');
+        arabicCard.style.visibility = 'hidden';
+        arabicCard.style.opacity = '0';
+        arabicCard.style.height = '0';
+        arabicCard.style.overflow = 'hidden';
+        arabicCard.style.margin = '0';
+        arabicCard.style.padding = '0';
+        arabicCard.style.transform = 'scale(0)';
+      } else {
+        console.log('✅ SHOWING Arabic card for non-private school users');
+        arabicCard.style.removeProperty('display');
+        arabicCard.style.visibility = 'visible';
+        arabicCard.style.opacity = '1';
+        arabicCard.style.height = 'auto';
+        arabicCard.style.overflow = 'visible';
+        arabicCard.style.margin = '20px 0';
+        arabicCard.style.padding = '';
+        arabicCard.style.transform = '';
+      }
     }
     console.log('=== END DEBUG ===');
   };
@@ -215,36 +246,64 @@ export default function Spectacles() {
       return;
     }
 
-    // Immediate filtering for private schools - multiple attempts
-    if (userType === 'professional' && professionalType === 'scolaire-privee') {
-      console.log('🎯 IMMEDIATE FILTER: Hiding Arabic card for private school');
+    // Immediate filtering for non-private schools - hide French Le Petit Prince
+    if (userType === 'professional' && professionalType !== 'scolaire-privee') {
+      console.log('🎯 IMMEDIATE FILTER: Hiding French Le Petit Prince card for non-private school');
       
-      const hideArabicCard = () => {
-        const arabicCard = document.getElementById('le-petit-prince-ar-card');
-        if (arabicCard) {
-          // Only hide the specific Arabic card, NOT its parent
-          arabicCard.style.setProperty('display', 'none', 'important');
-          arabicCard.style.visibility = 'hidden';
-          arabicCard.style.opacity = '0';
-          arabicCard.style.height = '0';
-          arabicCard.style.overflow = 'hidden';
-          arabicCard.style.margin = '0';
-          arabicCard.style.padding = '0';
-          arabicCard.style.transform = 'scale(0)';
-          console.log('✅ Arabic card hidden successfully (card only, not parent)');
+      const hideFrenchCard = () => {
+        const frenchCard = document.getElementById('le-petit-prince-fr-card');
+        if (frenchCard) {
+          frenchCard.style.setProperty('display', 'none', 'important');
+          frenchCard.style.visibility = 'hidden';
+          frenchCard.style.opacity = '0';
+          frenchCard.style.height = '0';
+          frenchCard.style.overflow = 'hidden';
+          frenchCard.style.margin = '0';
+          frenchCard.style.padding = '0';
+          frenchCard.style.transform = 'scale(0)';
+          console.log('✅ French Le Petit Prince card hidden successfully');
           return true;
         } else {
-          console.log('❌ Arabic card not found, retrying...');
+          console.log('❌ French Le Petit Prince card not found, retrying...');
           return false;
         }
       };
 
       // Try multiple times with increasing delays
-      setTimeout(hideArabicCard, 50);
-      setTimeout(hideArabicCard, 200);
-      setTimeout(hideArabicCard, 500);
-      setTimeout(hideArabicCard, 1000);
-      setTimeout(hideArabicCard, 2000);
+      setTimeout(hideFrenchCard, 50);
+      setTimeout(hideFrenchCard, 200);
+      setTimeout(hideFrenchCard, 500);
+      setTimeout(hideFrenchCard, 1000);
+      setTimeout(hideFrenchCard, 2000);
+    }
+    
+    // For individual users, also hide French Le Petit Prince
+    if (userType === 'particulier') {
+      console.log('🎯 IMMEDIATE FILTER: Hiding French Le Petit Prince card for individual users');
+      
+      const hideFrenchCard = () => {
+        const frenchCard = document.getElementById('le-petit-prince-fr-card');
+        if (frenchCard) {
+          frenchCard.style.setProperty('display', 'none', 'important');
+          frenchCard.style.visibility = 'hidden';
+          frenchCard.style.opacity = '0';
+          frenchCard.style.height = '0';
+          frenchCard.style.overflow = 'hidden';
+          frenchCard.style.margin = '0';
+          frenchCard.style.padding = '0';
+          frenchCard.style.transform = 'scale(0)';
+          console.log('✅ French Le Petit Prince card hidden for individual users');
+          return true;
+        }
+        return false;
+      };
+
+      // Try multiple times with increasing delays
+      setTimeout(hideFrenchCard, 50);
+      setTimeout(hideFrenchCard, 200);
+      setTimeout(hideFrenchCard, 500);
+      setTimeout(hideFrenchCard, 1000);
+      setTimeout(hideFrenchCard, 2000);
     }
 
     // Show spectacles section immediately after component mounts
@@ -645,10 +704,10 @@ export default function Spectacles() {
             <!-- Navigation Menu -->
             <nav class="nav-menu">
               <li class="nav-item">
-                <a href="https://edjs.art/" class="nav-link">QUI SOMMES NOUS</a>
+                <a href="https://edjs.art/" class="nav-link">QUI SOMME-NOUS ?</a>
               </li>
               <li class="nav-item">
-                <a href="/spectacles" class="nav-link">SPECTACLES</a>
+                <a href="/spectacles" class="nav-link">Nos Spectacles</a>
               </li>
               <li class="nav-item">
                 <a href="https://edjs.art/gallery" class="nav-link">GALERIE</a>
@@ -1352,7 +1411,7 @@ export default function Spectacles() {
           <div class="container">
             <div class="row g-4">
               <!-- Le Petit Prince -->
-              <div class="col-lg-6 col-md-6 spectacle-item" data-category="primaire">
+              <div class="col-lg-6 col-md-6 spectacle-item" data-category="primaire" id="le-petit-prince-fr-card">
                 <div class="spectacle-card fade-in-up visible" style="background: url('https://edjs.art/assets/img/Asset%209@4x.png') center/cover; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden; width: 100%; height: 400px; display: flex; transition: all 0.4s ease; position: relative; margin: 20px 0;">
                   <!-- Status Badge -->
                   <div style="position: absolute; top: 15px; right: 15px; z-index: 10;">
@@ -1382,7 +1441,7 @@ export default function Spectacles() {
                         <div style="display: flex; justify-content: flex-start; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                             <i class="fas fa-clock" style="color: #BDCF00;"></i>
-                            <span>60 mins</span>
+                            <span>60 minutes</span>
                           </div>
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display le-petit-prince-age-study" id="le-petit-prince-age-study" data-age="7 ans et +" data-study-level="CM1, CM2, Collège, Lycée">
                             <i class="fas fa-child" style="color: #BDCF00;"></i>
@@ -1402,11 +1461,11 @@ export default function Spectacles() {
                       </div>
                       
                       <!-- Buttons -->
-                      <div style="display: flex; gap: 8px; justify-content: flex-start; margin-bottom: 20px; flex-wrap: wrap;">
-                        <button class="btn-reserve spectacle-btn" onclick="window.handleReservation('le-petit-prince')" style="background: #BDCF00; color: white; padding: 6px 8px; border-radius: 8px; border: none; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">
+                      <div style="display: flex; flex-direction: column; gap: 8px; justify-content: flex-start; margin-bottom: 20px;">
+                        <button class="btn-reserve spectacle-btn" onclick="window.handleReservation('le-petit-prince')" style="background: #BDCF00; color: white; padding: 6px 8px; border-radius: 8px; border: none; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; width: 140px;">
                           Réserver
                         </button>
-                        <button class="btn-details spectacle-btn" onclick="window.handleDetails('le-petit-prince')" style="background: transparent; color: #BDCF00; padding: 6px 12px; border: 2px solid #BDCF00; border-radius: 8px; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">Détails</button>
+                        <button class="btn-details spectacle-btn" onclick="window.handleDetails('le-petit-prince')" style="background: transparent; color: #BDCF00; padding: 6px 12px; border: 2px solid #BDCF00; border-radius: 8px; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; width: 140px;">Détails</button>
                       </div>
                     </div>
                   </div>
@@ -1506,7 +1565,7 @@ export default function Spectacles() {
                         <div style="display: flex; justify-content: flex-start; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                             <i class="fas fa-clock" style="color: #6f42c1;"></i>
-                            <span>55 mins</span>
+                            <span>55 minutes</span>
                           </div>
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display tara-sur-la-lune-age-study" id="tara-sur-la-lune-age-study" data-age="5 ans et +" data-study-level="Maternelles, Primaires">
                             <i class="fas fa-child" style="color: #20c997;"></i>
@@ -1568,7 +1627,7 @@ export default function Spectacles() {
                         <div style="display: flex; justify-content: flex-start; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                             <i class="fas fa-clock" style="color: #dc3545;"></i>
-                            <span>60 mins</span>
+                            <span>60 minutes</span>
                           </div>
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display mirath-atfal-age-study" id="mirath-atfal-age-study" data-age="5 ans et +" data-study-level="Primaire, Collège, Lycée">
                             <i class="fas fa-child" style="color: #dc3545;"></i>
@@ -1689,9 +1748,9 @@ export default function Spectacles() {
                       <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-clock" style="color: #e91e63;"></i>
-                          <span>50 mins</span>
+                          <span>50 minutes</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display charlotte-age-study" id="charlotte-age-study" data-age="6 ans et +" data-study-level="Du GS au CE2">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display charlotte-age-study" id="charlotte-age-study" data-age="5 ans et +" data-study-level="Du GS au CE2">
                           <i class="fas fa-child" style="color: #e91e63;"></i>
                           <span class="age-level-text">5 ans et +</span>
                         </div>
@@ -1748,15 +1807,15 @@ export default function Spectacles() {
                       <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-clock" style="color: #17a2b8;"></i>
-                          <span>70 mins</span>
+                          <span>70 minutes</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display estevanico-age-study" id="estevanico-age-study" data-age="8 ans et +" data-study-level="CE2, CM1, CM2, Collège">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display estevanico-age-study" id="estevanico-age-study" data-age="10 ans et +" data-study-level="CE2, CM1, CM2, Collège">
                           <i class="fas fa-child" style="color: #17a2b8;"></i>
                           <span class="age-level-text">10 ans et +</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-users" style="color: #17a2b8;"></i>
-                          <span>3 comédiens</span>
+                          <span>4 comédiens</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-theater-masks" style="color: #17a2b8;"></i>
@@ -1807,7 +1866,7 @@ export default function Spectacles() {
                       <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-clock" style="color: #28a745;"></i>
-                          <span>65 mins</span>
+                          <span>65 minutes</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display lenfant-de-larbre-age-study" id="lenfant-de-larbre-age-study" data-age="9 ans et +" data-study-level="CM2, Collège">
                           <i class="fas fa-child" style="color: #28a745;"></i>
@@ -1863,14 +1922,14 @@ export default function Spectacles() {
                       
                       
                       <!-- Info Badges -->
-                      <div style="display: flex; flex-wrap: wrap; gap: 8px; margin: 15px 0; justify-content: flex-start;">
+                      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; margin: 15px 0;">
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-clock" style="color: #6f42c1;"></i>
                           <span>60 minutes</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display antigone-age-study" id="antigone-age-study" data-age="12 ans et +" data-study-level="Collège, Lycée">
                           <i class="fas fa-child" style="color: #6f42c1;"></i>
-                          <span class="age-level-text">12 ans et +</span>
+                          <span class="age-level-text">Collège, Lycée</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-users" style="color: #6f42c1;"></i>
@@ -1878,7 +1937,7 @@ export default function Spectacles() {
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-theater-masks" style="color: #6f42c1;"></i>
-                          <span>Théâtre classique</span>
+                          <span>Tragédie</span>
                         </div>
                       </div>
                       
@@ -1986,9 +2045,9 @@ export default function Spectacles() {
                           <i class="fas fa-clock" style="color: #20c997;"></i>
                           <span>55 minutes</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display leau-la-age-study" id="leau-la-age-study" data-age="9 ans et +" data-study-level="CM1, CM2, Collège, Lycée">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display leau-la-age-study" id="leau-la-age-study" data-age="8 ans et +" data-study-level="CM1, CM2, Collège, Lycée">
                           <i class="fas fa-child" style="color: #20c997;"></i>
-                          <span class="age-level-text">5 ans et +</span>
+                          <span class="age-level-text">8 ans et +</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-users" style="color: #20c997;"></i>

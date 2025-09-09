@@ -689,7 +689,7 @@ export default function SpectacleCharlotte() {
                   </div>
                   <div class="info-item">
                     <i class="fas fa-child"></i>
-                    <span>${userTypeInfo.showStudyLevel ? 'Niveau scolaire : ' + getStudyLevelForSpectacle('charlotte') : 'Âge recommandé : 5 ans et +'}</span>
+                    <span>${userTypeInfo.showStudyLevel ? 'Niveaux scolaires : ' + getStudyLevelForSpectacle('charlotte') : 'Âge recommandé : 5 ans et +'}</span>
                   </div>
                   <div class="info-item">
                     <i class="fas fa-calendar"></i>

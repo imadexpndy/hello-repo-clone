@@ -830,7 +830,7 @@ export default function SpectacleMirathAtfal() {
                 </div>
                 <div className="info-item">
                   <i className="fas fa-child"></i>
-                  <span>{userTypeInfo.showStudyLevel ? 'Niveau scolaire : Maternelle, Primaire' : 'Âge recommandé : 5 ans et +'}</span>
+                  <span>{userTypeInfo.showStudyLevel ? 'Niveaux scolaires : Maternelle, Primaire' : 'Âge recommandé : 5 ans et +'}</span>
                 </div>
                 <div className="info-item">
                   <i className="fas fa-calendar"></i>
