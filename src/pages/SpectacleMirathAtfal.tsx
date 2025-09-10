@@ -479,7 +479,7 @@ export default function SpectacleMirathAtfal() {
               <div className="tv-frame">
                 <div className="tv-screen">
                   <img 
-                    src="/src/assets/Tara_Sur_La_Lune_Web_020.jpg" 
+                    src="/assets/Tara_Sur_La_Lune_Web_020.jpg" 
                     alt="Mirath Atfal" 
                     style={{
                       width: '100%', 

@@ -479,7 +479,7 @@ export default function SpectacleCharlotte() {
               <div className="tv-frame">
                 <div className="tv-screen">
                   <img 
-                    src="/src/assets/Tara_Sur_La_Lune_Web_020.jpg" 
+                    src="/assets/Tara_Sur_La_Lune_Web_020.jpg" 
                     alt="Charlotte Affiche" 
                     style={{
                       width: '100%', 
