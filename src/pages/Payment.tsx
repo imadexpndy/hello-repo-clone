@@ -248,7 +248,7 @@ export default function Payment() {
                 
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span>Nombre de participants :</span>
+                    <span>Nombre de billets :</span>
                     <span>{participants}</span>
                   </div>
                   <div className="flex justify-between">

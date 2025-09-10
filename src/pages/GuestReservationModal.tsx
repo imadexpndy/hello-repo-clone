@@ -254,7 +254,7 @@ export default function GuestReservationModal({
               </div>
               {guestForm.organizationType === 'individual' ? (
                 <div>
-                  <label className="block text-sm font-medium mb-2">Nombre de participants *</label>
+                  <label className="block text-sm font-medium mb-2">Nombre de billets *</label>
                   <Input
                     required
                     type="number"

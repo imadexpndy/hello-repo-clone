@@ -512,7 +512,7 @@ export default function ReservationSimple() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Nombre de participants *
+                      Nombre de billets *
                     </label>
                     <input
                       type="number"
@@ -554,7 +554,7 @@ export default function ReservationSimple() {
                     </>
                   )}
                   {reservationData.profileType === 'Particulier' && (
-                    <div><strong>Nombre de participants :</strong> {reservationData.numberOfParticipants}</div>
+                    <div><strong>Nombre de billets :</strong> {reservationData.numberOfParticipants}</div>
                   )}
                   <div><strong>Contact :</strong> {reservationData.fullName} - {reservationData.email}</div>
                 </div>

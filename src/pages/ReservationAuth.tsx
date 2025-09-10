@@ -368,7 +368,7 @@ const ReservationAuth = () => {
                   )}
                   
                   <div className="space-y-2">
-                    <Label htmlFor="participantCount" className="text-sm font-medium text-foreground">Nombre de participants</Label>
+                    <Label htmlFor="participantCount" className="text-sm font-medium text-foreground">Nombre de billets</Label>
                     <Input
                       id="participantCount"
                       type="number"
