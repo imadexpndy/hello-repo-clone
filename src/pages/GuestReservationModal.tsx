@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { X, User, UserPlus, LogIn, Star, Shield, Clock, Gift } from 'lucide-react';
+import { getUserTypeSessions } from '@/data/sessions';
 
 interface GuestReservationModalProps {
   isOpen: boolean;
@@ -30,8 +31,10 @@ export default function GuestReservationModal({
     organizationName: '',
     numberOfChildren: 0,
     numberOfAccompanists: 0,
-    notes: ''
+    notes: '',
+    selectedSession: ''
   });
+  const [availableSessions, setAvailableSessions] = useState<any[]>([]);
 
   if (!isOpen) return null;
 
@@ -48,6 +51,9 @@ export default function GuestReservationModal({
   };
 
   const handleGuestReservation = () => {
+    // Load available sessions for particulier users
+    const sessions = getUserTypeSessions(spectacleId, 'particulier');
+    setAvailableSessions(sessions);
     setStep('guest-form');
   };
 
@@ -268,6 +274,27 @@ export default function GuestReservationModal({
               )}
             </div>
 
+
+            {/* Session Selection */}
+            <div>
+              <label className="block text-sm font-medium mb-2">Séance souhaitée *</label>
+              <select
+                required
+                className="w-full p-2 border rounded-md"
+                value={guestForm.selectedSession}
+                onChange={(e) => setGuestForm({...guestForm, selectedSession: e.target.value})}
+              >
+                <option value="">Choisir une séance</option>
+                {availableSessions.map((session) => (
+                  <option key={session.id} value={session.id}>
+                    {session.date} à {session.time} - {session.venue} ({session.city})
+                  </option>
+                ))}
+              </select>
+              {availableSessions.length === 0 && (
+                <p className="text-sm text-gray-500 mt-1">Aucune séance disponible pour les particuliers</p>
+              )}
+            </div>
 
             <div>
               <label className="block text-sm font-medium mb-2">Notes ou demandes spéciales</label>
