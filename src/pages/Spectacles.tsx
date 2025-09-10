@@ -1889,7 +1889,7 @@ export default function Spectacles() {
                   
                   <!-- Left Side: Affiche -->
                   <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
-                    <img src="/src/assets/flash @4x.png" alt="Flash" style="width: 150%; height: 120%; object-fit: contain;" />
+                    <img src="/assets/flash @4x.png" alt="Flash" style="width: 150%; height: 120%; object-fit: contain;" />
                   </div>
                   
                   <!-- Right Side: Content -->
