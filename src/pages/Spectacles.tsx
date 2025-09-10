@@ -65,60 +65,53 @@ export default function Spectacles() {
     const arabicCard = document.getElementById('le-petit-prince-ar-card') as HTMLElement;
     
     console.log('=== SPECTACLE VISIBILITY DEBUG ===');
-    console.log('userType:', currentUserType);
-    console.log('professionalType:', currentProfessionalType);
-    console.log('frenchCard found:', !!frenchCard);
-    console.log('arabicCard found:', !!arabicCard);
-    
-    const isPrivateSchool = currentUserType === 'professional' && currentProfessionalType === 'scolaire-privee';
-    
-    // Handle French Le Petit Prince card - only visible for private schools
-    if (frenchCard) {
-      if (!isPrivateSchool) {
-        console.log('✅ HIDING French Le Petit Prince card for non-private school users');
+    console.log('Current user type:', currentUserType);
+    console.log('Current professional type:', currentProfessionalType);
+    console.log('French card found:', !!frenchCard);
+    console.log('Arabic card found:', !!arabicCard);
+
+    if (currentUserType === 'professional' && currentProfessionalType !== 'scolaire-privee') {
+      // Hide French version for non-private schools
+      if (frenchCard) {
         frenchCard.style.setProperty('display', 'none', 'important');
-        frenchCard.style.visibility = 'hidden';
-        frenchCard.style.opacity = '0';
-        frenchCard.style.height = '0';
-        frenchCard.style.overflow = 'hidden';
-        frenchCard.style.margin = '0';
-        frenchCard.style.padding = '0';
-        frenchCard.style.transform = 'scale(0)';
-      } else {
-        console.log('✅ SHOWING French Le Petit Prince card for private schools');
-        frenchCard.style.removeProperty('display');
-        frenchCard.style.visibility = 'visible';
-        frenchCard.style.opacity = '1';
-        frenchCard.style.height = 'auto';
-        frenchCard.style.overflow = 'visible';
-        frenchCard.style.margin = '20px 0';
-        frenchCard.style.padding = '';
-        frenchCard.style.transform = '';
+        console.log('✅ Hidden French Le Petit Prince for non-private school');
       }
-    }
-    
-    // Handle Arabic Le Petit Prince card - hidden for private schools
-    if (arabicCard) {
-      if (isPrivateSchool) {
-        console.log('✅ HIDING Arabic Le Petit Prince card for private schools');
-        arabicCard.style.setProperty('display', 'none', 'important');
-        arabicCard.style.visibility = 'hidden';
-        arabicCard.style.opacity = '0';
-        arabicCard.style.height = '0';
-        arabicCard.style.overflow = 'hidden';
-        arabicCard.style.margin = '0';
-        arabicCard.style.padding = '0';
-        arabicCard.style.transform = 'scale(0)';
-      } else {
-        console.log('✅ SHOWING Arabic card for non-private school users');
-        arabicCard.style.removeProperty('display');
+      
+      // Show Arabic version for non-private schools
+      if (arabicCard) {
+        arabicCard.style.setProperty('display', 'block', 'important');
         arabicCard.style.visibility = 'visible';
         arabicCard.style.opacity = '1';
-        arabicCard.style.height = 'auto';
-        arabicCard.style.overflow = 'visible';
-        arabicCard.style.margin = '20px 0';
-        arabicCard.style.padding = '';
-        arabicCard.style.transform = '';
+        console.log('✅ Shown Arabic Le Petit Prince for non-private school');
+      }
+    } else if (currentUserType === 'professional' && currentProfessionalType === 'scolaire-privee') {
+      // Show French version for private schools
+      if (frenchCard) {
+        frenchCard.style.setProperty('display', 'block', 'important');
+        frenchCard.style.visibility = 'visible';
+        frenchCard.style.opacity = '1';
+        console.log('✅ Shown French Le Petit Prince for private school');
+      }
+      
+      // Hide Arabic version for private schools
+      if (arabicCard) {
+        arabicCard.style.setProperty('display', 'none', 'important');
+        console.log('✅ Hidden Arabic Le Petit Prince for private school');
+      }
+    } else if (currentUserType === 'particulier') {
+      // Show BOTH French and Arabic versions for individual users
+      if (frenchCard) {
+        frenchCard.style.setProperty('display', 'block', 'important');
+        frenchCard.style.visibility = 'visible';
+        frenchCard.style.opacity = '1';
+        console.log('✅ Shown French Le Petit Prince for individual user');
+      }
+      
+      if (arabicCard) {
+        arabicCard.style.setProperty('display', 'block', 'important');
+        arabicCard.style.visibility = 'visible';
+        arabicCard.style.opacity = '1';
+        console.log('✅ Shown Arabic Le Petit Prince for individual user');
       }
     }
     console.log('=== END DEBUG ===');
@@ -223,6 +216,8 @@ export default function Spectacles() {
     let mappedUserType = currentUserType;
     if (currentUserType === 'professional' && currentProfessionalType) {
       mappedUserType = currentProfessionalType; // Use the specific professional type for filtering
+    } else if (currentUserType === 'particulier') {
+      mappedUserType = 'particulier'; // Ensure particulier type is preserved
     }
     
     navigate(`/reservation/${spectacleId}?userType=${mappedUserType}&professionalType=${currentProfessionalType || ''}`);
@@ -296,34 +291,8 @@ export default function Spectacles() {
       setTimeout(hideFrenchCard, 2000);
     }
     
-    // For individual users, also hide French Le Petit Prince
-    if (userType === 'particulier') {
-      console.log('🎯 IMMEDIATE FILTER: Hiding French Le Petit Prince card for individual users');
-      
-      const hideFrenchCard = () => {
-        const frenchCard = document.getElementById('le-petit-prince-fr-card');
-        if (frenchCard) {
-          frenchCard.style.setProperty('display', 'none', 'important');
-          frenchCard.style.visibility = 'hidden';
-          frenchCard.style.opacity = '0';
-          frenchCard.style.height = '0';
-          frenchCard.style.overflow = 'hidden';
-          frenchCard.style.margin = '0';
-          frenchCard.style.padding = '0';
-          frenchCard.style.transform = 'scale(0)';
-          console.log('✅ French Le Petit Prince card hidden for individual users');
-          return true;
-        }
-        return false;
-      };
-
-      // Try multiple times with increasing delays
-      setTimeout(hideFrenchCard, 50);
-      setTimeout(hideFrenchCard, 200);
-      setTimeout(hideFrenchCard, 500);
-      setTimeout(hideFrenchCard, 1000);
-      setTimeout(hideFrenchCard, 2000);
-    }
+    // Particulier users can now see both French and Arabic versions of Le Petit Prince
+    // Remove the hiding logic for French version
 
     // Show spectacles section immediately after component mounts
     setTimeout(() => {
@@ -715,7 +684,7 @@ export default function Spectacles() {
           <div class="header-container">
             <!-- Logo Section -->
             <div class="logo-section">
-              <a href="https://edjs.art/">
+              <a href="https://edjs.ma/">
                 <img src="https://edjs.art/assets/img/edjs%20logo%20black@4x.png" alt="L'École des jeunes spectateurs" class="logo">
               </a>
             </div>
@@ -723,16 +692,16 @@ export default function Spectacles() {
             <!-- Navigation Menu -->
             <nav class="nav-menu">
               <li class="nav-item">
-                <a href="https://edjs.art/" class="nav-link">QUI SOMME-NOUS ?</a>
+                <a href="https://edjs.ma/" class="nav-link">QUI SOMME-NOUS ?</a>
               </li>
               <li class="nav-item">
                 <a href="/spectacles" class="nav-link">Nos Spectacles</a>
               </li>
               <li class="nav-item">
-                <a href="https://edjs.art/gallery" class="nav-link">GALERIE</a>
+                <a href="https://edjs.ma/gallery" class="nav-link">GALERIE</a>
               </li>
               <li class="nav-item">
-                <a href="https://edjs.art/partners" class="nav-link">PARTENAIRES</a>
+                <a href="https://edjs.ma/partners" class="nav-link">PARTENAIRES</a>
               </li>
             </nav>
 
@@ -1522,7 +1491,7 @@ export default function Spectacles() {
                         <div style="display: flex; justify-content: flex-start; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                             <i class="fas fa-clock" style="color: #BDCF00;"></i>
-                            <span>50 دقيقة</span>
+                            <span>60 دقيقة</span>
                           </div>
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display le-petit-prince-ar-age-study" id="le-petit-prince-ar-age-study" data-age="7 سنوات وأكثر" data-study-level="CM1, CM2, Collège, Lycée">
                             <i class="fas fa-child" style="color: #BDCF00;"></i>
@@ -1532,11 +1501,11 @@ export default function Spectacles() {
                         <div style="display: flex; justify-content: flex-start; gap: 10px; flex-wrap: wrap;">
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                             <i class="fas fa-users" style="color: #BDCF00;"></i>
-                            <span>3 ممثلين</span>
+                            <span>2 ممثلين</span>
                           </div>
                           <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                             <i class="fas fa-theater-masks" style="color: #BDCF00;"></i>
-                            <span>عاطفي</span>
+                            <span>حكاية مع الرسم على الرمل</span>
                           </div>
                         </div>
                       </div>
@@ -1863,7 +1832,7 @@ export default function Spectacles() {
                   
                   <!-- Left Side: Affiche -->
                   <div style="width: 50%; height: 100%; position: relative; display: flex; align-items: center; justify-content: flex-start; padding: 20px 5px 20px 60px;">
-                    <img src="/assets/img/spectacles/estevanico.png" alt="Estevanico" style="width: 150%; height: 120%; object-fit: contain;" />
+                    <img src="/src/assets/estivanico new_1@4x.png" alt="Estevanico" style="width: 150%; height: 120%; object-fit: contain;" />
                   </div>
                   
                   <!-- Right Side: Content -->
@@ -1941,7 +1910,7 @@ export default function Spectacles() {
                           <i class="fas fa-clock" style="color: #ff6b35;"></i>
                           <span>65 minutes</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display flash-age-study" id="flash-age-study" data-age="5 ans et +" data-study-level="GS, CP, CE1, CE2">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display flash-age-study" id="flash-age-study" data-age="5 ans et +" data-study-level="GS au CM2">
                           <i class="fas fa-child" style="color: #ff6b35;"></i>
                           <span class="age-level-text">5 ans et +</span>
                         </div>
@@ -2127,17 +2096,17 @@ export default function Spectacles() {
             
             // Map spectacle IDs to reservation URLs on EDJS site
             const reservationUrls = {
-              'le-petit-prince': 'https://edjs.art/reservation-le-petit-prince.html',
-              'le-petit-prince-ar': 'https://edjs.art/reservation-le-petit-prince-ar.html',
-              'tara-sur-la-lune': 'https://edjs.art/reservation-tara-sur-la-lune.html',
-              'mirath-atfal': 'https://edjs.art/reservation-mirath-atfal.html',
-              'simple-comme-bonjour': 'https://edjs.art/reservation-simple-comme-bonjour.html',
-              'charlotte': 'https://edjs.art/reservation-charlotte.html',
-              'estevanico': 'https://edjs.art/reservation-estevanico.html',
-              'flash': 'https://edjs.art/reservation-flash.html',
-              'antigone': 'https://edjs.art/reservation-antigone.html',
-              'alice-chez-les-merveilles': 'https://edjs.art/reservation-alice-chez-les-merveilles.html',
-              'leau-la': 'https://edjs.art/reservation-leau-la.html'
+              'le-petit-prince': 'https://edjs.ma/reservation-le-petit-prince.html',
+              'le-petit-prince-ar': 'https://edjs.ma/reservation-le-petit-prince-ar.html',
+              'tara-sur-la-lune': 'https://edjs.ma/reservation-tara-sur-la-lune.html',
+              'mirath-atfal': 'https://edjs.ma/reservation-mirath-atfal.html',
+              'simple-comme-bonjour': 'https://edjs.ma/reservation-simple-comme-bonjour.html',
+              'charlotte': 'https://edjs.ma/reservation-charlotte.html',
+              'estevanico': 'https://edjs.ma/reservation-estevanico.html',
+              'flash': 'https://edjs.ma/reservation-flash.html',
+              'antigone': 'https://edjs.ma/reservation-antigone.html',
+              'alice-chez-les-merveilles': 'https://edjs.ma/reservation-alice-chez-les-merveilles.html',
+              'leau-la': 'https://edjs.ma/reservation-leau-la.html'
             };
             
             const url = reservationUrls[spectacleId];
@@ -2180,7 +2149,7 @@ export default function Spectacles() {
                   </div>
                   <div>
                     <i class="fas fa-envelope" style="margin-right: 8px; color: #BDCF00;"></i>
-                    contact@edjs.art
+                    contact@edjs.ma
                   </div>
                 </div>
               </div>
@@ -2189,10 +2158,10 @@ export default function Spectacles() {
                   <div style="margin-bottom: 20px;">
                     <h5 style="color: white; font-size: 16px; margin-bottom: 15px;">Navigation</h5>
                     <ul style="list-style: none; padding: 0; margin: 0;">
-                      <li style="margin-bottom: 8px;"><a href="/" style="color: #ccc; text-decoration: none; font-size: 14px;">Accueil</a></li>
+                      <li style="margin-bottom: 8px;"><a href="https://edjs.ma/" style="color: #ccc; text-decoration: none; font-size: 14px;">Accueil</a></li>
                       <li style="margin-bottom: 8px;"><a href="/spectacles" style="color: #ccc; text-decoration: none; font-size: 14px;">Spectacles</a></li>
-                      <li style="margin-bottom: 8px;"><a href="https://edjs.art/gallery.html" style="color: #ccc; text-decoration: none; font-size: 14px;">Galerie</a></li>
-                      <li style="margin-bottom: 8px;"><a href="https://edjs.art/contact.html" style="color: #ccc; text-decoration: none; font-size: 14px;">Contact</a></li>
+                      <li style="margin-bottom: 8px;"><a href="https://edjs.ma/gallery.html" style="color: #ccc; text-decoration: none; font-size: 14px;">Galerie</a></li>
+                      <li style="margin-bottom: 8px;"><a href="https://edjs.ma/contact.html" style="color: #ccc; text-decoration: none; font-size: 14px;">Contact</a></li>
                     </ul>
                   </div>
                   <div style="margin-bottom: 20px;">

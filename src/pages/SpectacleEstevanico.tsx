@@ -437,10 +437,10 @@ export default function SpectacleEstevanico() {
               <p className="hero-subtitle">L'incroyable voyage d'un explorateur marocain à travers l'Amérique</p>
               <div className="info-pills">
                 <span className="info-pill">
-                  <i className="fas fa-clock"></i>65 minutes
+                  <i className="fas fa-clock"></i>70 minutes
                 </span>
                 <span className="info-pill">
-                  <i className="fas fa-users"></i>3 comédiens
+                  <i className="fas fa-users"></i>4 comédiens
                 </span>
                 {/* Debug conditional rendering */}
                 {/* Show study levels only for private schools */}
@@ -454,11 +454,11 @@ export default function SpectacleEstevanico() {
                   (userType === 'professional' && professionalType === 'scolaire-publique') ||
                   (userType === 'professional' && professionalType === 'association')) && (
                   <span className="info-pill">
-                    <i className="fas fa-child"></i>9 ans et +
+                    <i className="fas fa-child"></i>10 ans et +
                   </span>
                 )}
                 <span className="info-pill">
-                  <i className="fas fa-theater-masks"></i>Récit historique
+                  <i className="fas fa-theater-masks"></i>Théâtre musical
                 </span>
               </div>
               <div className="hero-buttons">
@@ -479,7 +479,7 @@ export default function SpectacleEstevanico() {
               <div className="tv-frame">
                 <div className="tv-screen">
                   <img 
-                    src="/public/lovable-uploads/estevanico-poster.jpg" 
+                    src="/src/assets/Tara_Sur_La_Lune_Web_020.jpg" 
                     alt="Estevanico Affiche" 
                     style={{
                       width: '100%', 
@@ -1067,7 +1067,7 @@ export default function SpectacleEstevanico() {
               <h3 style={{color: '#cccccc', marginBottom: '20px', fontSize: '1.2rem'}}>Navigation</h3>
               <ul style={{listStyle: 'none', padding: 0, margin: 0}}>
                 <li style={{marginBottom: '8px'}}>
-                  <a href="/" style={{color: 'white', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.3s'}} 
+                  <a href="https://edjs.ma/" style={{color: 'white', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.3s'}} 
                      onMouseEnter={(e) => (e.target as HTMLElement).style.color = '#BDCF00'}
                      onMouseLeave={(e) => (e.target as HTMLElement).style.color = 'white'}>
                     Accueil
@@ -1101,15 +1101,15 @@ export default function SpectacleEstevanico() {
           {/* Footer Bottom */}
           <div style={{borderTop: '1px solid #333', paddingTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px'}}>
             <p style={{color: 'white', margin: 0, fontSize: '0.85rem'}}>
-              Copyright © {new Date().getFullYear()} <a href="/" style={{color: '#BDCF00', textDecoration: 'none'}}>L'École des jeunes spectateurs</a>. Tous droits réservés.
+              Copyright © {new Date().getFullYear()} <a href="https://edjs.ma/" style={{color: '#BDCF00', textDecoration: 'none'}}>L'École des jeunes spectateurs</a>. Tous droits réservés.
             </p>
             <div style={{display: 'flex', gap: '20px'}}>
-              <a href="https://edjs.art/contact.html" style={{color: 'white', textDecoration: 'none', fontSize: '0.85rem'}}
+              <a href="https://edjs.ma/contact.html" style={{color: 'white', textDecoration: 'none', fontSize: '0.85rem'}}
                  onMouseEnter={(e) => (e.target as HTMLElement).style.color = '#BDCF00'}
                  onMouseLeave={(e) => (e.target as HTMLElement).style.color = 'white'}>
                 Conditions Générales
               </a>
-              <a href="https://edjs.art/contact.html" style={{color: 'white', textDecoration: 'none', fontSize: '0.85rem'}}
+              <a href="https://edjs.ma/contact.html" style={{color: 'white', textDecoration: 'none', fontSize: '0.85rem'}}
                  onMouseEnter={(e) => (e.target as HTMLElement).style.color = '#BDCF00'}
                  onMouseLeave={(e) => (e.target as HTMLElement).style.color = 'white'}>
                 Politique de Confidentialité

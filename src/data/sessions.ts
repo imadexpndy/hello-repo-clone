@@ -13,6 +13,10 @@ export const SESSIONS: Session[] = [
   // OCTOBRE - LE PETIT PRINCE
   // RABAT - THEATRE BAHNINI
   { id: 'lpp-1', date: '2025-10-04', time: '15:00', location: 'RABAT - THEATRE BAHNINI', audienceType: 'tout-public', spectacleId: 'le-petit-prince', month: 'octobre' },
+  
+  // LE PETIT PRINCE ARABIC VERSION - Available for particulier users
+  { id: 'lpp-ar-1', date: '2025-10-05', time: '15:00', location: 'RABAT - THEATRE BAHNINI', audienceType: 'tout-public', spectacleId: 'le-petit-prince-ar', month: 'octobre' },
+  { id: 'lpp-ar-2', date: '2025-10-12', time: '15:00', location: 'CASABLANCA - COMPLEXE EL HASSANI', audienceType: 'tout-public', spectacleId: 'le-petit-prince-ar', month: 'octobre' },
   { id: 'lpp-2', date: '2025-10-06', time: '09:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-privee', spectacleId: 'le-petit-prince', month: 'octobre', price: 100 },
   { id: 'lpp-3', date: '2025-10-06', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-privee', spectacleId: 'le-petit-prince', month: 'octobre', price: 100 },
   { id: 'lpp-4', date: '2025-10-07', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'association', spectacleId: 'le-petit-prince', month: 'octobre' },
@@ -162,7 +166,7 @@ export const SESSIONS: Session[] = [
 export const getUserTypeSessions = (spectacleId: string, userType?: string, userCity?: string) => {
   let filteredSessions = SESSIONS.filter(session => session.spectacleId === spectacleId);
 
-  // Filter out Arabic version of Le Petit Prince for private schools
+  // Filter out Arabic version of Le Petit Prince for private schools only
   if (spectacleId === 'le-petit-prince-ar' && userType === 'scolaire-privee') {
     return [];
   }

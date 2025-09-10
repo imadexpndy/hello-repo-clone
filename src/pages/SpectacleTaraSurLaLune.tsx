@@ -437,10 +437,10 @@ export default function SpectacleTaraSurLaLune() {
               <p className="hero-subtitle">Une aventure spatiale captivante avec Tara qui découvre les mystères de la lune</p>
               <div className="info-pills">
                 <span className="info-pill">
-                  <i className="fas fa-clock"></i>45 minutes
+                  <i className="fas fa-clock"></i>55 minutes
                 </span>
                 <span className="info-pill">
-                  <i className="fas fa-users"></i>4 acteurs
+                  <i className="fas fa-users"></i>1 comédien
                 </span>
                 {/* Debug conditional rendering */}
                 {/* Show study levels only for private schools */}
@@ -458,7 +458,7 @@ export default function SpectacleTaraSurLaLune() {
                   </span>
                 )}
                 <span className="info-pill">
-                  <i className="fas fa-theater-masks"></i>Aventure spatiale
+                  <i className="fas fa-theater-masks"></i>Théâtre avec projection
                 </span>
               </div>
               <div className="hero-buttons">
@@ -479,7 +479,7 @@ export default function SpectacleTaraSurLaLune() {
               <div className="tv-frame">
                 <div className="tv-screen">
                   <img 
-                    src="https://edjs.art/assets/edjs%20img/Tara-sur-la-lune-Affiche.webp" 
+                    src="/src/assets/Tara_Sur_La_Lune_Web_020.jpg" 
                     alt="Tara sur la Lune Affiche" 
                     style={{
                       width: '100%', 
@@ -1043,7 +1043,7 @@ export default function SpectacleTaraSurLaLune() {
               <h3 style={{color: '#cccccc', marginBottom: '20px', fontSize: '1.2rem'}}>Navigation</h3>
               <ul style={{listStyle: 'none', padding: 0, margin: 0}}>
                 <li style={{marginBottom: '8px'}}>
-                  <a href="/" style={{color: 'white', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.3s'}} 
+                  <a href="https://edjs.ma/" style={{color: 'white', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.3s'}} 
                      onMouseEnter={(e) => (e.target as HTMLElement).style.color = '#BDCF00'}
                      onMouseLeave={(e) => (e.target as HTMLElement).style.color = 'white'}>
                     Accueil
@@ -1077,15 +1077,15 @@ export default function SpectacleTaraSurLaLune() {
           {/* Footer Bottom */}
           <div style={{borderTop: '1px solid #333', paddingTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px'}}>
             <p style={{color: 'white', margin: 0, fontSize: '0.85rem'}}>
-              Copyright © {new Date().getFullYear()} <a href="/" style={{color: '#BDCF00', textDecoration: 'none'}}>L'École des jeunes spectateurs</a>. Tous droits réservés.
+              Copyright © {new Date().getFullYear()} <a href="https://edjs.ma/" style={{color: '#BDCF00', textDecoration: 'none'}}>L'École des jeunes spectateurs</a>. Tous droits réservés.
             </p>
             <div style={{display: 'flex', gap: '20px'}}>
-              <a href="https://edjs.art/contact.html" style={{color: 'white', textDecoration: 'none', fontSize: '0.85rem'}}
+              <a href="https://edjs.ma/contact.html" style={{color: 'white', textDecoration: 'none', fontSize: '0.85rem'}}
                  onMouseEnter={(e) => (e.target as HTMLElement).style.color = '#BDCF00'}
                  onMouseLeave={(e) => (e.target as HTMLElement).style.color = 'white'}>
                 Conditions Générales
               </a>
-              <a href="https://edjs.art/contact.html" style={{color: 'white', textDecoration: 'none', fontSize: '0.85rem'}}
+              <a href="https://edjs.ma/contact.html" style={{color: 'white', textDecoration: 'none', fontSize: '0.85rem'}}
                  onMouseEnter={(e) => (e.target as HTMLElement).style.color = '#BDCF00'}
                  onMouseLeave={(e) => (e.target as HTMLElement).style.color = 'white'}>
                 Politique de Confidentialité

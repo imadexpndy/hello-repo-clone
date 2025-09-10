@@ -437,7 +437,7 @@ export default function SpectacleAliceChezLesMerveilles() {
               <p className="hero-subtitle">L'aventure fantastique d'Alice dans un monde plein de surprises</p>
               <div className="info-pills">
                 <span className="info-pill">
-                  <i className="fas fa-clock"></i>55 minutes
+                  <i className="fas fa-clock"></i>50 minutes
                 </span>
                 <span className="info-pill">
                   <i className="fas fa-users"></i>3 comédiens
@@ -446,7 +446,7 @@ export default function SpectacleAliceChezLesMerveilles() {
                 {/* Show study levels only for private schools */}
                 {userType === 'professional' && professionalType === 'scolaire-privee' && (
                   <span className="info-pill">
-                    <i className="fas fa-child"></i>CP, CE1, CE2, CM1
+                    <i className="fas fa-child"></i>MS, GS, CP
                   </span>
                 )}
                 {/* Show age ranges for public schools, associations, and particulier */}
@@ -454,11 +454,11 @@ export default function SpectacleAliceChezLesMerveilles() {
                   (userType === 'professional' && professionalType === 'scolaire-publique') ||
                   (userType === 'professional' && professionalType === 'association')) && (
                   <span className="info-pill">
-                    <i className="fas fa-child"></i>4 ans et +
+                    <i className="fas fa-child"></i>5 ans et +
                   </span>
                 )}
                 <span className="info-pill">
-                  <i className="fas fa-theater-masks"></i>Conte fantastique
+                  <i className="fas fa-theater-masks"></i>Théâtre
                 </span>
               </div>
               <div className="hero-buttons">
@@ -479,7 +479,7 @@ export default function SpectacleAliceChezLesMerveilles() {
               <div className="tv-frame">
                 <div className="tv-screen">
                   <img 
-                    src="/public/lovable-uploads/alice-poster.jpg" 
+                    src="/src/assets/Tara_Sur_La_Lune_Web_020.jpg" 
                     alt="Alice chez les Merveilles Affiche" 
                     style={{
                       width: '100%', 
@@ -1075,7 +1075,7 @@ export default function SpectacleAliceChezLesMerveilles() {
               <h3 style={{color: '#cccccc', marginBottom: '20px', fontSize: '1.2rem'}}>Navigation</h3>
               <ul style={{listStyle: 'none', padding: 0, margin: 0}}>
                 <li style={{marginBottom: '8px'}}>
-                  <a href="/" style={{color: 'white', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.3s'}} 
+                  <a href="https://edjs.ma/" style={{color: 'white', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.3s'}} 
                      onMouseEnter={(e) => (e.target as HTMLElement).style.color = '#BDCF00'}
                      onMouseLeave={(e) => (e.target as HTMLElement).style.color = 'white'}>
                     Accueil
@@ -1109,15 +1109,15 @@ export default function SpectacleAliceChezLesMerveilles() {
           {/* Footer Bottom */}
           <div style={{borderTop: '1px solid #333', paddingTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px'}}>
             <p style={{color: 'white', margin: 0, fontSize: '0.85rem'}}>
-              Copyright © {new Date().getFullYear()} <a href="/" style={{color: '#BDCF00', textDecoration: 'none'}}>L'École des jeunes spectateurs</a>. Tous droits réservés.
+              Copyright © {new Date().getFullYear()} <a href="https://edjs.ma/" style={{color: '#BDCF00', textDecoration: 'none'}}>L'École des jeunes spectateurs</a>. Tous droits réservés.
             </p>
             <div style={{display: 'flex', gap: '20px'}}>
-              <a href="https://edjs.art/contact.html" style={{color: 'white', textDecoration: 'none', fontSize: '0.85rem'}}
+              <a href="https://edjs.ma/contact.html" style={{color: 'white', textDecoration: 'none', fontSize: '0.85rem'}}
                  onMouseEnter={(e) => (e.target as HTMLElement).style.color = '#BDCF00'}
                  onMouseLeave={(e) => (e.target as HTMLElement).style.color = 'white'}>
                 Conditions Générales
               </a>
-              <a href="https://edjs.art/contact.html" style={{color: 'white', textDecoration: 'none', fontSize: '0.85rem'}}
+              <a href="https://edjs.ma/contact.html" style={{color: 'white', textDecoration: 'none', fontSize: '0.85rem'}}
                  onMouseEnter={(e) => (e.target as HTMLElement).style.color = '#BDCF00'}
                  onMouseLeave={(e) => (e.target as HTMLElement).style.color = 'white'}>
                 Politique de Confidentialité

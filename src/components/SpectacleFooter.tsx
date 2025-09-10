@@ -38,11 +38,11 @@ export default function SpectacleFooter() {
                     <h3 class="vs-footer__title" style="color: #cccccc;">Navigation</h3>
                     <div class="vs-footer__menu">
                       <ul class="vs-footer__menu--list">
-                        <li><a href="https://edjs.art/">Accueil</a></li>
+                        <li><a href="https://edjs.ma/">Accueil</a></li>
                         <li><a href="/spectacles">Spectacles</a></li>
-                        <li><a href="https://edjs.art/gallery.html">Galerie</a></li>
-                        <li><a href="https://edjs.art/partners.html">Partenaires</a></li>
-                        <li><a href="https://edjs.art/contact.html">Contact</a></li>
+                        <li><a href="https://edjs.ma/gallery.html">Galerie</a></li>
+                        <li><a href="https://edjs.ma/partners.html">Partenaires</a></li>
+                        <li><a href="https://edjs.ma/contact.html">Contact</a></li>
                       </ul>
                     </div>
                   </div>
@@ -87,13 +87,13 @@ export default function SpectacleFooter() {
                 <div class="col-md-auto">
                   <p class="vs-footer__copyright mb-0" style="color: white;">
                     Copyright © <span id="currentYear">2024</span>
-                    <a href="https://edjs.art/">L'École des jeunes spectateurs</a>. Tous droits réservés.
+                    <a href="https://edjs.ma/">L'École des jeunes spectateurs</a>. Tous droits réservés.
                   </p>
                 </div>
                 <div class="col-md-auto">
                   <ul class="vs-footer__bottom--menu">
-                    <li><a href="https://edjs.art/contact.html">Conditions Générales</a></li>
-                    <li><a href="https://edjs.art/contact.html">Politique de Confidentialité</a></li>
+                    <li><a href="https://edjs.ma/contact.html">Conditions Générales</a></li>
+                    <li><a href="https://edjs.ma/contact.html">Politique de Confidentialité</a></li>
                   </ul>
                 </div>
               </div>

@@ -33,6 +33,7 @@ const ReservationFlow = () => {
     participantCount: 1,
     childrenCount: 0,
     accompaniersCount: 0,
+    ticketCount: 0,
     specialRequests: ''
   });
 
@@ -59,6 +60,12 @@ const ReservationFlow = () => {
     if (sessionParam && !selectedSession) {
       setSelectedSession(sessionParam);
       setStep(3); // Skip session selection, go directly to form
+    }
+
+    // Handle user type from URL parameter or session storage for non-logged users
+    if (!user && userTypeParam && !userType) {
+      setUserType(userTypeParam);
+      setStep(2); // Show session selection for non-logged users
     }
 
     // Pre-populate form data for logged-in users and skip organization type selection
@@ -381,7 +388,6 @@ const ReservationFlow = () => {
                     </>
                   )}
                   
-                  
                   <div className="space-y-2">
                     <Label htmlFor="phone">Téléphone</Label>
                     <Input
@@ -393,46 +399,67 @@ const ReservationFlow = () => {
                     />
                   </div>
 
-                  {/* Organization name is automatically populated from user profile - no need to ask again */}
-                  
-                  {/* Always show children and accompaniers count fields */}
-                  <div className="space-y-2">
-                    <Label htmlFor="childrenCount">Nombre d'enfants</Label>
-                    <Input
-                      id="childrenCount"
-                      type="number"
-                      min="1"
-                      value={formData.childrenCount || ''}
-                      onChange={(e) => handleInputChange('childrenCount', parseInt(e.target.value) || 0)}
-                      className="h-12 bg-primary/5 border-2 border-primary/20 focus:border-primary/50"
-                      placeholder="Nombre d'enfants participants"
-                    />
+                  <div className="grid grid-cols-1 gap-6">
+                    {(userType === 'scolaire-privee' || userType === 'scolaire-publique' || userType === 'association') ? (
+                      // Professional users - show children and accompaniers fields
+                      <>
+                        <div className="space-y-2">
+                          <Label htmlFor="childrenCount">Nombre d'enfants</Label>
+                          <Input
+                            id="childrenCount"
+                            type="number"
+                            min="1"
+                            value={formData.childrenCount || ''}
+                            onChange={(e) => handleInputChange('childrenCount', parseInt(e.target.value) || 0)}
+                            className="h-12 bg-primary/5 border-2 border-primary/20 focus:border-primary/50"
+                            placeholder="Nombre d'enfants participants"
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="accompaniersCount">Nombre d'accompagnateurs</Label>
+                          <Input
+                            id="accompaniersCount"
+                            type="number"
+                            min="0"
+                            max={Math.ceil((formData.childrenCount || 0) / 30) * 3}
+                            value={formData.accompaniersCount || ''}
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value) || 0;
+                              const maxAllowed = Math.ceil((formData.childrenCount || 0) / 30) * 3;
+                              if (value <= maxAllowed) {
+                                handleInputChange('accompaniersCount', value);
+                              }
+                            }}
+                            className="h-12 bg-primary/5 border-2 border-primary/20 focus:border-primary/50"
+                            placeholder="Nombre d'accompagnateurs adultes"
+                          />
+                          <p className="text-sm text-muted-foreground italic">
+                            Maximum autorisé: {Math.ceil((formData.childrenCount || 0) / 30) * 3} accompagnateurs 
+                            (3 par groupe de 30 enfants)
+                          </p>
+                        </div>
+                      </>
+                    ) : (
+                      // Individual users (particulier) - show only ticket count
+                      <div className="space-y-2">
+                        <Label htmlFor="ticketCount">Nombre de billets</Label>
+                        <Input
+                          id="ticketCount"
+                          type="number"
+                          min="1"
+                          max="10"
+                          value={formData.ticketCount || ''}
+                          onChange={(e) => handleInputChange('ticketCount', parseInt(e.target.value) || 0)}
+                          className="h-12 bg-primary/5 border-2 border-primary/20 focus:border-primary/50"
+                          placeholder="Nombre de billets souhaités"
+                        />
+                        <p className="text-sm text-muted-foreground italic">
+                          Maximum 10 billets par réservation
+                        </p>
+                      </div>
+                    )}
                   </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="accompaniersCount">Nombre d'accompagnateurs</Label>
-                    <Input
-                      id="accompaniersCount"
-                      type="number"
-                      min="0"
-                      max={Math.ceil((formData.childrenCount || 0) / 30) * 3}
-                      value={formData.accompaniersCount || ''}
-                      onChange={(e) => {
-                        const value = parseInt(e.target.value) || 0;
-                        const maxAllowed = Math.ceil((formData.childrenCount || 0) / 30) * 3;
-                        if (value <= maxAllowed) {
-                          handleInputChange('accompaniersCount', value);
-                        }
-                      }}
-                      className="h-12 bg-primary/5 border-2 border-primary/20 focus:border-primary/50"
-                      placeholder="Nombre d'accompagnateurs adultes"
-                    />
-                    <p className="text-sm text-muted-foreground italic">
-                      Maximum autorisé: {Math.ceil((formData.childrenCount || 0) / 30) * 3} accompagnateurs 
-                      (3 par groupe de 30 enfants)
-                    </p>
-                  </div>
-
                 </div>
                 
                 <div className="flex space-x-4">
@@ -472,26 +499,47 @@ const ReservationFlow = () => {
                       <span className="text-muted-foreground">Spectacle:</span>
                       <span className="font-medium">{spectacle.title}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Enfants:</span>
-                      <span className="font-medium">{formData.childrenCount || 0}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Accompagnateurs:</span>
-                      <span className="font-medium">{formData.accompaniersCount || 0}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Total participants:</span>
-                      <span className="font-medium">{(formData.childrenCount || 0) + (formData.accompaniersCount || 0)}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Prix unitaire:</span>
-                      <span className="font-medium">{userType === 'scolaire-privee' ? '100' : '80'} MAD</span>
-                    </div>
-                    <div className="border-t pt-2 flex justify-between font-semibold">
-                      <span>Total:</span>
-                      <span className="text-primary">{((formData.childrenCount || 0) + (formData.accompaniersCount || 0)) * (userType === 'scolaire-privee' ? 100 : 80)} MAD</span>
-                    </div>
+                    {(userType === 'scolaire-privee' || userType === 'scolaire-publique' || userType === 'association') ? (
+                      // Professional users - show children and accompaniers breakdown
+                      <>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Enfants:</span>
+                          <span className="font-medium">{formData.childrenCount || 0}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Accompagnateurs:</span>
+                          <span className="font-medium">{formData.accompaniersCount || 0}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Total participants:</span>
+                          <span className="font-medium">{(formData.childrenCount || 0) + (formData.accompaniersCount || 0)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Prix unitaire:</span>
+                          <span className="font-medium">{userType === 'scolaire-privee' ? '100' : '80'} MAD</span>
+                        </div>
+                        <div className="border-t pt-2 flex justify-between font-semibold">
+                          <span>Total:</span>
+                          <span className="text-primary">{((formData.childrenCount || 0) + (formData.accompaniersCount || 0)) * (userType === 'scolaire-privee' ? 100 : 80)} MAD</span>
+                        </div>
+                      </>
+                    ) : (
+                      // Individual users - show ticket count and total
+                      <>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Nombre de billets:</span>
+                          <span className="font-medium">{formData.ticketCount || 0}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-muted-foreground">Prix unitaire:</span>
+                          <span className="font-medium">80 MAD</span>
+                        </div>
+                        <div className="border-t pt-2 flex justify-between font-semibold">
+                          <span>Total:</span>
+                          <span className="text-primary">{(formData.ticketCount || 0) * 80} MAD</span>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -513,7 +561,9 @@ const ReservationFlow = () => {
                         spectacleId,
                         userType,
                         selectedSession,
-                        totalAmount: ((formData.childrenCount || 0) + (formData.accompaniersCount || 0)) * (userType === 'scolaire-privee' ? 100 : 80)
+                        totalAmount: (userType === 'scolaire-privee' || userType === 'scolaire-publique' || userType === 'association') 
+                          ? ((formData.childrenCount || 0) + (formData.accompaniersCount || 0)) * (userType === 'scolaire-privee' ? 100 : 80)
+                          : (formData.ticketCount || 0) * 80
                       };
                       sessionStorage.setItem('reservationData', JSON.stringify(reservationData));
                       navigate('/payment-method-selection');

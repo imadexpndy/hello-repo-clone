@@ -102,7 +102,7 @@ export const generateTicketPDF = (ticketData: TicketData): Uint8Array => {
   doc.setTextColor(128, 128, 128);
   doc.text('Ce billet est votre preuve de réservation. Veuillez le présenter à l\'entrée.', 105, yPos, { align: 'center' });
   doc.text('EDJS - École de Jeunes Spectacles', 105, yPos + 10, { align: 'center' });
-  doc.text('www.edjs.art | contact@edjs.art', 105, yPos + 20, { align: 'center' });
+  doc.text('www.edjs.ma | contact@edjs.ma', 105, yPos + 20, { align: 'center' });
   
   // Add border
   doc.setLineWidth(1);
@@ -186,7 +186,7 @@ export const generateBulkTicketsPDF = (ticketData: TicketData): Uint8Array => {
   doc.setFontSize(10);
   doc.setTextColor(128, 128, 128);
   doc.text('EDJS - École de Jeunes Spectacles', 105, 340, { align: 'center' });
-  doc.text('www.edjs.art | contact@edjs.art', 105, 350, { align: 'center' });
+  doc.text('www.edjs.ma | contact@edjs.ma', 105, 350, { align: 'center' });
   
   return doc.output('arraybuffer') as Uint8Array;
 };
