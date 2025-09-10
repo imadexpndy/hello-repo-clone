@@ -154,14 +154,35 @@ const ReservationFlow = () => {
     
     // Check URL parameter first, then user profile
     const userTypeParam = searchParams.get('userType');
+    const professionalTypeParam = searchParams.get('professionalType');
     let userTypeForSessions = '';
     
+    // Priority: URL parameter > user profile > guest default
     if (userTypeParam) {
       userTypeForSessions = userTypeParam;
+    } else if (professionalTypeParam) {
+      userTypeForSessions = professionalTypeParam;
     } else if (user && userType) {
       userTypeForSessions = userType;
     } else if (isGuest) {
-      userTypeForSessions = '';
+      userTypeForSessions = 'particulier'; // Default for guests
+    }
+    
+    // Map professional types to correct session filtering
+    if (userTypeForSessions === 'professional') {
+      if (professionalTypeParam) {
+        userTypeForSessions = professionalTypeParam;
+      } else {
+        // Try to get from user metadata
+        const role = user?.user_metadata?.role;
+        if (role === 'private_school' || role === 'private_school_teacher') {
+          userTypeForSessions = 'scolaire-privee';
+        } else if (role === 'public_school' || role === 'public_school_teacher') {
+          userTypeForSessions = 'scolaire-publique';
+        } else if (role === 'association' || role === 'association_member') {
+          userTypeForSessions = 'association';
+        }
+      }
     }
     
     // Get user's city from profile - ensure we always pass a city for filtering
@@ -172,6 +193,7 @@ const ReservationFlow = () => {
       spectacleId,
       userTypeForSessions,
       userTypeParam,
+      professionalTypeParam,
       userType,
       userCity,
       sessionsCount: sessions.length,
