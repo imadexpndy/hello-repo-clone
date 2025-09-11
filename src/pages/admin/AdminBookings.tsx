@@ -66,25 +66,28 @@ export default function AdminBookings() {
         .from('bookings')
         .select(`
           *,
-          profiles!left(name, email, first_name, last_name),
-          organizations!left(name, type),
-          sessions!left(
+          sessions!inner(
             session_date,
             session_time,
             venue,
             city,
-            spectacles!left(title)
+            spectacles!inner(title)
           )
         `)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error details:', error);
+        throw error;
+      }
+      
+      console.log('Fetched bookings:', data);
       setBookings((data || []) as any);
     } catch (error) {
       console.error('Error fetching bookings:', error);
       toast({
         title: 'Erreur',
-        description: 'Impossible de charger les réservations',
+        description: `Impossible de charger les réservations: ${error.message}`,
         variant: 'destructive',
       });
     } finally {

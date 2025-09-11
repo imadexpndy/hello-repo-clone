@@ -52,14 +52,21 @@ export default function AdminUsers() {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .select('*')
+        .select(`
+          *
+        `)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error details:', error);
+        throw error;
+      }
+      
+      console.log('Fetched users:', data);
       setUsers(data || []);
     } catch (error) {
       console.error('Error fetching users:', error);
-      toast.error('Erreur lors du chargement des utilisateurs');
+      toast.error(`Erreur lors du chargement des utilisateurs: ${error.message}`);
     }
   };
 
@@ -84,13 +91,21 @@ export default function AdminUsers() {
     try {
       setLoading(true);
       
+      console.log('Sending invitation with data:', inviteForm);
+      
       const { data, error } = await supabase.functions.invoke('send-admin-invitation', {
         body: inviteForm
       });
 
-      if (error) throw error;
+      console.log('Invitation response:', { data, error });
+
+      if (error) {
+        console.error('Function invocation error:', error);
+        throw error;
+      }
 
       if (data?.error) {
+        console.error('Function returned error:', data.error);
         toast.error(`Erreur: ${data.error}`);
         return;
       }
@@ -113,7 +128,7 @@ export default function AdminUsers() {
     } catch (error) {
       console.error('Error sending invitation:', error);
       const errorMessage = error?.message || 'Erreur lors de l\'envoi de l\'invitation';
-      toast.error(errorMessage);
+      toast.error(`Erreur détaillée: ${errorMessage}`);
     } finally {
       setLoading(false);
     }

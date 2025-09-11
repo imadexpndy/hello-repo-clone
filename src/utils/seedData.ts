@@ -3,6 +3,16 @@ import { supabase } from '@/integrations/supabase/client';
 // Simplified spectacle data for seeding
 export const sampleSpectacles = [
   {
+    title: "Flash",
+    description: "Un spectacle électrisant qui explore les super-pouvoirs et l'héroïsme à travers une aventure captivante pleine d'action et d'émotion.",
+    duration_minutes: 75,
+    price: 85,
+    age_range_min: 6,
+    age_range_max: 12,
+    level_range: "CP-6ème",
+    is_active: true
+  },
+  {
     title: "Le Petit Prince",
     description: "L'adaptation du chef-d'œuvre de Saint-Exupéry, une histoire poétique universelle sur l'amitié, l'amour et les valeurs humaines essentielles.",
     duration_minutes: 75,
@@ -58,20 +68,47 @@ export async function seedSpectacles() {
   try {
     console.log('Seeding spectacles...');
     
+    // First, update any existing "L'Enfant de l'Arbre" to "Flash"
+    const { error: updateError } = await supabase
+      .from('spectacles')
+      .update({
+        title: 'Flash',
+        description: 'Un spectacle électrisant qui explore les super-pouvoirs et l\'héroïsme à travers une aventure captivante pleine d\'action et d\'émotion.'
+      })
+      .eq('title', 'L\'Enfant de l\'Arbre');
+    
+    if (updateError) {
+      console.log('No existing L\'Enfant de l\'Arbre to update:', updateError);
+    }
+    
     // Check if spectacles already exist
     const { data: existing, error: checkError } = await supabase
       .from('spectacles')
-      .select('id')
-      .limit(1);
+      .select('id, title')
+      .limit(10);
     
     if (checkError) {
       console.error('Error checking existing spectacles:', checkError);
       return false;
     }
     
-    if (existing && existing.length > 0) {
-      console.log('Spectacles already exist, skipping seed');
+    // If Flash already exists, we're good
+    if (existing && existing.some(s => s.title === 'Flash')) {
+      console.log('Flash spectacle already exists');
       return true;
+    }
+    
+    // If other spectacles exist but not Flash, clear them and insert fresh data
+    if (existing && existing.length > 0) {
+      console.log('Clearing existing spectacles and inserting fresh data...');
+      const { error: deleteError } = await supabase
+        .from('spectacles')
+        .delete()
+        .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all
+      
+      if (deleteError) {
+        console.error('Error clearing spectacles:', deleteError);
+      }
     }
     
     // Insert sample spectacles
@@ -105,6 +142,8 @@ export const sampleSessions = [
     b2c_capacity: 50,
     partner_quota: 30,
     price_mad: 85,
+    session_type: 'tout-public',
+    status: 'published',
     is_active: true
   },
   {
@@ -117,6 +156,8 @@ export const sampleSessions = [
     b2c_capacity: 50,
     partner_quota: 30,
     price_mad: 85,
+    session_type: 'scolaire-privee',
+    status: 'published',
     is_active: true
   },
   {
@@ -129,6 +170,8 @@ export const sampleSessions = [
     b2c_capacity: 40,
     partner_quota: 25,
     price_mad: 95,
+    session_type: 'scolaire-publique',
+    status: 'published',
     is_active: true
   },
   {
@@ -141,6 +184,8 @@ export const sampleSessions = [
     b2c_capacity: 30,
     partner_quota: 20,
     price_mad: 90,
+    session_type: 'association',
+    status: 'published',
     is_active: true
   },
   {
@@ -153,6 +198,8 @@ export const sampleSessions = [
     b2c_capacity: 45,
     partner_quota: 25,
     price_mad: 100,
+    session_type: 'tout-public',
+    status: 'published',
     is_active: true
   }
 ];

@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { DashboardLayout } from '@/components/DashboardLayout';
 import { DashboardCard } from '@/components/DashboardCard';
 import { StatsCard } from '@/components/StatsCard';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 import {
   Theater,
   Calendar,
@@ -24,14 +26,74 @@ import {
 
 export default function AdminDashboard() {
   const { profile } = useAuth();
+  const { toast } = useToast();
+  const [stats, setStats] = useState({
+    spectacles: 0,
+    sessions: 0,
+    users: 0,
+    bookings: 0,
+    pendingRegistrations: 0
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchDashboardStats();
+  }, []);
+
+  const fetchDashboardStats = async () => {
+    try {
+      // Fetch spectacles count
+      const { count: spectaclesCount } = await supabase
+        .from('spectacles')
+        .select('*', { count: 'exact', head: true });
+
+      // Fetch sessions count
+      const { count: sessionsCount } = await supabase
+        .from('sessions')
+        .select('*', { count: 'exact', head: true });
+
+      // Fetch users count
+      const { count: usersCount } = await supabase
+        .from('profiles')
+        .select('*', { count: 'exact', head: true });
+
+      // Fetch bookings count
+      const { count: bookingsCount } = await supabase
+        .from('bookings')
+        .select('*', { count: 'exact', head: true });
+
+      // Fetch pending registrations count
+      const { count: pendingCount } = await supabase
+        .from('profiles')
+        .select('*', { count: 'exact', head: true })
+        .in('verification_status', ['pending', 'under_review']);
+
+      setStats({
+        spectacles: spectaclesCount || 0,
+        sessions: sessionsCount || 0,
+        users: usersCount || 0,
+        bookings: bookingsCount || 0,
+        pendingRegistrations: pendingCount || 0
+      });
+    } catch (error) {
+      console.error('Error fetching dashboard stats:', error);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible de charger les statistiques',
+        variant: 'destructive'
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const headerActions = (
     <div className="flex gap-2">
-      <Button size="sm">
+      <Button size="sm" onClick={() => window.location.href = '/admin/spectacles'}>
         <Plus className="h-4 w-4 mr-2" />
         Nouveau spectacle
       </Button>
-      <Button variant="outline" size="sm">
+      <Button variant="outline" size="sm" onClick={() => window.location.href = '/admin/sessions'}>
         <Plus className="h-4 w-4 mr-2" />
         Nouvelle session
       </Button>
@@ -48,27 +110,27 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <StatsCard
           title="Spectacles actifs"
-          value="0"
+          value={loading ? "..." : stats.spectacles.toString()}
           icon={Theater}
-          description="Aucun spectacle actif"
+          description={stats.spectacles === 0 ? "Aucun spectacle actif" : `${stats.spectacles} spectacle${stats.spectacles > 1 ? 's' : ''} actif${stats.spectacles > 1 ? 's' : ''}`}
         />
         <StatsCard
           title="Sessions planifiées"
-          value="0"
+          value={loading ? "..." : stats.sessions.toString()}
           icon={Calendar}
-          description="Aucune session planifiée"
+          description={stats.sessions === 0 ? "Aucune session planifiée" : `${stats.sessions} session${stats.sessions > 1 ? 's' : ''} planifiée${stats.sessions > 1 ? 's' : ''}`}
         />
         <StatsCard
           title="Utilisateurs actifs"
-          value="0"
+          value={loading ? "..." : stats.users.toString()}
           icon={Users}
-          description="Aucun utilisateur enregistré"
+          description={stats.users === 0 ? "Aucun utilisateur enregistré" : `${stats.users} utilisateur${stats.users > 1 ? 's' : ''} enregistré${stats.users > 1 ? 's' : ''}`}
         />
         <StatsCard
           title="Réservations totales"
-          value="0"
+          value={loading ? "..." : stats.bookings.toString()}
           icon={Ticket}
-          description="Aucune réservation"
+          description={stats.bookings === 0 ? "Aucune réservation" : `${stats.bookings} réservation${stats.bookings > 1 ? 's' : ''}`}
         />
       </div>
 
@@ -81,7 +143,7 @@ export default function AdminDashboard() {
           href="/admin/spectacles"
           buttonText="Gérer les spectacles"
           gradient={true}
-          badge="0 actifs"
+          badge={loading ? "..." : `${stats.spectacles} actifs`}
         />
 
         <DashboardCard
@@ -90,7 +152,7 @@ export default function AdminDashboard() {
           icon={Calendar}
           href="/admin/sessions"
           buttonText="Gérer les sessions"
-          badge="0 sessions"
+          badge={loading ? "..." : `${stats.sessions} sessions`}
         />
 
         <DashboardCard
@@ -99,7 +161,7 @@ export default function AdminDashboard() {
           icon={ClipboardList}
           href="/admin/bookings"
           buttonText="Voir les réservations"
-          badge="0 réservations"
+          badge={loading ? "..." : `${stats.bookings} réservations`}
           badgeVariant="secondary"
         />
       </div>
@@ -107,21 +169,21 @@ export default function AdminDashboard() {
       {/* Secondary Action Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <DashboardCard
-          title="Utilisateurs"
-          description="Gérer les comptes et vérifications"
-          icon={Users}
-          href="/admin/users"
-          buttonText="Gérer"
-          badge="0 en attente"
-          badgeVariant="destructive"
-        />
-
-        <DashboardCard
           title="Organisations"
           description="Écoles et associations partenaires"
           icon={Building2}
           href="/admin/organizations"
           buttonText="Voir"
+        />
+
+        <DashboardCard
+          title="Demandes d'inscription"
+          description="Gérer les demandes d'inscription en attente"
+          icon={UserCheck}
+          href="/admin/registrations"
+          buttonText="Gérer"
+          badge={loading ? "..." : `${stats.pendingRegistrations} en attente`}
+          badgeVariant={stats.pendingRegistrations > 0 ? "destructive" : "secondary"}
         />
 
         <DashboardCard

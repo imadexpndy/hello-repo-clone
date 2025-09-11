@@ -77,7 +77,7 @@ export default function AdminSessions() {
     total_capacity: '',
     b2c_capacity: '',
     partner_quota: '50',
-    session_type: 'b2c',
+    session_type: 'tout-public',
     status: 'draft',
   });
 
@@ -92,7 +92,7 @@ export default function AdminSessions() {
         .from('sessions')
         .select(`
           *,
-          spectacles (title),
+          spectacles!inner (title),
           bookings (number_of_tickets)
         `)
         .order('session_date', { ascending: true });
@@ -228,7 +228,7 @@ export default function AdminSessions() {
       total_capacity: '',
       b2c_capacity: '',
       partner_quota: '50',
-      session_type: 'b2c',
+      session_type: 'tout-public',
       status: 'draft',
     });
     setEditingSession(null);
@@ -383,9 +383,9 @@ export default function AdminSessions() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="private">Privé (écoles privées)</SelectItem>
-                          <SelectItem value="public">Public (écoles publiques)</SelectItem>
-                          <SelectItem value="b2c">B2C (grand public)</SelectItem>
+                          <SelectItem value="scolaire-privee">Scolaire Privé</SelectItem>
+                          <SelectItem value="scolaire-publique">Scolaire Public</SelectItem>
+                          <SelectItem value="tout-public">Tout Public</SelectItem>
                           <SelectItem value="association">Associations</SelectItem>
                         </SelectContent>
                       </Select>
@@ -487,9 +487,9 @@ export default function AdminSessions() {
                       </TableCell>
                       <TableCell>
                         <Badge variant="outline">
-                          {session.session_type === 'private' && 'Privé'}
-                          {session.session_type === 'public' && 'Public'}
-                          {session.session_type === 'b2c' && 'B2C'}
+                          {session.session_type === 'scolaire-privee' && 'Scolaire Privé'}
+                          {session.session_type === 'scolaire-publique' && 'Scolaire Public'}
+                          {session.session_type === 'tout-public' && 'Tout Public'}
                           {session.session_type === 'association' && 'Association'}
                         </Badge>
                       </TableCell>

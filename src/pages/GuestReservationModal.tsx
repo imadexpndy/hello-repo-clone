@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { X, User, UserPlus, LogIn, Star, Shield, Clock, Gift } from 'lucide-react';
 import { getUserTypeSessions } from '@/data/sessions';
@@ -27,6 +28,7 @@ export default function GuestReservationModal({
     phone: '',
     email: '',
     participants: 1,
+    numberOfTickets: 1,
     organizationType: 'individual',
     organizationName: '',
     numberOfChildren: 0,
@@ -256,22 +258,19 @@ export default function GuestReservationModal({
                 >
                   <option value="individual">Particulier</option>
                 </select>
-                <p className="text-xs text-gray-500 mt-1">Les réservations invité sont uniquement pour les particuliers</p>
               </div>
-              {guestForm.organizationType === 'individual' ? (
-                <div>
-                  <label className="block text-sm font-medium mb-2">Nombre de billets *</label>
-                  <Input
-                    required
-                    type="number"
-                    min="1"
-                    value={guestForm.participants}
-                    onChange={(e) => setGuestForm({...guestForm, participants: parseInt(e.target.value)})}
-                  />
-                </div>
-              ) : (
-                <div></div>
-              )}
+              <div>
+                <Label htmlFor="numberOfTickets">Number of tickets *</Label>
+                <Input
+                  id="numberOfTickets"
+                  required
+                  type="number"
+                  min="1"
+                  max="10"
+                  value={guestForm.numberOfTickets}
+                  onChange={(e) => setGuestForm({...guestForm, numberOfTickets: parseInt(e.target.value) || 1})}
+                />
+              </div>
             </div>
 
 
