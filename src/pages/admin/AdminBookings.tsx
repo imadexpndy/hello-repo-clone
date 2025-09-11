@@ -19,7 +19,12 @@ interface Booking {
   created_at: string;
   students_count?: number;
   accompanists_count?: number;
+  participants_count?: number;
+  accompaniers_count?: number;
   total_amount?: number;
+  is_confirmed: boolean;
+  confirmed_at?: string;
+  confirmed_by?: string;
   profiles: {
     name?: string;
     email: string;
@@ -31,10 +36,15 @@ interface Booking {
     type: string;
   } | null;
   sessions: {
+    id: string;
     session_date: string;
     session_time: string;
     venue: string;
     city: string;
+    capacity_professional: number;
+    capacity_particulier: number;
+    booked_professional: number;
+    booked_particulier: number;
     spectacles: {
       title: string;
     };
@@ -67,10 +77,15 @@ export default function AdminBookings() {
         .select(`
           *,
           sessions!inner(
+            id,
             session_date,
             session_time,
             venue,
             city,
+            capacity_professional,
+            capacity_particulier,
+            booked_professional,
+            booked_particulier,
             spectacles!inner(title)
           )
         `)
@@ -121,26 +136,113 @@ export default function AdminBookings() {
     setFilteredBookings(filtered);
   };
 
-  const updateBookingStatus = async (bookingId: string, newStatus: 'approved' | 'rejected') => {
+  const confirmBooking = async (booking: Booking) => {
+    try {
+      // Check capacity before confirming
+      const isProfessional = ['private_school', 'public_school', 'association', 'partner'].includes(booking.booking_type);
+      const attendeesCount = isProfessional 
+        ? (booking.participants_count || 0) + (booking.accompaniers_count || 0)
+        : booking.number_of_tickets;
+      
+      const session = booking.sessions;
+      if (!session) {
+        throw new Error('Session non trouvée');
+      }
+
+      const availableCapacity = isProfessional 
+        ? session.capacity_professional - session.booked_professional
+        : session.capacity_particulier - session.booked_particulier;
+
+      if (availableCapacity < attendeesCount) {
+        toast({
+          title: 'Capacité insuffisante',
+          description: `Seulement ${availableCapacity} places disponibles pour ce type de réservation`,
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      const { error } = await supabase
+        .from('bookings')
+        .update({ 
+          status: 'confirmed',
+          is_confirmed: true,
+          confirmed_at: new Date().toISOString(),
+          confirmed_by: (await supabase.auth.getUser()).data.user?.id
+        })
+        .eq('id', booking.id);
+
+      if (error) throw error;
+
+      toast({
+        title: 'Réservation confirmée',
+        description: 'La réservation a été confirmée et le stock mis à jour',
+      });
+
+      fetchBookings();
+    } catch (error) {
+      console.error('Error confirming booking:', error);
+      toast({
+        title: 'Erreur',
+        description: `Impossible de confirmer la réservation: ${error.message}`,
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const rejectBooking = async (bookingId: string) => {
     try {
       const { error } = await supabase
         .from('bookings')
-        .update({ status: newStatus })
+        .update({ 
+          status: 'rejected',
+          is_confirmed: false
+        })
         .eq('id', bookingId);
 
       if (error) throw error;
 
       toast({
-        title: 'Statut mis à jour',
-        description: `Réservation ${newStatus === 'approved' ? 'approuvée' : 'rejetée'}`,
+        title: 'Réservation rejetée',
+        description: 'La réservation a été rejetée',
       });
 
       fetchBookings();
     } catch (error) {
-      console.error('Error updating booking:', error);
+      console.error('Error rejecting booking:', error);
       toast({
         title: 'Erreur',
-        description: 'Impossible de mettre à jour le statut',
+        description: 'Impossible de rejeter la réservation',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const unconfirmBooking = async (bookingId: string) => {
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .update({ 
+          status: 'pending',
+          is_confirmed: false,
+          confirmed_at: null,
+          confirmed_by: null
+        })
+        .eq('id', bookingId);
+
+      if (error) throw error;
+
+      toast({
+        title: 'Confirmation annulée',
+        description: 'La confirmation a été annulée et le stock libéré',
+      });
+
+      fetchBookings();
+    } catch (error) {
+      console.error('Error unconfirming booking:', error);
+      toast({
+        title: 'Erreur',
+        description: 'Impossible d\'annuler la confirmation',
         variant: 'destructive',
       });
     }
@@ -197,7 +299,8 @@ export default function AdminBookings() {
     document.body.removeChild(link);
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: string, isConfirmed: boolean) => {
+    if (isConfirmed) return 'bg-green-500';
     switch (status) {
       case 'confirmed': return 'bg-green-500';
       case 'pending': return 'bg-yellow-500';
@@ -206,6 +309,26 @@ export default function AdminBookings() {
       case 'rejected': return 'bg-red-500';
       case 'cancelled': return 'bg-gray-500';
       default: return 'bg-gray-500';
+    }
+  };
+
+  const getAvailableCapacity = (booking: Booking) => {
+    if (!booking.sessions) return { available: 0, total: 0, type: '' };
+    
+    const isProfessional = ['private_school', 'public_school', 'association', 'partner'].includes(booking.booking_type);
+    
+    if (isProfessional) {
+      return {
+        available: booking.sessions.capacity_professional - booking.sessions.booked_professional,
+        total: booking.sessions.capacity_professional,
+        type: 'Professionnels'
+      };
+    } else {
+      return {
+        available: booking.sessions.capacity_particulier - booking.sessions.booked_particulier,
+        total: booking.sessions.capacity_particulier,
+        type: 'Particuliers'
+      };
     }
   };
 
@@ -287,7 +410,8 @@ export default function AdminBookings() {
                       <TableHead>Type</TableHead>
                       <TableHead>Spectacle</TableHead>
                       <TableHead>Session</TableHead>
-                      <TableHead>Billets</TableHead>
+                      <TableHead>Participants</TableHead>
+                      <TableHead>Capacité</TableHead>
                       <TableHead>Montant</TableHead>
                       <TableHead>Statut</TableHead>
                       <TableHead>Actions</TableHead>
@@ -325,13 +449,32 @@ export default function AdminBookings() {
                         </TableCell>
                         <TableCell>
                           <div className="text-sm">
-                            <div>{booking.number_of_tickets} billets</div>
-                            {(booking.students_count || 0) > 0 && (
-                              <div className="text-muted-foreground">
-                                {booking.students_count} élèves, {booking.accompanists_count} accomp.
+                            {['private_school', 'public_school', 'association', 'partner'].includes(booking.booking_type) ? (
+                              <div>
+                                <div>{(booking.participants_count || 0) + (booking.accompaniers_count || 0)} total</div>
+                                <div className="text-muted-foreground">
+                                  {booking.participants_count || 0} participants, {booking.accompaniers_count || 0} accomp.
+                                </div>
                               </div>
+                            ) : (
+                              <div>{booking.number_of_tickets} billets</div>
                             )}
                           </div>
+                        </TableCell>
+                        <TableCell>
+                          {(() => {
+                            const capacity = getAvailableCapacity(booking);
+                            return (
+                              <div className="text-sm">
+                                <div className={capacity.available < 10 ? 'text-red-600 font-medium' : 'text-green-600'}>
+                                  {capacity.available}/{capacity.total}
+                                </div>
+                                <div className="text-muted-foreground text-xs">
+                                  {capacity.type}
+                                </div>
+                              </div>
+                            );
+                          })()} 
                         </TableCell>
                         <TableCell>
                           {booking.total_amount ? `${booking.total_amount} MAD` : '-'}
@@ -340,33 +483,68 @@ export default function AdminBookings() {
                           <div className="space-y-1">
                             <Badge 
                               variant="secondary" 
-                              className={`${getStatusColor(booking.status)} text-white`}
+                              className={`${getStatusColor(booking.status, booking.is_confirmed)} text-white`}
                             >
-                              {booking.status}
+                              {booking.is_confirmed ? 'Confirmé' : booking.status}
                             </Badge>
                             <div className="text-xs text-muted-foreground">
                               {booking.payment_status}
                             </div>
+                            {booking.is_confirmed && booking.confirmed_at && (
+                              <div className="text-xs text-muted-foreground">
+                                Confirmé le {new Date(booking.confirmed_at).toLocaleDateString('fr-FR')}
+                              </div>
+                            )}
                           </div>
                         </TableCell>
                         <TableCell>
-                          {booking.status === 'awaiting_verification' && (
-                            <div className="space-x-2">
-                              <Button
-                                size="sm"
-                                onClick={() => updateBookingStatus(booking.id, 'approved')}
-                              >
-                                Approuver
-                              </Button>
+                          <div className="space-x-2">
+                            {!booking.is_confirmed && booking.status === 'pending' && (
+                              <>
+                                <Button
+                                  size="sm"
+                                  onClick={() => confirmBooking(booking)}
+                                  className="bg-green-600 hover:bg-green-700"
+                                >
+                                  Confirmer
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => rejectBooking(booking.id)}
+                                >
+                                  Rejeter
+                                </Button>
+                              </>
+                            )}
+                            {booking.is_confirmed && (
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => updateBookingStatus(booking.id, 'rejected')}
+                                onClick={() => unconfirmBooking(booking.id)}
+                                className="text-red-600 border-red-600 hover:bg-red-50"
                               >
-                                Rejeter
+                                Annuler confirmation
                               </Button>
-                            </div>
-                          )}
+                            )}
+                            {booking.status === 'awaiting_verification' && (
+                              <>
+                                <Button
+                                  size="sm"
+                                  onClick={() => confirmBooking(booking)}
+                                >
+                                  Approuver
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => rejectBooking(booking.id)}
+                                >
+                                  Rejeter
+                                </Button>
+                              </>
+                            )}
+                          </div>
                         </TableCell>
                       </TableRow>
                     ))}

@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { createClient } from '@supabase/supabase-js';
 
 // Simplified spectacle data for seeding
 export const sampleSpectacles = [
@@ -64,16 +65,16 @@ export const sampleSpectacles = [
   }
 ];
 
-export async function seedSpectacles() {
+export const seedSpectacles = async () => {
   try {
-    console.log('Seeding spectacles...');
+    console.log('Starting to seed spectacles...');
     
-    // First, update any existing "L'Enfant de l'Arbre" to "Flash"
+    // First, try to update existing L'Enfant de l'Arbre to Flash
     const { error: updateError } = await supabase
       .from('spectacles')
-      .update({
+      .update({ 
         title: 'Flash',
-        description: 'Un spectacle électrisant qui explore les super-pouvoirs et l\'héroïsme à travers une aventure captivante pleine d\'action et d\'émotion.'
+        description: 'Flash est un spectacle captivant qui explore les thèmes de la vitesse, de la technologie et de la connexion humaine dans notre monde moderne.'
       })
       .eq('title', 'L\'Enfant de l\'Arbre');
     
@@ -89,44 +90,45 @@ export async function seedSpectacles() {
     
     if (checkError) {
       console.error('Error checking existing spectacles:', checkError);
-      return false;
+      throw new Error(`Database check failed: ${checkError.message}`);
     }
     
     // If Flash already exists, we're good
     if (existing && existing.some(s => s.title === 'Flash')) {
       console.log('Flash spectacle already exists');
-      return true;
+      return existing;
     }
     
     // If other spectacles exist but not Flash, clear them and insert fresh data
     if (existing && existing.length > 0) {
       console.log('Clearing existing spectacles and inserting fresh data...');
       const { error: deleteError } = await supabase
-        .from('spectacles')
+        .from('sessions')
         .delete()
         .neq('id', '00000000-0000-0000-0000-000000000000'); // Delete all
       
       if (deleteError) {
-        console.error('Error clearing spectacles:', deleteError);
+        console.error('Error clearing sessions:', deleteError);
       }
     }
     
     // Insert sample spectacles
+    console.log('Inserting spectacles:', sampleSpectacles);
     const { data, error } = await supabase
       .from('spectacles')
-      .insert(sampleSpectacles)
+      .upsert(sampleSpectacles, { onConflict: 'title' })
       .select();
     
     if (error) {
       console.error('Error seeding spectacles:', error);
-      return false;
+      throw new Error(`Failed to insert spectacles: ${error.message}`);
     }
     
     console.log('Successfully seeded spectacles:', data);
-    return true;
+    return data;
   } catch (error) {
     console.error('Failed to seed spectacles:', error);
-    return false;
+    throw error;
   }
 }
 
@@ -204,73 +206,115 @@ export const sampleSessions = [
   }
 ];
 
-export async function seedSessions() {
+export const seedSessions = async () => {
   try {
-    console.log('Seeding sessions...');
+    console.log('Starting to seed sessions...');
     
-    // Get spectacles to create sessions for
-    const { data: spectacles, error: spectacleError } = await supabase
+    // Generate SQL INSERT statements for manual execution in Supabase dashboard
+    const { data: spectacles, error: spectaclesError } = await supabase
       .from('spectacles')
-      .select('id, title')
-      .eq('is_active', true)
-      .limit(3);
+      .select('id, title');
     
-    if (spectacleError || !spectacles || spectacles.length === 0) {
-      console.error('No spectacles found for sessions');
-      return false;
+    if (spectaclesError) throw spectaclesError;
+    
+    if (!spectacles || spectacles.length === 0) {
+      console.log('No spectacles found. Please seed spectacles first.');
+      return { 
+        success: false, 
+        message: 'No spectacles found. Please seed spectacles first.',
+        sqlStatements: []
+      };
     }
+
+    const sqlStatements = [];
     
-    // Check if sessions already exist
-    const { data: existingSessions, error: checkError } = await supabase
-      .from('sessions')
-      .select('id')
-      .limit(1);
+    // Add DELETE statement to clear existing sessions
+    sqlStatements.push('-- Clear existing sessions');
+    sqlStatements.push('DELETE FROM sessions;');
+    sqlStatements.push('');
+
+    const sessions = [];
     
-    if (checkError) {
-      console.error('Error checking existing sessions:', checkError);
-      return false;
-    }
-    
-    if (existingSessions && existingSessions.length > 0) {
-      console.log('Sessions already exist, skipping seed');
-      return true;
-    }
-    
-    // Create sessions for each spectacle
-    const sessionsToInsert = [];
-    
-    spectacles.forEach((spectacle, spectacleIndex) => {
-      // Create 2-3 sessions per spectacle with different dates
-      sampleSessions.slice(0, 3).forEach((session, sessionIndex) => {
-        const sessionDate = new Date();
-        sessionDate.setDate(sessionDate.getDate() + (spectacleIndex * 7) + (sessionIndex * 2) + 7); // Spread sessions over time
-        
-        sessionsToInsert.push({
-          ...session,
-          spectacle_id: spectacle.id,
-          session_date: sessionDate.toISOString().split('T')[0],
-          price_mad: sampleSpectacles[spectacleIndex]?.price || 85
+    // Public school sessions data for specific spectacles
+    const publicSchoolSessions = [
+      // CASABLANCA
+      { title: 'Alice Chez Les Merveilles', date: '2026-05-22', times: ['09:30'], venue: 'Complexe El Hassani', city: 'Casablanca', type: 'scolaire-publique' },
+      { title: 'Antigone', date: '2026-04-24', times: ['09:30'], venue: 'Théâtre Zefzaf', city: 'Casablanca', type: 'scolaire-publique' },
+      { title: 'Charlotte', date: '2026-01-30', times: ['09:30'], venue: 'Complexe El Hassani', city: 'Casablanca', type: 'scolaire-publique' },
+      { title: 'Estevanico', date: '2026-02-20', times: ['10:00'], venue: 'Complexe El Hassani', city: 'Casablanca', type: 'scolaire-publique' },
+      { title: 'Flash', date: '2026-04-03', times: ['09:30'], venue: 'Complexe El Hassani', city: 'Casablanca', type: 'scolaire-publique' },
+      { title: 'L\'Eau, La', date: '2025-11-14', times: ['09:30'], venue: 'Complexe El Hassani', city: 'Casablanca', type: 'association' },
+      { title: 'Le Petit Prince', date: '2025-10-09', times: ['09:30'], venue: 'Complexe El Hassani', city: 'Casablanca', type: 'scolaire-publique' },
+      { title: 'Mirath Atfal', date: '2025-11-10', times: ['14:30'], venue: 'Théâtre Zefzaf', city: 'Casablanca', type: 'scolaire-publique' },
+      { title: 'Simple comme bonjour', date: '2025-12-19', times: ['09:30'], venue: 'Complexe El Hassani', city: 'Casablanca', type: 'scolaire-publique' },
+      { title: 'Tara Sur La Lune', date: '2025-10-14', times: ['09:30'], venue: 'Complexe El Hassani', city: 'Casablanca', type: 'scolaire-publique' },
+      
+      // RABAT
+      { title: 'Alice Chez Les Merveilles', date: '2026-05-19', times: ['14:30'], venue: 'Théâtre Bahnini', city: 'Rabat', type: 'association' },
+      { title: 'Antigone', date: '2026-04-21', times: ['14:30'], venue: 'Théâtre Bahnini', city: 'Rabat', type: 'association' },
+      { title: 'Charlotte', date: '2026-01-27', times: ['14:30'], venue: 'Théâtre Bahnini', city: 'Rabat', type: 'association' },
+      { title: 'Estevanico', date: '2026-02-17', times: ['14:30'], venue: 'Théâtre Bahnini', city: 'Rabat', type: 'association' },
+      { title: 'Flash', date: '2026-03-31', times: ['14:30'], venue: 'Théâtre Bahnini', city: 'Rabat', type: 'association' },
+      { title: 'L\'Eau, La', date: '2025-11-11', times: ['14:30'], venue: 'Théâtre Bahnini', city: 'Rabat', type: 'association' },
+      { title: 'Le Petit Prince', date: '2025-10-07', times: ['14:30'], venue: 'Théâtre Bahnini', city: 'Rabat', type: 'association' },
+      { title: 'Mirath Atfal', date: '2025-11-13', times: ['14:30'], venue: 'Théâtre Bahnini', city: 'Rabat', type: 'scolaire-publique' },
+      { title: 'Simple comme bonjour', date: '2025-12-16', times: ['14:30'], venue: 'Théâtre Bahnini', city: 'Rabat', type: 'association' },
+      { title: 'Tara Sur La Lune', date: '2025-10-09', times: ['14:30'], venue: 'Théâtre Bahnini', city: 'Rabat', type: 'association' }
+    ];
+      
+    publicSchoolSessions.forEach(sessionData => {
+      const spectacle = spectacles.find(s => 
+        s.title.toLowerCase().includes(sessionData.title.toLowerCase()) ||
+        sessionData.title.toLowerCase().includes(s.title.toLowerCase())
+      );
+      
+      if (spectacle) {
+        sessionData.times.forEach(time => {
+          sessions.push({
+            spectacle_id: spectacle.id,
+            session_date: sessionData.date,
+            session_time: time,
+            venue: sessionData.venue,
+            city: sessionData.city,
+            session_type: sessionData.type,
+            total_capacity: 300,
+            status: 'published'
+          });
         });
-      });
+      }
     });
+
+    // Generate SQL INSERT statements for all sessions
+    sessions.forEach(session => {
+      const values = [
+        `'${session.spectacle_id}'`,
+        `'${session.session_date}'`,
+        `'${session.session_time}'`,
+        `'${session.venue}'`,
+        `'${session.city}'`,
+        `'${session.session_type}'`,
+        session.total_capacity,
+        `'${session.status}'`
+      ].join(', ');
+      
+      sqlStatements.push(`INSERT INTO sessions (spectacle_id, session_date, session_time, venue, city, session_type, total_capacity, status) VALUES (${values});`);
+    });
+
+    console.log(`Generated ${sessions.length} session insert statements`);
+    console.log('Copy and paste the following SQL statements into your Supabase SQL Editor:');
+    console.log('\n' + sqlStatements.join('\n'));
     
-    const { data, error } = await supabase
-      .from('sessions')
-      .insert(sessionsToInsert)
-      .select();
-    
-    if (error) {
-      console.error('Error seeding sessions:', error);
-      return false;
-    }
-    
-    console.log('Successfully seeded sessions:', data);
-    return true;
+    return { 
+      success: true, 
+      message: `Generated ${sessions.length} session insert statements. Check console for SQL to copy.`,
+      sqlStatements,
+      sessionCount: sessions.length
+    };
   } catch (error) {
-    console.error('Failed to seed sessions:', error);
-    return false;
+    console.error('Error generating session data:', error);
+    throw error;
   }
-}
+};
 
 export async function seedAllData() {
   console.log('Starting data seeding...');

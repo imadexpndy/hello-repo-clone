@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { SESSIONS, getUserTypeSessions } from '@/data/sessions';
 
 interface SpectacleSession {
   id: string;
@@ -134,6 +135,8 @@ export default function ReservationWithSessions() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [availableSessions, setAvailableSessions] = useState<SpectacleSession[]>([]);
+  const [selectedCity, setSelectedCity] = useState<string>('');
+  const [availableCities, setAvailableCities] = useState<string[]>([]);
   const [reservationData, setReservationData] = useState<ReservationData>({
     spectacle: spectacleId || '',
     selectedSession: null,
@@ -155,8 +158,30 @@ export default function ReservationWithSessions() {
       navigate('/auth?return_url=' + returnUrl);
     }
 
-    if (spectacleId && spectacleSessions[spectacleId]) {
-      setAvailableSessions(spectacleSessions[spectacleId]);
+    if (spectacleId) {
+      // Get sessions for particulier users (tout-public sessions)
+      const userType = 'particulier';
+      const sessions = getUserTypeSessions(spectacleId, userType);
+      
+      // Convert sessions to SpectacleSession format
+      const convertedSessions: SpectacleSession[] = sessions.map(session => ({
+        id: session.id,
+        date: session.date,
+        time: session.time,
+        location: session.location.includes('RABAT') ? 'Rabat' : 'Casablanca',
+        targetAudience: 'Grand public',
+        availableSpots: 100,
+        maxCapacity: 150,
+        ageRange: '5+ ans',
+        duration: '50 min',
+        price: { professional: 100, individual: 150 }
+      }));
+      
+      setAvailableSessions(convertedSessions);
+      
+      // Extract unique cities
+      const cities = [...new Set(convertedSessions.map(session => session.location))];
+      setAvailableCities(cities);
     }
   }, [user, navigate, spectacleId]);
 
@@ -167,10 +192,16 @@ export default function ReservationWithSessions() {
     }));
   };
 
+  // Filter sessions by selected city
+  const getFilteredSessions = () => {
+    if (!selectedCity) return availableSessions;
+    return availableSessions.filter(session => session.location === selectedCity);
+  };
+
   const validateStep = (step: number): boolean => {
     switch (step) {
       case 1:
-        return !!(reservationData.selectedSession);
+        return !!(selectedCity && reservationData.selectedSession);
       case 2:
         return !!(reservationData.profileType);
       case 3:
@@ -255,73 +286,120 @@ export default function ReservationWithSessions() {
             ))}
           </div>
 
-          {/* Step 1: Session Selection */}
+          {/* Step 1: City and Session Selection */}
           {currentStep === 1 && (
             <div className="space-y-6">
               <div className="text-center">
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">Choisir une session</h2>
+                <h2 className="text-2xl font-bold text-gray-800 mb-2">Choisir une ville et une session</h2>
                 <h3 className="text-xl text-green-600 mb-6">
                   {spectacleNames[reservationData.spectacle] || reservationData.spectacle}
                 </h3>
               </div>
 
-              <div className="space-y-4">
-                {availableSessions.map((session) => (
-                  <div
-                    key={session.id}
-                    onClick={() => handleInputChange('selectedSession', session)}
-                    className={`p-6 border-2 rounded-lg cursor-pointer transition-all ${
-                      reservationData.selectedSession?.id === session.id
-                        ? 'border-green-500 bg-green-50'
-                        : 'border-gray-300 hover:border-green-300'
-                    }`}
-                  >
-                    <div className="flex justify-between items-start">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-4 mb-3">
-                          <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
-                            {session.location}
-                          </div>
-                          <div className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-semibold">
-                            {session.targetAudience}
-                          </div>
-                        </div>
-                        
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                          <div>
-                            <span className="font-semibold text-gray-600">Date:</span>
-                            <div>{new Date(session.date).toLocaleDateString('fr-FR')}</div>
-                          </div>
-                          <div>
-                            <span className="font-semibold text-gray-600">Heure:</span>
-                            <div>{session.time}</div>
-                          </div>
-                          <div>
-                            <span className="font-semibold text-gray-600">Durée:</span>
-                            <div>{session.duration}</div>
-                          </div>
-                          <div>
-                            <span className="font-semibold text-gray-600">Âge:</span>
-                            <div>{session.ageRange}</div>
+              {/* City Selection */}
+              <div className="mb-6">
+                <h4 className="text-lg font-semibold text-gray-700 mb-3">1. Sélectionnez votre ville</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {availableCities.map((city) => (
+                    <button
+                      key={city}
+                      onClick={() => {
+                        setSelectedCity(city);
+                        // Reset selected session when city changes
+                        handleInputChange('selectedSession', null);
+                      }}
+                      className={`p-4 border-2 rounded-lg text-left transition-all ${
+                        selectedCity === city
+                          ? 'border-blue-500 bg-blue-50 text-blue-800'
+                          : 'border-gray-300 hover:border-blue-300 text-gray-700'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <i className="fas fa-map-marker-alt text-lg"></i>
+                        <div>
+                          <div className="font-semibold text-lg">{city}</div>
+                          <div className="text-sm opacity-75">
+                            {availableSessions.filter(s => s.location === city).length} session(s) disponible(s)
                           </div>
                         </div>
                       </div>
-                      
-                      <div className="text-right">
-                        <div className="text-lg font-bold text-green-600">
-                          {session.price.professional} DH (PRO)
-                        </div>
-                        <div className="text-sm text-gray-600">
-                          {session.price.individual} DH (Particulier)
-                        </div>
-                        <div className="text-xs text-gray-500 mt-1">
-                          {session.availableSpots}/{session.maxCapacity} places
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                    </button>
+                  ))}
+                </div>
               </div>
+
+              {/* Session Selection */}
+              {selectedCity && (
+                <div>
+                  <h4 className="text-lg font-semibold text-gray-700 mb-3">
+                    2. Sélectionnez votre session à {selectedCity}
+                  </h4>
+                  <div className="space-y-4">
+                    {getFilteredSessions().map((session) => (
+                      <div
+                        key={session.id}
+                        onClick={() => handleInputChange('selectedSession', session)}
+                        className={`p-6 border-2 rounded-lg cursor-pointer transition-all ${
+                          reservationData.selectedSession?.id === session.id
+                            ? 'border-green-500 bg-green-50'
+                            : 'border-gray-300 hover:border-green-300'
+                        }`}
+                      >
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-4 mb-3">
+                              <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
+                                <i className="fas fa-map-marker-alt mr-1"></i>
+                                {session.location}
+                              </div>
+                              <div className="bg-purple-100 text-purple-800 px-3 py-1 rounded-full text-sm font-semibold">
+                                {session.targetAudience}
+                              </div>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                              <div>
+                                <span className="font-semibold text-gray-600">Date:</span>
+                                <div>{new Date(session.date).toLocaleDateString('fr-FR')}</div>
+                              </div>
+                              <div>
+                                <span className="font-semibold text-gray-600">Heure:</span>
+                                <div>{session.time}</div>
+                              </div>
+                              <div>
+                                <span className="font-semibold text-gray-600">Durée:</span>
+                                <div>{session.duration}</div>
+                              </div>
+                              <div>
+                                <span className="font-semibold text-gray-600">Âge:</span>
+                                <div>{session.ageRange}</div>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="text-right">
+                            <div className="text-lg font-bold text-green-600">
+                              {session.price.individual} DH
+                            </div>
+                            <div className="text-xs text-gray-500 mt-1">
+                              {session.availableSpots}/{session.maxCapacity} places
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {!selectedCity && (
+                <div className="text-center py-8">
+                  <div className="text-gray-500">
+                    <i className="fas fa-arrow-up text-2xl mb-2"></i>
+                    <p>Veuillez d'abord sélectionner une ville pour voir les sessions disponibles</p>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -332,7 +410,7 @@ export default function ReservationWithSessions() {
                 <h2 className="text-2xl font-bold text-gray-800 mb-2">Choisir votre profil</h2>
                 <div className="bg-blue-50 p-4 rounded-lg mb-6">
                   <p className="text-sm text-blue-800">
-                    <strong>Session sélectionnée:</strong> {reservationData.selectedSession?.date} à {reservationData.selectedSession?.time} 
+                    <strong>Session sélectionnée:</strong> {new Date(reservationData.selectedSession?.date || '').toLocaleDateString('fr-FR')} à {reservationData.selectedSession?.time} 
                     - {reservationData.selectedSession?.location} ({reservationData.selectedSession?.targetAudience})
                   </p>
                 </div>

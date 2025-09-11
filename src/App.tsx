@@ -69,6 +69,9 @@ import SpectacleFlash from "./pages/SpectacleFlash";
 import SpectacleAntigone from "./pages/SpectacleAntigone";
 import SpectacleLeauLa from "./pages/SpectacleLeauLa";
 import SpectacleTemplate from "./pages/SpectacleTemplate";
+import SessionsTable from "./pages/SessionsTable";
+import SessionsVerification from "./pages/SessionsVerification";
+import SeedDataPage from "./pages/SeedDataPage";
 import MyReservations from "./pages/MyReservations";
 import Payment from "./pages/Payment";
 import PaymentMethodSelection from "./pages/PaymentMethodSelection";
@@ -144,6 +147,9 @@ const App = () => {
               <Route path="/spectacle/alice-aux-pays-des-merveilles" element={<SpectacleAliceChezLesMerveilles />} />
               <Route path="/spectacle/casse-noisette" element={<SpectacleMinimal />} />
               <Route path="/spectacle/leau-la" element={<SpectacleLeauLa />} />
+              <Route path="/sessions" element={<SessionsTable />} />
+              <Route path="/sessions-verification" element={<SessionsVerification />} />
+              <Route path="/seed-data" element={<SeedDataPage />} />
               <Route path="/xjniuhguou98q3ij" element={<SpectacleTemplate />} />
 
               {/* Protected Admin Routes */}
