@@ -990,14 +990,14 @@ export default function SpectacleLePetitPrinceAr() {
                 <li style={{marginBottom: '8px'}}>
                   <a href="https://edjs.ma/gallery.html" style={{color: 'white', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.3s'}}
                      onMouseEnter={(e) => (e.target as HTMLElement).style.color = '#BDCF00'}
-                     onMouseLeave={(e) => (e.target as HTMLElement).style.color = 'white'}}>
+                     onMouseLeave={(e) => (e.target as HTMLElement).style.color = 'white'}>
                     Galerie
                   </a>
                 </li>
                 <li style={{marginBottom: '8px'}}>
                   <a href="https://edjs.ma/contact.html" style={{color: 'white', textDecoration: 'none', fontSize: '0.9rem', transition: 'color 0.3s'}}
                      onMouseEnter={(e) => (e.target as HTMLElement).style.color = '#BDCF00'}
-                     onMouseLeave={(e) => (e.target as HTMLElement).style.color = 'white'}}>
+                     onMouseLeave={(e) => (e.target as HTMLElement).style.color = 'white'}>
                     Contact
                   </a>
                 </li>
@@ -1008,7 +1008,7 @@ export default function SpectacleLePetitPrinceAr() {
           {/* Footer Bottom */}
           <div style={{borderTop: '1px solid #333', paddingTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px'}}>
             <p style={{color: 'white', margin: 0, fontSize: '0.85rem'}}>
-              Copyright &copy; {new Date().getFullYear()} <a href="https://edjs.ma/" style={{color: '#BDCF00', textDecoration: 'none'}}>L'École des jeunes spectateurs</a>. Tous droits réservés.
+              Copyright © {new Date().getFullYear()} <a href="https://edjs.ma/" style={{color: '#BDCF00', textDecoration: 'none'}}>L'École des jeunes spectateurs</a>. Tous droits réservés.
             </p>
             <div style={{display: 'flex', gap: '20px'}}>
               <a href="https://edjs.ma/contact.html" style={{color: 'white', textDecoration: 'none', fontSize: '0.85rem'}}
