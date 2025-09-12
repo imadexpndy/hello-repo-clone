@@ -45,7 +45,8 @@ const ReservationFlow = () => {
     'tara-sur-la-lune': { title: 'Tara sur la Lune', description: 'Une aventure spatiale extraordinaire' },
     'estevanico': { title: 'Estevanico', description: 'Une découverte historique passionnante' },
     'charlotte': { title: 'Charlotte', description: 'Une histoire d\'amitié touchante' },
-    'alice-chez-les-merveilles': { title: 'Alice chez les Merveilles', description: 'Un voyage fantastique au pays des merveilles' }
+    'alice-chez-les-merveilles': { title: 'Alice chez les Merveilles', description: 'Un voyage fantastique au pays des merveilles' },
+    'leau-la': { title: 'L\'Eau Là', description: 'Une aventure aquatique captivante' }
   };
 
   const spectacle = spectacleData[spectacleId as keyof typeof spectacleData];

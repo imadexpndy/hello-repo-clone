@@ -77,7 +77,6 @@ import Payment from "./pages/Payment";
 import PaymentMethodSelection from "./pages/PaymentMethodSelection";
 import PaymentInstructions from "./pages/PaymentInstructions";
 import PaymentConfirmation from "./pages/PaymentConfirmation";
-import LeauLaReservation from "./pages/reservation/leau-la";
 
 const queryClient = new QueryClient();
 
@@ -134,7 +133,6 @@ const App = () => {
                   <ReservationFlow />
                 </ProtectedRoute>
               } />
-              <Route path="/reservation/leau-la" element={<LeauLaReservation />} />
               <Route path="/spectacles" element={<Spectacles />} />
               <Route path="/spectacle/le-petit-prince" element={<SpectacleLePetitPrince />} />
               <Route path="/spectacle/le-petit-prince-ar" element={<SpectacleLePetitPrince />} />
