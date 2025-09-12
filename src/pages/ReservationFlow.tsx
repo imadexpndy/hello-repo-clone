@@ -144,8 +144,7 @@ const ReservationFlow = () => {
 
   const checkSessionCapacity = async (sessionId: string) => {
     try {
-      // Get session info from sessions.ts data
-      const sessions = getAvailableSessions();
+      const sessions = getUserTypeSessions(userType || 'particulier', spectacleId || '');
       const sessionInfo = sessions.find(s => s.id === sessionId);
       
       if (!sessionInfo) {
@@ -155,11 +154,23 @@ const ReservationFlow = () => {
       }
 
       // Count confirmed and paid bookings from database
-      const { data: bookingsData, error: bookingsError } = await supabase
-        .from('bookings')
-        .select('number_of_tickets, status')
-        .eq('session_frontend_id', sessionId)
-        .in('status', ['confirmed', 'awaiting_verification']);
+      let bookingsData: any[] | null = null;
+      let bookingsError: any = null;
+      
+      try {
+        // Simplified query to avoid TypeScript inference issues
+        const { data, error } = await (supabase as any)
+          .from('bookings')
+          .select('number_of_tickets, status')
+          .eq('session_frontend_id', sessionId)
+          .in('status', ['confirmed', 'awaiting_verification']);
+        
+        bookingsData = data;
+        bookingsError = error;
+      } catch (error) {
+        console.error('Error fetching bookings:', error);
+        bookingsError = error;
+      }
 
       if (bookingsError) {
         console.error('Error fetching bookings:', bookingsError);
@@ -312,7 +323,7 @@ const ReservationFlow = () => {
       }
 
       // Use RPC to create booking and map frontend session ID to UUID
-      const { data: booking, error: bookingError } = await supabase.rpc('create_booking_by_frontend_id' as any, {
+      const bookingResult = await supabase.rpc('create_booking_by_frontend_id' as any, {
         p_frontend_session_id: selectedSession,
         p_spectacle_id: spectacleId,
         p_booking_type: userType || 'particulier',
@@ -327,6 +338,9 @@ const ReservationFlow = () => {
         p_total_amount: totalAmount,
         p_payment_reference: reservationId
       });
+
+      const booking = bookingResult.data;
+      const bookingError = bookingResult.error;
 
       if (bookingError) {
         console.error('=== BOOKING ERROR DETAILS ===');
