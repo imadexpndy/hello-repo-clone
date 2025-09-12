@@ -14,6 +14,21 @@ export default function Spectacles() {
     spectacleName: ''
   });
 
+  // Immediately define window functions to prevent "not defined" errors
+  React.useEffect(() => {
+    (window as any).handleReservation = (spectacleId: string) => {
+      console.log('Emergency handleReservation called with:', spectacleId);
+      // Redirect to reservation page directly
+      window.location.href = `/reservation/${spectacleId}`;
+    };
+    
+    (window as any).handleDetails = (spectacleId: string) => {
+      console.log('Emergency handleDetails called with:', spectacleId);
+      // Navigate to spectacle detail page
+      window.location.href = `/spectacle/${spectacleId}`;
+    };
+  }, []);
+
   // Get user type from session storage
   const [userType, setUserType] = useState(sessionStorage.getItem('userType'));
   const [professionalType, setProfessionalType] = useState(sessionStorage.getItem('professionalType'));
@@ -186,6 +201,9 @@ export default function Spectacles() {
 
   const handleReservation = (spectacleId: string, spectacleName: string = '') => {
     console.log('handleReservation called with:', spectacleId);
+    
+    // Immediately expose to window to ensure availability
+    (window as any).handleReservation = handleReservation;
     
     // Get current user type from session storage
     const currentUserType = sessionStorage.getItem('userType');
@@ -442,17 +460,26 @@ export default function Spectacles() {
     setTimeout(() => {
       initializeDropdown();
       
-      // Double-check function exposure after DOM is ready
-      (window as any).handleReservation = handleReservation;
-      (window as any).handleDetails = handleDetails;
+      // Store original function reference
+      const originalHandleReservation = handleReservation;
+      const originalHandleDetails = handleDetails;
       
       // Add error handling wrapper for handleReservation
       (window as any).handleReservation = function(spectacleId: string) {
         try {
           console.log('Window handleReservation called with:', spectacleId);
-          return handleReservation(spectacleId);
+          return originalHandleReservation(spectacleId);
         } catch (error) {
           console.error('Error in handleReservation:', error);
+        }
+      };
+      
+      (window as any).handleDetails = function(spectacleId: string) {
+        try {
+          console.log('Window handleDetails called with:', spectacleId);
+          return originalHandleDetails(spectacleId);
+        } catch (error) {
+          console.error('Error in handleDetails:', error);
         }
       };
       
