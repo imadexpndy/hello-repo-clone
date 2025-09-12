@@ -797,7 +797,7 @@ export default function SpectacleLeauLa() {
                   <>
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
                       <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Samedi 8 Novembre 2025</div>
-                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>15H00 - Rabat, Théâtre Bahnini</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>15H00 - Rabat, Salle Allal El Fassi</div>
                       <button 
                         onClick={handleReservationClick}
                         style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
@@ -864,7 +864,7 @@ export default function SpectacleLeauLa() {
                     {/* Rabat Sessions */}
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
                       <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Lundi 10 Novembre 2025</div>
-                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09H30 - Rabat, Théâtre Bahnini</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09H30 - Rabat, Salle Allal El Fassi</div>
                       <button 
                         onClick={handleReservationClick}
                         style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
@@ -876,7 +876,7 @@ export default function SpectacleLeauLa() {
                     
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
                       <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Lundi 10 Novembre 2025</div>
-                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Rabat, Théâtre Bahnini</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Rabat, Salle Allal El Fassi</div>
                       <button 
                         onClick={handleReservationClick}
                         style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
@@ -893,7 +893,7 @@ export default function SpectacleLeauLa() {
                   <>
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
                       <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mardi 11 Novembre 2025</div>
-                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Rabat, Théâtre Bahnini</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Rabat, Salle Allal El Fassi</div>
                       <button 
                         onClick={() => window.location.href = '/reservation/leau-la?session=rabat-nov-11-14h30'}
                         style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
@@ -922,7 +922,7 @@ export default function SpectacleLeauLa() {
                   <>
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
                       <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mardi 11 Novembre 2025</div>
-                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Rabat, Théâtre Bahnini</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Rabat, Salle Allal El Fassi</div>
                       <button 
                         onClick={() => window.location.href = '/reservation/leau-la?session=rabat-nov-11-14h30'}
                         style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}

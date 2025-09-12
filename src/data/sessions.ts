@@ -44,12 +44,12 @@ export const SESSIONS: Session[] = [
   { id: 'tsl-8', date: '2025-10-14', time: '14:30', location: 'CASABLANCA - COMPLEXE EL HASSANI', audienceType: 'association', spectacleId: 'tara-sur-la-lune', month: 'octobre', capacity: 300 },
 
   // NOVEMBRE - L'EAU LA
-  // RABAT - THEATRE BAHNINI
-  { id: 'leau-1', date: '2025-11-08', time: '15:00', location: 'RABAT - THEATRE BAHNINI', audienceType: 'tout-public', spectacleId: 'leau-la', month: 'novembre', capacity: 220 },
-  { id: 'leau-2', date: '2025-11-10', time: '09:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-privee', spectacleId: 'leau-la', month: 'novembre', price: 100, capacity: 400 },
-  { id: 'leau-3', date: '2025-11-10', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-privee', spectacleId: 'leau-la', month: 'novembre', price: 100, capacity: 400 },
-  { id: 'leau-4', date: '2025-11-11', time: '09:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'association', spectacleId: 'leau-la', month: 'novembre', capacity: 400 },
-  { id: 'leau-5', date: '2025-11-11', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-publique', spectacleId: 'leau-la', month: 'novembre', capacity: 400 },
+  // RABAT - SALLE ALLAL EL FASSI
+  { id: 'leau-1', date: '2025-11-08', time: '15:00', location: 'RABAT - SALLE ALLAL EL FASSI', audienceType: 'tout-public', spectacleId: 'leau-la', month: 'novembre', capacity: 220 },
+  { id: 'leau-2', date: '2025-11-10', time: '09:30', location: 'RABAT - SALLE ALLAL EL FASSI', audienceType: 'scolaire-privee', spectacleId: 'leau-la', month: 'novembre', price: 100, capacity: 400 },
+  { id: 'leau-3', date: '2025-11-10', time: '14:30', location: 'RABAT - SALLE ALLAL EL FASSI', audienceType: 'scolaire-privee', spectacleId: 'leau-la', month: 'novembre', price: 100, capacity: 400 },
+  { id: 'leau-4', date: '2025-11-11', time: '09:30', location: 'RABAT - SALLE ALLAL EL FASSI', audienceType: 'association', spectacleId: 'leau-la', month: 'novembre', capacity: 400 },
+  { id: 'leau-5', date: '2025-11-11', time: '14:30', location: 'RABAT - SALLE ALLAL EL FASSI', audienceType: 'scolaire-publique', spectacleId: 'leau-la', month: 'novembre', capacity: 400 },
   
   // CASABLANCA - COMPLEXE EL HASSANI
   { id: 'leau-6', date: '2025-11-13', time: '09:30', location: 'CASABLANCA - COMPLEXE EL HASSANI', audienceType: 'scolaire-privee', spectacleId: 'leau-la', month: 'novembre', price: 100, capacity: 300 },
@@ -58,8 +58,6 @@ export const SESSIONS: Session[] = [
   { id: 'leau-9', date: '2025-11-14', time: '09:30', location: 'CASABLANCA - COMPLEXE EL HASSANI', audienceType: 'scolaire-publique', spectacleId: 'leau-la', month: 'novembre', capacity: 300 },
   { id: 'leau-10', date: '2025-11-14', time: '14:30', location: 'CASABLANCA - COMPLEXE EL HASSANI', audienceType: 'scolaire-privee', spectacleId: 'leau-la', month: 'novembre', price: 100, capacity: 300 },
   { id: 'leau-11', date: '2025-11-15', time: '15:00', location: 'CASABLANCA - COMPLEXE EL HASSANI', audienceType: 'tout-public', spectacleId: 'leau-la', month: 'novembre', capacity: 220 },
-  { id: 'leau-12', date: '2025-11-13', time: '09:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-privee', spectacleId: 'leau-la', month: 'novembre', price: 100, capacity: 400 },
-  { id: 'leau-13', date: '2025-11-13', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-privee', spectacleId: 'leau-la', month: 'novembre', price: 100, capacity: 400 },
 
   // NOVEMBRE - MIRATH ATFAL
   // CASABLANCA - THEATRE ZEFZAF
