@@ -742,7 +742,7 @@ export default function Spectacles() {
             <!-- Navigation Menu -->
             <nav class="nav-menu">
               <li class="nav-item">
-                <a href="https://edjs.ma/" class="nav-link">QUI SOMME-NOUS ?</a>
+                <a href="https://edjs.ma/" class="nav-link">QUI SOMMES-NOUS ?</a>
               </li>
               <li class="nav-item">
                 <a href="/spectacles" class="nav-link">Nos Spectacles</a>
