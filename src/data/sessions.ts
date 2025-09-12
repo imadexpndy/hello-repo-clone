@@ -32,7 +32,7 @@ export const SESSIONS: Session[] = [
 
   // OCTOBRE - TARA SUR LA LUNE
   // RABAT - THEATRE BAHNINI
-  { id: 'tsl-1', date: '2025-10-11', time: '15:00', location: 'RABAT - THEATRE BAHNINI', audienceType: 'tout-public', spectacleId: 'tara-sur-la-lune', month: 'octobre', capacity: 220 },
+  { id: 'tsl-1', date: '2025-10-11', time: '14:00', location: 'RABAT - THEATRE BAHNINI', audienceType: 'tout-public', spectacleId: 'tara-sur-la-lune', month: 'octobre', capacity: 220 },
   { id: 'tsl-2', date: '2025-10-09', time: '09:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-privee', spectacleId: 'tara-sur-la-lune', month: 'octobre', price: 100, capacity: 400 },
   { id: 'tsl-3', date: '2025-10-09', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-publique', spectacleId: 'tara-sur-la-lune', month: 'octobre', capacity: 400 },
   { id: 'tsl-4', date: '2025-10-10', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'association', spectacleId: 'tara-sur-la-lune', month: 'octobre', capacity: 400 },
