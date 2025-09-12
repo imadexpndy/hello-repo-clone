@@ -68,12 +68,12 @@ export const SESSIONS: Session[] = [
   { id: 'ma-3', date: '2025-11-10', time: '14:30', location: 'CASABLANCA - THEATRE ZEFZAF', audienceType: 'scolaire-publique', spectacleId: 'mirath-atfal', month: 'novembre', capacity: 300 },
   { id: 'ma-4', date: '2025-11-11', time: '14:30', location: 'CASABLANCA - THEATRE ZEFZAF', audienceType: 'association', spectacleId: 'mirath-atfal', month: 'novembre', capacity: 300 },
   
-  // RABAT - THEATRE BAHNINI
-  { id: 'ma-5', date: '2025-11-13', time: '09:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-privee', spectacleId: 'mirath-atfal', month: 'novembre', price: 100, capacity: 400 },
-  { id: 'ma-6', date: '2025-11-13', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-publique', spectacleId: 'mirath-atfal', month: 'novembre', capacity: 400 },
-  { id: 'ma-7', date: '2025-11-14', time: '09:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'association', spectacleId: 'mirath-atfal', month: 'novembre', capacity: 400 },
-  { id: 'ma-8', date: '2025-11-14', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'association', spectacleId: 'mirath-atfal', month: 'novembre', capacity: 400 },
-  { id: 'ma-9', date: '2025-11-15', time: '15:00', location: 'RABAT - THEATRE BAHNINI', audienceType: 'tout-public', spectacleId: 'mirath-atfal', month: 'novembre', capacity: 220 },
+  // RABAT - SALLE ALLAL EL FASSI
+  { id: 'ma-5', date: '2025-11-13', time: '09:30', location: 'RABAT - SALLE ALLAL EL FASSI', audienceType: 'scolaire-privee', spectacleId: 'mirath-atfal', month: 'novembre', price: 100, capacity: 400 },
+  { id: 'ma-6', date: '2025-11-13', time: '14:30', location: 'RABAT - SALLE ALLAL EL FASSI', audienceType: 'scolaire-publique', spectacleId: 'mirath-atfal', month: 'novembre', capacity: 400 },
+  { id: 'ma-7', date: '2025-11-14', time: '09:30', location: 'RABAT - SALLE ALLAL EL FASSI', audienceType: 'association', spectacleId: 'mirath-atfal', month: 'novembre', capacity: 400 },
+  { id: 'ma-8', date: '2025-11-14', time: '14:30', location: 'RABAT - SALLE ALLAL EL FASSI', audienceType: 'association', spectacleId: 'mirath-atfal', month: 'novembre', capacity: 400 },
+  { id: 'ma-9', date: '2025-11-15', time: '15:00', location: 'RABAT - SALLE ALLAL EL FASSI', audienceType: 'tout-public', spectacleId: 'mirath-atfal', month: 'novembre', capacity: 220 },
 
   // DECEMBRE - SIMPLE COMME BONJOUR
   // RABAT - THEATRE BAHNINI
