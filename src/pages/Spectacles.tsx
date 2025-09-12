@@ -319,6 +319,12 @@ export default function Spectacles() {
     // Expose handleReservation to global window object for inline handlers
     (window as any).handleReservation = handleReservation;
     (window as any).handleDetails = handleDetails;
+    
+    // Ensure functions are available immediately
+    console.log('Functions exposed to window:', {
+      handleReservation: typeof (window as any).handleReservation,
+      handleDetails: typeof (window as any).handleDetails
+    });
 
     // Load external stylesheets
     const loadStylesheet = (href: string) => {
@@ -414,6 +420,13 @@ export default function Spectacles() {
     (window as any).handleDetails = handleDetails;
     (window as any).goBackToSelection = goBackToSelection;
     
+    // Debug: Verify functions are properly exposed
+    console.log('Window functions check:', {
+      handleReservation: typeof (window as any).handleReservation,
+      handleDetails: typeof (window as any).handleDetails,
+      goBackToSelection: typeof (window as any).goBackToSelection
+    });
+    
     // Expose hideAuthGate function to window for inline onclick
     (window as any).hideAuthGate = () => {
       const authGateSection = document.getElementById('authGateSection');
@@ -432,6 +445,16 @@ export default function Spectacles() {
       // Double-check function exposure after DOM is ready
       (window as any).handleReservation = handleReservation;
       (window as any).handleDetails = handleDetails;
+      
+      // Add error handling wrapper for handleReservation
+      (window as any).handleReservation = function(spectacleId: string) {
+        try {
+          console.log('Window handleReservation called with:', spectacleId);
+          return handleReservation(spectacleId);
+        } catch (error) {
+          console.error('Error in handleReservation:', error);
+        }
+      };
       
       // Test both reservation and details buttons
       const detailsButtons = document.querySelectorAll('.btn-details');
