@@ -80,7 +80,7 @@ export const SpectacleAccessControl: React.FC<SpectacleAccessControlProps> = ({ 
     return <>{children}</>;
   }
 
-  // Allow access for private school teachers
+  // Allow immediate access for private school teachers - no approval needed
   if (profile?.role === 'teacher_private') {
     return <>{children}</>;
   }

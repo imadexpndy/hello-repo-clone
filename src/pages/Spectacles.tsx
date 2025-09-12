@@ -16,17 +16,14 @@ export default function Spectacles() {
 
   // Immediately define window functions to prevent "not defined" errors
   React.useEffect(() => {
-    (window as any).handleReservation = (spectacleId: string) => {
-      console.log('Emergency handleReservation called with:', spectacleId);
-      // Redirect to reservation page directly
-      window.location.href = `/reservation/${spectacleId}`;
-    };
-    
     (window as any).handleDetails = (spectacleId: string) => {
       console.log('Emergency handleDetails called with:', spectacleId);
       // Navigate to spectacle detail page
       window.location.href = `/spectacle/${spectacleId}`;
     };
+    
+    // Remove the conflicting legacy window.handleReservation function
+    delete (window as any).handleReservation;
   }, []);
 
   // Get user type from session storage
@@ -363,12 +360,8 @@ export default function Spectacles() {
       const authGateSection = document.getElementById('authGateSection');
       const spectaclesSection = document.getElementById('spectaclesSection');
       
-      if (authGateSection) {
-        authGateSection.style.display = 'none';
-      }
-      if (spectaclesSection) {
-        spectaclesSection.style.display = 'block';
-      }
+      if (authGateSection) authGateSection.style.display = 'none';
+      if (spectaclesSection) spectaclesSection.style.display = 'block';
     };
 
     // Initialize JavaScript functionality after DOM is ready
@@ -619,7 +612,6 @@ export default function Spectacles() {
           .auth-btn:hover {
             background: #a8b800;
             transform: translateY(-4px);
-            box-shadow: 0 8px 25px rgba(189, 207, 0, 0.5);
           }
 
           .mobile-toggle {
@@ -999,6 +991,7 @@ export default function Spectacles() {
       color: #BDCF00;
       text-decoration: none;
     }
+
           .auth-gate-section {
             padding: 80px 0;
             background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
@@ -1786,7 +1779,7 @@ export default function Spectacles() {
                       </div>
                       
                       <!-- Title -->
-                      <h3 class="spectacle-card__title" style="font-size: 24px; font-weight: 800; margin: 15px 0; line-height: 1.1; background: white; padding: 6px 12px; border-radius: 8px; display: inline-block; color: #333; white-space: nowrap;">SIMPLE COMME BONJOUR</h3>
+                      <h3 class="spectacle-card__title" style="font-size: 24px; font-weight: 800; margin: 15px 0; line-height: 1.1; background: white; padding: 6px 12px; border-radius: 8px; display: inline-block; color: #333;">SIMPLE COMME BONJOUR</h3>
                       
                       
                       <!-- Info Badges -->
@@ -2117,11 +2110,11 @@ export default function Spectacles() {
         </section>
 
         <script>
-          // Make handleReservation available globally
           // Make handleDetails available globally
           window.handleDetails = function(spectacleId) {
             console.log('handleDetails called with:', spectacleId);
-            // Navigate to individual spectacle detail page within Hello Planet app
+            
+            // Map spectacle IDs to detail page routes
             const spectacleRoutes = {
               'le-petit-prince': '/spectacle/le-petit-prince',
               'le-petit-prince-ar': '/spectacle/le-petit-prince-ar',
@@ -2144,50 +2137,9 @@ export default function Spectacles() {
             }
           };
           
-          // Make handleReservation available globally
-          window.handleReservation = function(spectacleId) {
-            console.log('handleReservation called with:', spectacleId);
-            
-            // Get user type and professional type from session storage
-            const userType = sessionStorage.getItem('userType');
-            const professionalType = sessionStorage.getItem('professionalType');
-            
-            // Map spectacle IDs to reservation URLs on EDJS site
-            const reservationUrls = {
-              'le-petit-prince': 'https://edjs.ma/reservation-le-petit-prince.html',
-              'le-petit-prince-ar': 'https://edjs.ma/reservation-le-petit-prince-ar.html',
-              'tara-sur-la-lune': 'https://edjs.ma/reservation-tara-sur-la-lune.html',
-              'mirath-atfal': 'https://edjs.ma/reservation-mirath-atfal.html',
-              'simple-comme-bonjour': 'https://edjs.ma/reservation-simple-comme-bonjour.html',
-              'charlotte': 'https://edjs.ma/reservation-charlotte.html',
-              'estevanico': 'https://edjs.ma/reservation-estevanico.html',
-              'flash': 'https://edjs.ma/reservation-flash.html',
-              'antigone': 'https://edjs.ma/reservation-antigone.html',
-              'alice-chez-les-merveilles': 'https://edjs.ma/reservation-alice-chez-les-merveilles.html',
-              'leau-la': 'https://edjs.ma/reservation-leau-la.html'
-            };
-            
-            const url = reservationUrls[spectacleId];
-            if (url) {
-              // Add user type parameters to the URL if available
-              let finalUrl = url;
-              if (userType) {
-                const separator = url.includes('?') ? '&' : '?';
-                finalUrl += separator + 'userType=' + encodeURIComponent(userType);
-                if (professionalType) {
-                  finalUrl += '&professionalType=' + encodeURIComponent(professionalType);
-                }
-              }
-              window.open(finalUrl, '_blank');
-            } else {
-              console.error('Unknown spectacle ID for reservation:', spectacleId);
-            }
-          };
-          
           // Ensure function is available immediately
-          console.log('handleReservation function set up:', typeof window.handleReservation);
+          console.log('handleDetails function set up:', typeof window.handleDetails);
         </script>
-
 {{ ... }}
         <!-- Simple Footer -->
         <footer style="background: #000; color: white; padding: 40px 0 0 0; margin: 0;">
@@ -2218,8 +2170,8 @@ export default function Spectacles() {
                     <ul style="list-style: none; padding: 0; margin: 0;">
                       <li style="margin-bottom: 8px;"><a href="https://edjs.ma/" style="color: #ccc; text-decoration: none; font-size: 14px;">Accueil</a></li>
                       <li style="margin-bottom: 8px;"><a href="/spectacles" style="color: #ccc; text-decoration: none; font-size: 14px;">Spectacles</a></li>
-                      <li style="margin-bottom: 8px;"><a href="https://edjs.ma/gallery.html" style="color: #ccc; text-decoration: none; font-size: 14px;">Galerie</a></li>
-                      <li style="margin-bottom: 8px;"><a href="https://edjs.ma/contact.html" style="color: #ccc; text-decoration: none; font-size: 14px;">Contact</a></li>
+                      <li style="margin-bottom: 8px;"><a href="https://edjs.ma/gallery" style="color: #ccc; text-decoration: none; font-size: 14px;">Galerie</a></li>
+                      <li style="margin-bottom: 8px;"><a href="https://edjs.ma/contact" style="color: #ccc; text-decoration: none; font-size: 14px;">Contact</a></li>
                     </ul>
                   </div>
                   <div style="margin-bottom: 20px;">
@@ -2235,7 +2187,7 @@ export default function Spectacles() {
             </div>
             <hr style="border-color: #333; margin: 30px 0 0 0;">
             <div style="text-align: center; color: #888; font-size: 12px; padding: 20px 0; margin: 0;">
-              © 2025 L'École des jeunes spectateurs. Tous droits réservés.
+              2025 L'École des jeunes spectateurs. Tous droits réservés.
             </div>
           </div>
         </footer>

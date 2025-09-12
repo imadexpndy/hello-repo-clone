@@ -768,7 +768,7 @@ export default function SpectacleLePetitPrince() {
                 {(userType === 'particulier' || !userType) && (
                   <>
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Samedi 4 Octobre 2026</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Samedi 4 Octobre 2025</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>15H00 - Rabat, Théâtre Bahnini</div>
                       <button 
                         onClick={handleReservation}
@@ -780,7 +780,7 @@ export default function SpectacleLePetitPrince() {
                     </div>
                     
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Samedi 11 Octobre 2026</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Samedi 11 Octobre 2025</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>15H00 - Casablanca, Complexe El Hassani</div>
                       <button 
                         onClick={() => window.location.href = '/reservation/le-petit-prince?session=casablanca-oct-11-15h00'}
@@ -798,8 +798,8 @@ export default function SpectacleLePetitPrince() {
                   <>
                     {/* Casablanca Sessions */}
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Vendredi 10 Octobre 2026</div>
-                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>10H00 - Casablanca, Complexe El Hassani</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Vendredi 10 Octobre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09H30 - Casablanca, Complexe El Hassani</div>
                       <button 
                         onClick={handleReservation}
                         style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
@@ -810,8 +810,8 @@ export default function SpectacleLePetitPrince() {
                     </div>
                     
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Vendredi 10 Octobre 2026</div>
-                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H00 - Casablanca, Complexe El Hassani</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Vendredi 10 Octobre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Casablanca, Complexe El Hassani</div>
                       <button 
                         onClick={handleReservation}
                         style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
@@ -823,8 +823,8 @@ export default function SpectacleLePetitPrince() {
                     
                     {/* Rabat Sessions */}
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Dimanche 6 Octobre 2026</div>
-                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>10H00 - Rabat, Théâtre Bahnini</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Dimanche 6 Octobre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09H30 - Rabat, Théâtre Bahnini</div>
                       <button 
                         onClick={handleReservation}
                         style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
@@ -835,8 +835,8 @@ export default function SpectacleLePetitPrince() {
                     </div>
                     
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Dimanche 6 Octobre 2026</div>
-                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H00 - Rabat, Théâtre Bahnini</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Dimanche 6 Octobre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Rabat, Théâtre Bahnini</div>
                       <button 
                         onClick={handleReservation}
                         style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
@@ -851,7 +851,7 @@ export default function SpectacleLePetitPrince() {
                 {/* Public school sessions - show for scolaire-publique */}
                 <div style={{display: professionalType === 'scolaire-publique' ? 'block' : 'none'}}>
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 9 Octobre 2026</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 9 Octobre 2025</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09H30 - Casablanca, Complexe El Hassani</div>
                       <button 
                         onClick={() => window.location.href = '/reservation/le-petit-prince?session=casablanca-oct-9-09h30'}
@@ -863,7 +863,7 @@ export default function SpectacleLePetitPrince() {
                     </div>
                     
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mardi 7 Octobre 2026</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mardi 7 Octobre 2025</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Rabat, Théâtre Bahnini</div>
                       <button 
                         onClick={() => window.location.href = '/reservation/le-petit-prince?session=rabat-oct-7-14h30'}
@@ -878,10 +878,10 @@ export default function SpectacleLePetitPrince() {
                 {/* Association sessions - show for association */}
                 <div style={{display: professionalType === 'association' ? 'block' : 'none'}}>
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 9 Octobre 2026</div>
-                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09H30 - Casablanca, Complexe El Hassani</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 9 Octobre 2025</div>
+                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Casablanca, Complexe El Hassani</div>
                       <button 
-                        onClick={() => window.location.href = '/reservation/le-petit-prince?session=casablanca-oct-9-09h30'}
+                        onClick={() => window.location.href = '/reservation/le-petit-prince?session=casablanca-oct-9-14h30'}
                         style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
                       >
                         <i className="fas fa-ticket-alt"></i>
@@ -890,7 +890,7 @@ export default function SpectacleLePetitPrince() {
                     </div>
                     
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mardi 7 Octobre 2026</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mardi 7 Octobre 2025</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Rabat, Théâtre Bahnini</div>
                       <button 
                         onClick={() => window.location.href = '/reservation/le-petit-prince?session=rabat-oct-7-14h30'}
@@ -934,7 +934,7 @@ export default function SpectacleLePetitPrince() {
                 )}
                 <div className="info-item">
                   <i className="fas fa-calendar"></i>
-                  <span>Période : Octobre 2026</span>
+                  <span>Période : Octobre 2025</span>
                 </div>
                 <div className="info-item">
                   <i className="fas fa-language"></i>

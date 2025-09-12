@@ -1,11 +1,25 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Building, Eye, GraduationCap, Users, School } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 
 export default function UserTypeSelection() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  // Redirect logged-in users directly to spectacles
+  useEffect(() => {
+    if (user) {
+      navigate('/spectacles');
+    }
+  }, [user, navigate]);
+
+  // Don't render the selection page if user is logged in
+  if (user) {
+    return null;
+  }
 
   const handleParticulierChoice = () => {
     // Set user type in session storage for later use

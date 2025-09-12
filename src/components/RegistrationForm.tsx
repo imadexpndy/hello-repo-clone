@@ -266,6 +266,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
       const verificationStatus = 
         userType === 'teacher_public' ? 'pending' :
         userType === 'association' ? 'pending' :
+        userType === 'teacher_private' ? 'approved' :
         'approved';
 
       const { error: profileError } = await supabase
@@ -280,7 +281,9 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
           verification_status: verificationStatus,
           verification_documents: uploadedDocs.length > 0 ? uploadedDocs : null,
           contact_person: userType === 'association' ? formData.contactPerson : null,
-          admin_role: role // Add the admin_role field which is used by the auth system
+          admin_role: role, // Add the admin_role field which is used by the auth system
+          is_verified: userType === 'teacher_private' ? true : false, // Private schools get immediate verification
+          role: role // Ensure role field is also set
         })
         .eq('user_id', authData.user.id);
 
@@ -290,12 +293,19 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
       setRegisteredEmail(formData.email);
       setShowEmailConfirmation(true);
 
-      // Additional message for pending verification
+      // Additional message for pending verification (only for public schools and associations)
       if (verificationStatus === 'pending') {
         setTimeout(() => {
           toast({
             title: "En attente de vérification",
             description: "Votre compte sera activé après validation par un administrateur",
+          });
+        }, 1000);
+      } else if (userType === 'teacher_private') {
+        setTimeout(() => {
+          toast({
+            title: "Compte activé",
+            description: "Votre compte école privée est immédiatement disponible",
           });
         }, 1000);
       }
@@ -838,17 +848,17 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
                 )}
 
                 {userType === 'teacher_public' ? (
-                  <Alert>
+                  <Alert className="border-orange-200 bg-orange-50">
                     <AlertDescription>
                       <strong>École Publique:</strong> Votre compte nécessite une validation manuelle avec documents officiels. 
-                      Accès après approbation administrative.
+                      Accès après approbation administrative (1-2 jours ouvrables).
                     </AlertDescription>
                   </Alert>
                 ) : (
-                  <Alert>
+                  <Alert className="border-green-200 bg-green-50">
                     <AlertDescription>
-                      <strong>École Privée:</strong> Vérification automatique par email du domaine scolaire. 
-                      Accès immédiat après confirmation.
+                      <strong>École Privée:</strong> ✅ Accès immédiat après confirmation de l'email. 
+                      Aucune approbation administrative requise.
                     </AlertDescription>
                   </Alert>
                 )}

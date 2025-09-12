@@ -48,6 +48,7 @@ import OffersPage from "./pages/partner/OffersPage";
 import MessagesPage from "./pages/partner/MessagesPage";
 import CalendarPage from "./pages/partner/CalendarPage";
 import B2CBooking from "./pages/b2c/B2CBooking";
+import { BookingTest } from "./pages/BookingTest";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import { Privacy } from "./pages/Privacy";
@@ -73,6 +74,7 @@ import SessionsTable from "./pages/SessionsTable";
 import SessionsVerification from "./pages/SessionsVerification";
 import SeedDataPage from "./pages/SeedDataPage";
 import MyReservations from "./pages/MyReservations";
+import TestReservations from "./pages/TestReservations";
 import Payment from "./pages/Payment";
 import PaymentMethodSelection from "./pages/PaymentMethodSelection";
 import PaymentInstructions from "./pages/PaymentInstructions";
@@ -150,6 +152,7 @@ const App = () => {
               <Route path="/sessions" element={<SessionsTable />} />
               <Route path="/sessions-verification" element={<SessionsVerification />} />
               <Route path="/seed-data" element={<SeedDataPage />} />
+              <Route path="/test-reservations" element={<TestReservations />} />
               <Route path="/xjniuhguou98q3ij" element={<SpectacleTemplate />} />
 
               {/* Protected Admin Routes */}
@@ -447,6 +450,30 @@ const App = () => {
                   </ProtectedRoute>
                 } 
               />
+              <Route 
+                path="/b2c/bookings" 
+                element={
+                  <ProtectedRoute>
+                    <MyReservations />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/b2c/shows" 
+                element={
+                  <ProtectedRoute>
+                    <Spectacles />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/b2c/seating" 
+                element={
+                  <ProtectedRoute>
+                    <Spectacles />
+                  </ProtectedRoute>
+                } 
+              />
               
               {/* Protected Admin Booking Routes */}
               <Route 
@@ -504,6 +531,9 @@ const App = () => {
               
               {/* Spectacles Routes */}
               <Route path="/spectacles" element={<Spectacles />} />
+              
+              {/* Test Routes */}
+              <Route path="/booking-test" element={<BookingTest />} />
               
               {/* Catch-all route */}
               <Route path="*" element={<NotFound />} />

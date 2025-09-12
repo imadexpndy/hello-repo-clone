@@ -62,10 +62,16 @@ export default function B2CDashboard() {
           <p className="text-muted-foreground mb-6">
             Explorez notre programmation et réservez vos places
           </p>
-          <Button size="lg" className="text-lg px-8" onClick={() => navigate('/spectacles')}>
-            <ShoppingCart className="h-5 w-5 mr-2" />
-            Voir les spectacles
-          </Button>
+          <div className="flex gap-4 justify-center">
+            <Button size="lg" className="text-lg px-8" onClick={() => navigate('/spectacles')}>
+              <ShoppingCart className="h-5 w-5 mr-2" />
+              Voir les spectacles
+            </Button>
+            <Button size="lg" variant="outline" className="text-lg px-8" onClick={() => navigate('/my-reservations')}>
+              <Ticket className="h-5 w-5 mr-2" />
+              Mes réservations
+            </Button>
+          </div>
         </CardContent>
       </Card>
 

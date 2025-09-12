@@ -796,7 +796,7 @@ export default function SpectacleAntigone() {
                 {(userType === 'particulier' || !userType) && (
                   <>
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Samedi 18 Avril 2025</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Samedi 18 Avril 2026</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>15H00 - Rabat, Théâtre Bahnini</div>
                       <button 
                         onClick={handleReservationClick}
@@ -808,7 +808,7 @@ export default function SpectacleAntigone() {
                     </div>
                     
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Samedi 25 Avril 2025</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Samedi 25 Avril 2026</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>15H00 - Casablanca, Complexe El Hassani</div>
                       <button 
                         onClick={() => window.location.href = '/reservation/antigone?session=casablanca-apr-12-15h00'}
@@ -880,7 +880,7 @@ export default function SpectacleAntigone() {
                 {professionalType === 'scolaire-publique' && (
                   <>
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mardi 8 Avril 2025</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mardi 8 Avril 2026</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Rabat, Théâtre Bahnini</div>
                       <button 
                         onClick={() => window.location.href = '/reservation/antigone?session=rabat-apr-8-14h30'}
@@ -892,7 +892,7 @@ export default function SpectacleAntigone() {
                     </div>
                     
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 10 Avril 2025</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 10 Avril 2026</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09H30 - Casablanca, Complexe El Hassani</div>
                       <button 
                         onClick={() => window.location.href = '/reservation/antigone?session=casablanca-apr-10-09h30'}
@@ -909,7 +909,7 @@ export default function SpectacleAntigone() {
                 {professionalType === 'association' && (
                   <>
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mardi 8 Avril 2025</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mardi 8 Avril 2026</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Rabat, Théâtre Bahnini</div>
                       <button 
                         onClick={() => window.location.href = '/reservation/antigone?session=rabat-apr-8-14h30'}
@@ -921,7 +921,7 @@ export default function SpectacleAntigone() {
                     </div>
                     
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 10 Avril 2025</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 10 Avril 2026</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Casablanca, Complexe El Hassani</div>
                       <button 
                         onClick={() => window.location.href = '/reservation/antigone?session=casablanca-apr-10-14h30'}
@@ -966,7 +966,7 @@ export default function SpectacleAntigone() {
                 )}
                 <div className="info-item">
                   <i className="fas fa-calendar"></i>
-                  <span>Période : Avril 2025</span>
+                  <span>Période : Avril 2026</span>
                 </div>
                 <div className="info-item">
                   <i className="fas fa-language"></i>
@@ -1131,7 +1131,7 @@ export default function SpectacleAntigone() {
           {/* Footer Bottom */}
           <div style={{borderTop: '1px solid #333', paddingTop: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px'}}>
             <p style={{color: 'white', margin: 0, fontSize: '0.85rem'}}>
-              Copyright © {new Date().getFullYear()} <a href="https://edjs.ma/" style={{color: '#BDCF00', textDecoration: 'none'}}>L'École des jeunes spectateurs</a>. Tous droits réservés.
+              Copyright &copy; {new Date().getFullYear()} <a href="https://edjs.ma/" style={{color: '#BDCF00', textDecoration: 'none'}}>L'École des jeunes spectateurs</a>. Tous droits réservés.
             </p>
             <div style={{display: 'flex', gap: '20px'}}>
               <a href="https://edjs.ma/contact.html" style={{color: 'white', textDecoration: 'none', fontSize: '0.85rem'}}

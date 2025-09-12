@@ -16,6 +16,7 @@ interface Booking {
   number_of_tickets: number;
   status: string;
   payment_status: string;
+  payment_reference?: string;
   created_at: string;
   students_count?: number;
   accompanists_count?: number;
@@ -82,10 +83,6 @@ export default function AdminBookings() {
             session_time,
             venue,
             city,
-            capacity_professional,
-            capacity_particulier,
-            booked_professional,
-            booked_particulier,
             spectacles!inner(title)
           )
         `)
@@ -97,6 +94,16 @@ export default function AdminBookings() {
       }
       
       console.log('Fetched bookings:', data);
+      console.log('Total bookings found:', data?.length || 0);
+      
+      // Log booking types for debugging
+      if (data && data.length > 0) {
+        const bookingTypes = data.map(b => b.booking_type);
+        console.log('Booking types found:', bookingTypes);
+        const b2cBookings = data.filter(b => b.booking_type === 'b2c');
+        console.log('B2C bookings:', b2cBookings.length);
+      }
+      
       setBookings((data || []) as any);
     } catch (error) {
       console.error('Error fetching bookings:', error);
@@ -116,10 +123,9 @@ export default function AdminBookings() {
     // Search filter
     if (searchTerm) {
       filtered = filtered.filter(booking =>
-        booking.profiles?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        booking.profiles?.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        booking.payment_reference?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         booking.sessions?.spectacles?.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        booking.organizations?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+        booking.booking_type?.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 

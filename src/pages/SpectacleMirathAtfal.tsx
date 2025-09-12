@@ -796,7 +796,7 @@ export default function SpectacleMirathAtfal() {
                 {(userType === 'particulier' || !userType) && (
                   <>
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Samedi 8 Novembre 2026</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Samedi 8 Novembre 2025</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>15H00 - Casablanca, Théâtre Zefzaf</div>
                       <button 
                         onClick={() => window.location.href = '/reservation/mirath-atfal?session=casablanca-nov-8-15h00'}
@@ -808,7 +808,7 @@ export default function SpectacleMirathAtfal() {
                     </div>
                     
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Samedi 15 Novembre 2026</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Samedi 15 Novembre 2025</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>15H00 - Rabat, Théâtre Bahnini</div>
                       <button 
                         onClick={handleReservationClick}
@@ -820,12 +820,12 @@ export default function SpectacleMirathAtfal() {
                     </div>
                   </>
                 )}
-
+                
                 {/* Private school sessions - show for scolaire-privee */}
                 {professionalType === 'scolaire-privee' && (
                   <>
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Lundi 10 Novembre 2026</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Lundi 10 Novembre 2025</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09H30 - Casablanca, Théâtre Zefzaf</div>
                       <button 
                         onClick={handleReservationClick}
@@ -837,7 +837,7 @@ export default function SpectacleMirathAtfal() {
                     </div>
                     
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 13 Novembre 2026</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 13 Novembre 2025</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09H30 - Rabat, Théâtre Bahnini</div>
                       <button 
                         onClick={handleReservationClick}
@@ -849,12 +849,12 @@ export default function SpectacleMirathAtfal() {
                     </div>
                   </>
                 )}
-
+                
                 {/* Public school sessions - show for scolaire-publique */}
                 {professionalType === 'scolaire-publique' && (
                   <>
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Lundi 10 Novembre 2026</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Lundi 10 Novembre 2025</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Casablanca, Théâtre Zefzaf</div>
                       <button 
                         onClick={() => window.location.href = '/reservation/mirath-atfal?session=casablanca-nov-10-14h30'}
@@ -866,7 +866,7 @@ export default function SpectacleMirathAtfal() {
                     </div>
                     
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 13 Novembre 2026</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 13 Novembre 2025</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Rabat, Théâtre Bahnini</div>
                       <button 
                         onClick={() => window.location.href = '/reservation/mirath-atfal?session=rabat-nov-13-14h30'}
@@ -878,12 +878,12 @@ export default function SpectacleMirathAtfal() {
                     </div>
                   </>
                 )}
-
+                
                 {/* Association sessions - show for association */}
                 {professionalType === 'association' && (
                   <>
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mardi 11 Novembre 2026</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mardi 11 Novembre 2025</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Casablanca, Théâtre Zefzaf</div>
                       <button 
                         onClick={() => window.location.href = '/reservation/mirath-atfal?session=casablanca-nov-11-14h30'}
@@ -895,7 +895,7 @@ export default function SpectacleMirathAtfal() {
                     </div>
                     
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Vendredi 14 Novembre 2026</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Vendredi 14 Novembre 2025</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09H30 - Rabat, Théâtre Bahnini</div>
                       <button 
                         onClick={() => window.location.href = '/reservation/mirath-atfal?session=rabat-nov-14-09h30'}
@@ -907,7 +907,7 @@ export default function SpectacleMirathAtfal() {
                     </div>
                     
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Vendredi 14 Novembre 2026</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Vendredi 14 Novembre 2025</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Rabat, Théâtre Bahnini</div>
                       <button 
                         onClick={() => window.location.href = '/reservation/mirath-atfal?session=rabat-nov-14-14h30'}
@@ -952,7 +952,7 @@ export default function SpectacleMirathAtfal() {
                 )}
                 <div className="info-item">
                   <i className="fas fa-calendar"></i>
-                  <span>Période : Novembre 2026</span>
+                  <span>Période : Novembre 2025</span>
                 </div>
                 <div className="info-item">
                   <i className="fas fa-language"></i>

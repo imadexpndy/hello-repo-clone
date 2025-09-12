@@ -30,50 +30,83 @@ const MyReservations = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate API call to fetch user reservations
     const fetchReservations = async () => {
+      if (!user) {
+        console.log('No user found in MyReservations');
+        return;
+      }
+      
       setLoading(true);
       
-      // Mock data - replace with actual API call
-      const mockReservations: Reservation[] = [
-        {
-          id: 'res-001',
-          spectacleTitle: 'Le Petit Prince',
-          date: '2025-10-04',
-          time: '15:00',
-          location: 'RABAT THEATRE BAHNINI',
-          participants: 2,
-          status: 'confirmed',
-          paymentStatus: 'confirmed',
-          totalAmount: 120,
-          bookingDate: '2025-01-15',
-          userRole: 'b2c_user'
-        },
-        {
-          id: 'res-002',
-          spectacleTitle: 'Tara sur la Lune',
-          date: '2025-10-18',
-          time: '15:00',
-          location: 'CASABLANCA COMPLEXE EL HASSANI',
-          participants: 3,
-          status: 'pending',
-          paymentStatus: 'pending',
-          totalAmount: 180,
-          bookingDate: '2025-01-20',
-          userRole: 'teacher_private',
-          paymentDeadline: '2025-01-23'
+      try {
+        // Import supabase client
+        const { supabase } = await import('@/integrations/supabase/client');
+        
+        // Fetch user's bookings from database with session details
+        console.log('=== MyReservations Database Query ===');
+        console.log('User ID:', user.id);
+        console.log('User email:', user.email);
+        
+        let { data: bookings, error } = await supabase
+          .from('bookings')
+          .select(`
+            id,
+            user_id,
+            booking_type,
+            number_of_tickets,
+            status,
+            payment_status,
+            total_amount,
+            created_at,
+            payment_reference,
+            sessions (
+              id,
+              session_date,
+              session_time,
+              venue,
+              city,
+              spectacles (
+                title
+              )
+            )
+          `)
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false });
+
+        console.log('Database bookings query result:', { data: bookings, error });
+
+        if (error) {
+          console.error('Error fetching database reservations:', error);
+          setReservations([]);
+          return;
         }
-      ];
-      
-      setTimeout(() => {
-        setReservations(mockReservations);
+
+        // Transform database data to component format
+        const transformedReservations: Reservation[] = (bookings || []).map(booking => ({
+          id: booking.id,
+          spectacleTitle: booking.sessions?.spectacles?.title || 'Spectacle',
+          date: booking.sessions?.session_date || '',
+          time: booking.sessions?.session_time || '',
+          location: `${booking.sessions?.city || ''} - ${booking.sessions?.venue || ''}`.trim().replace(/^- /, ''),
+          participants: booking.number_of_tickets || 0,
+          status: booking.status as 'confirmed' | 'pending' | 'cancelled',
+          paymentStatus: booking.payment_status as 'paid' | 'pending' | 'confirmed',
+          totalAmount: booking.total_amount || 0,
+          bookingDate: booking.created_at || '',
+          userRole: booking.booking_type || 'particulier'
+        }));
+
+        console.log('Final transformed reservations from database:', transformedReservations);
+        setReservations(transformedReservations);
+      } catch (error) {
+        console.error('Error in fetchReservations:', error);
+        setReservations([]);
+      } finally {
         setLoading(false);
-      }, 1000);
+      }
     };
 
-    if (user) {
-      fetchReservations();
-    }
+    fetchReservations();
   }, [user]);
 
   const getStatusBadge = (status: string) => {

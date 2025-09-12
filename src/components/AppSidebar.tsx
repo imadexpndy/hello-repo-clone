@@ -11,7 +11,6 @@ import {
   Mail, 
   Shield, 
   BarChart3, 
-  Theater, 
   Ticket, 
   ClipboardList, 
   GraduationCap, 
@@ -62,7 +61,7 @@ export function AppSidebar() {
       case 'super_admin':
         return [
           ...commonItems,
-          { title: "Spectacles", url: "/admin/spectacles", icon: Theater },
+          { title: "Spectacles", url: "/admin/spectacles", icon: () => <img src="/src/assets/Asset 11@4x.png" alt="Spectacles" className="h-4 w-4" /> },
           { title: "Sessions", url: "/admin/sessions", icon: Calendar },
           { title: "Réservations", url: "/admin/bookings", icon: ClipboardList },
           { title: "Demandes d'Inscription", url: "/admin/registrations", icon: UserCheck },
@@ -78,7 +77,7 @@ export function AppSidebar() {
         return [
           ...commonItems,
           { title: "Tableau de Bord", url: "/teacher/dashboard", icon: LayoutDashboard },
-          { title: "Réserver un Spectacle", url: "/teacher/spectacles", icon: Theater },
+          { title: "Réserver un Spectacle", url: "/teacher/spectacles", icon: () => <img src="/src/assets/Asset 11@4x.png" alt="Spectacles" className="h-4 w-4" /> },
           { title: "Mes Réservations", url: "/teacher/bookings", icon: ClipboardList },
           { title: "Mes Devis", url: "/teacher/quotes", icon: FileText },
           { title: "Mon École", url: "/teacher/school", icon: GraduationCap },
@@ -87,7 +86,7 @@ export function AppSidebar() {
       case 'association':
         return [
           ...commonItems,
-          { title: "Spectacles", url: "/association/shows", icon: Theater },
+          { title: "Spectacles", url: "/association/shows", icon: () => <img src="/src/assets/Asset 11@4x.png" alt="Spectacles" className="h-4 w-4" /> },
           { title: "Réserver", url: "/association/new-booking", icon: Ticket },
           { title: "Mes Réservations", url: "/association/bookings", icon: ClipboardList },
           { title: "Mon Association", url: "/association/info", icon: Heart },
@@ -105,8 +104,7 @@ export function AppSidebar() {
       case 'b2c_user':
         return [
           ...commonItems,
-          { title: "Spectacles", url: "/b2c/shows", icon: Theater },
-          { title: "Réserver", url: "/b2c/booking", icon: ShoppingCart },
+          { title: "Spectacles", url: "/b2c/shows", icon: () => <img src="/src/assets/Asset 11@4x.png" alt="Spectacles" className="h-4 w-4" /> },
           { title: "Mes Réservations", url: "/b2c/bookings", icon: ClipboardList },
           { title: "Plan des Salles", url: "/b2c/seating", icon: BookOpen },
         ];
@@ -141,8 +139,8 @@ export function AppSidebar() {
     <Sidebar collapsible="icon" className="border-r">
       <SidebarHeader className="border-b p-4">
         <div className="flex items-center gap-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <Theater className="h-4 w-4" />
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-primary-foreground">
+            <img src="/src/assets/Asset 11@4x.png" alt="EDJS Logo" className="h-4 w-4" />
           </div>
           {!isCollapsed && (
             <div className="flex flex-col">
