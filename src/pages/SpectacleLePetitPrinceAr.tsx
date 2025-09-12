@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 import VideoPopup from '@/components/VideoPopup';
 
 export default function SpectacleLePetitPrinceAr() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   const [userType, setUserType] = useState<string>('');
   const [professionalType, setProfessionalType] = useState<string>('');
@@ -16,6 +18,43 @@ export default function SpectacleLePetitPrinceAr() {
     comment: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Handle reservation with session pre-selection
+  const handleReservation = (sessionId?: string) => {
+    if (!user) {
+      const returnUrl = encodeURIComponent(window.location.href);
+      navigate(`/auth?return_url=${returnUrl}`);
+      return;
+    }
+
+    const currentUserType = sessionStorage.getItem('userType');
+    const currentProfessionalType = sessionStorage.getItem('professionalType');
+    
+    // Determine user type for reservation
+    let mappedUserType = currentUserType;
+    if (currentUserType === 'professional' && currentProfessionalType) {
+      mappedUserType = currentProfessionalType;
+    } else if (currentUserType === 'particulier') {
+      mappedUserType = 'particulier';
+    }
+    
+    // Build reservation URL with session pre-selection
+    let reservationUrl = `/reservation/le-petit-prince-ar?userType=${mappedUserType}`;
+    if (sessionId) {
+      reservationUrl += `&session=${sessionId}`;
+    }
+    if (currentProfessionalType) {
+      reservationUrl += `&professionalType=${currentProfessionalType}`;
+    }
+    
+    navigate(reservationUrl);
+  };
+
+  // Handle reservation button clicks without session ID
+  const handleReservationClick = () => handleReservation();
+
+  // Handle reservation button clicks with specific session ID
+  const handleSessionReservation = (sessionId: string) => () => handleReservation(sessionId);
 
   useEffect(() => {
     // Load external stylesheets
@@ -59,17 +98,6 @@ export default function SpectacleLePetitPrinceAr() {
       window.removeEventListener('userTypeChanged', handleUserTypeChange);
     };
   }, []);
-
-  const handleReservation = () => {
-    if (user) {
-      // Pass user type as parameter to show only relevant sessions
-      const userTypeParam = professionalType || userType || '';
-      window.location.href = `/reservation/le-petit-prince-ar?userType=${userTypeParam}`;
-    } else {
-      const returnUrl = encodeURIComponent(window.location.href);
-      window.location.href = `/auth?return_url=${returnUrl}`;
-    }
-  };
 
   const getUserTypeDisplay = () => {
     if (userType === 'professional' && professionalType) {
@@ -462,7 +490,7 @@ export default function SpectacleLePetitPrinceAr() {
                 </span>
               </div>
               <div className="hero-buttons">
-                <button className="btn-primary" onClick={handleReservation}>
+                <button className="btn-primary" onClick={handleReservationClick}>
                   <i className="fas fa-ticket-alt"></i>
                   {user ? 'Réserver Maintenant' : 'Se connecter pour réserver'}
                 </button>
@@ -862,7 +890,7 @@ export default function SpectacleLePetitPrinceAr() {
                   الحجز
                 </h3>
                 <p style={{color: 'var(--text-light)', marginBottom: '1.5rem'}}>احجز مقاعدك الآن لهذا الاقتباس السحري للأمير الصغير.</p>
-                <button className="btn-primary w-100" onClick={handleReservation} style={{width: '100%'}}>
+                <button className="btn-primary w-100" onClick={handleReservationClick} style={{width: '100%'}}>
                   <i className="fas fa-ticket-alt"></i>
                   {user ? 'Réserver Maintenant' : 'Se connecter pour réserver'}
                 </button>
