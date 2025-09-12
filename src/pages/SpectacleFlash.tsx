@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { useNavigate } from 'react-router-dom';
 import VideoPopup from '@/components/VideoPopup';
 
 export default function SpectacleFlash() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   const [userType, setUserType] = useState<string>('');
   const [professionalType, setProfessionalType] = useState<string>('');
@@ -16,6 +18,43 @@ export default function SpectacleFlash() {
     comment: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Handle reservation with session pre-selection
+  const handleReservation = (sessionId?: string) => {
+    if (!user) {
+      const returnUrl = encodeURIComponent(window.location.href);
+      navigate(`/auth?return_url=${returnUrl}`);
+      return;
+    }
+
+    const currentUserType = sessionStorage.getItem('userType');
+    const currentProfessionalType = sessionStorage.getItem('professionalType');
+    
+    // Determine user type for reservation
+    let mappedUserType = currentUserType;
+    if (currentUserType === 'professional' && currentProfessionalType) {
+      mappedUserType = currentProfessionalType;
+    } else if (currentUserType === 'particulier') {
+      mappedUserType = 'particulier';
+    }
+    
+    // Build reservation URL with session pre-selection
+    let reservationUrl = `/reservation/flash?userType=${mappedUserType}`;
+    if (sessionId) {
+      reservationUrl += `&session=${sessionId}`;
+    }
+    if (currentProfessionalType) {
+      reservationUrl += `&professionalType=${currentProfessionalType}`;
+    }
+    
+    navigate(reservationUrl);
+  };
+
+  // Handle reservation button clicks without session ID
+  const handleReservationClick = () => handleReservation();
+
+  // Handle reservation button clicks with specific session ID
+  const handleSessionReservation = (sessionId: string) => () => handleReservation(sessionId);
 
   useEffect(() => {
     // Load external stylesheets
@@ -59,17 +98,6 @@ export default function SpectacleFlash() {
       window.removeEventListener('userTypeChanged', handleUserTypeChange);
     };
   }, []);
-
-  const handleReservation = () => {
-    if (user) {
-      // Pass user type as parameter to show only relevant sessions
-      const userTypeParam = professionalType || userType || '';
-      window.location.href = `/reservation/flash?userType=${userTypeParam}`;
-    } else {
-      const returnUrl = encodeURIComponent(window.location.href);
-      window.location.href = `/auth?return_url=${returnUrl}`;
-    }
-  };
 
   const getUserTypeDisplay = () => {
     if (userType === 'professional' && professionalType) {
@@ -462,7 +490,7 @@ export default function SpectacleFlash() {
                 </span>
               </div>
               <div className="hero-buttons">
-                <button className="btn-primary" onClick={handleReservation}>
+                <button className="btn-primary" onClick={handleReservationClick}>
                   <i className="fas fa-ticket-alt"></i>
                   {user ? 'Réserver Maintenant' : 'Se connecter pour réserver'}
                 </button>
@@ -770,7 +798,7 @@ export default function SpectacleFlash() {
                     <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Samedi 28 Mars 2026</div>
                     <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>15H00 - Rabat, Théâtre Bahnini</div>
                     <button 
-                      onClick={handleReservation}
+                      onClick={handleReservationClick}
                       style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
                     >
                       <i className="fas fa-ticket-alt"></i>
@@ -782,7 +810,7 @@ export default function SpectacleFlash() {
                     <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Samedi 4 Avril 2026</div>
                     <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>15H00 - Casablanca, Complexe El Hassani</div>
                     <button 
-                      onClick={handleReservation}
+                      onClick={handleReservationClick}
                       style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
                     >
                       <i className="fas fa-ticket-alt"></i>
@@ -798,7 +826,7 @@ export default function SpectacleFlash() {
                       <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mercredi 2 Avril 2026</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09H30 - Casablanca, Complexe El Hassani</div>
                       <button 
-                        onClick={handleReservation}
+                        onClick={handleReservationClick}
                         style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
                       >
                         <i className="fas fa-ticket-alt"></i>
@@ -810,7 +838,7 @@ export default function SpectacleFlash() {
                       <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mercredi 2 Avril 2026</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Casablanca, Complexe El Hassani</div>
                       <button 
-                        onClick={handleReservation}
+                        onClick={handleReservationClick}
                         style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
                       >
                         <i className="fas fa-ticket-alt"></i>
@@ -823,7 +851,7 @@ export default function SpectacleFlash() {
                       <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Lundi 30 Mars 2026</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09H30 - Rabat, Théâtre Bahnini</div>
                       <button 
-                        onClick={handleReservation}
+                        onClick={handleReservationClick}
                         style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
                       >
                         <i className="fas fa-ticket-alt"></i>
@@ -835,7 +863,7 @@ export default function SpectacleFlash() {
                       <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Lundi 30 Mars 2026</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Rabat, Théâtre Bahnini</div>
                       <button 
-                        onClick={handleReservation}
+                        onClick={handleReservationClick}
                         style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
                       >
                         <i className="fas fa-ticket-alt"></i>
@@ -850,7 +878,7 @@ export default function SpectacleFlash() {
                       <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mardi 31 Mars 2026</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Rabat, Théâtre Bahnini</div>
                       <button 
-                        onClick={handleReservation}
+                        onClick={handleReservationClick}
                         style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
                       >
                         <i className="fas fa-ticket-alt"></i>
@@ -862,7 +890,7 @@ export default function SpectacleFlash() {
                       <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 3 Avril 2026</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09H30 - Casablanca, Complexe El Hassani</div>
                       <button 
-                        onClick={handleReservation}
+                        onClick={handleReservationClick}
                         style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
                       >
                         <i className="fas fa-ticket-alt"></i>
@@ -877,7 +905,7 @@ export default function SpectacleFlash() {
                       <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mardi 31 Mars 2026</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Rabat, Théâtre Bahnini</div>
                       <button 
-                        onClick={handleReservation}
+                        onClick={handleReservationClick}
                         style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
                       >
                         <i className="fas fa-ticket-alt"></i>
@@ -889,7 +917,7 @@ export default function SpectacleFlash() {
                       <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 3 Avril 2026</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14H30 - Casablanca, Complexe El Hassani</div>
                       <button 
-                        onClick={handleReservation}
+                        onClick={handleReservationClick}
                         style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
                       >
                         <i className="fas fa-ticket-alt"></i>
@@ -976,7 +1004,7 @@ export default function SpectacleFlash() {
                   Réservation
                 </h3>
                 <p style={{color: 'var(--text-light)', marginBottom: '1.5rem'}}>Réservez dès maintenant vos places pour cette comédie musicale touchante sur Flash le papillon.</p>
-                <button className="btn-primary w-100" onClick={handleReservation} style={{width: '100%'}}>
+                <button className="btn-primary w-100" onClick={handleReservationClick} style={{width: '100%'}}>
                   <i className="fas fa-ticket-alt"></i>
                   {user ? 'Réserver Maintenant' : 'Se connecter pour réserver'}
                 </button>

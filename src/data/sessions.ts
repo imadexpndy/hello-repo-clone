@@ -189,13 +189,9 @@ export const getUserTypeSessions = (spectacleId: string, userType?: string, user
     );
     console.log('Filtered for particulier/individual:', filteredSessions.length);
     
-    // Filter by city if specified
-    if (userCity) {
-      filteredSessions = filteredSessions.filter(session => 
-        session.location.toLowerCase().includes(userCity.toLowerCase())
-      );
-      console.log('Filtered by city:', filteredSessions.length);
-    }
+    // Don't filter by city for particulier - they should see both Rabat and Casablanca sessions
+    // This allows them to choose their preferred city
+    console.log('Particulier sees all cities - no city filtering applied');
   } else if (userType === 'scolaire-privee') {
     // Private schools see only their specific sessions
     filteredSessions = filteredSessions.filter(session => 

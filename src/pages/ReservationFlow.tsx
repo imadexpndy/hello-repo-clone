@@ -9,6 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Calendar, Clock, Users, MapPin, Building2, User, UserCheck } from 'lucide-react';
 import { getUserTypeSessions } from '@/data/sessions';
 import { supabase } from '@/integrations/supabase/client';
+import { sendConfirmationEmail, checkEmailExists, ReservationEmailData } from '@/services/emailService';
 
 const ReservationFlow = () => {
   const { spectacleId } = useParams();
@@ -62,6 +63,7 @@ const ReservationFlow = () => {
     if (sessionParam && !selectedSession) {
       setSelectedSession(sessionParam);
       setStep(3); // Skip session selection, go directly to form
+      console.log('Pre-selected session from URL:', sessionParam);
     }
 
     // Handle user type from URL parameter or session storage for non-logged users
@@ -210,15 +212,68 @@ const ReservationFlow = () => {
     setLoading(true);
     
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Check for duplicate email if user is not logged in
+      if (!user && formData.email) {
+        const emailExists = await checkEmailExists(formData.email);
+        if (emailExists) {
+          toast({
+            title: "Email déjà utilisé",
+            description: "Cet email est déjà enregistré. Veuillez vous connecter ou utiliser un autre email.",
+            variant: "destructive"
+          });
+          setLoading(false);
+          return;
+        }
+      }
+
+      // Get session details for email
+      const sessions = getAvailableSessions();
+      const session = sessions.find(s => s.id === selectedSession);
       
+      if (!session) {
+        throw new Error('Session non trouvée');
+      }
+
+      // Generate reservation ID
+      const reservationId = `RES-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+
+      // Calculate total amount and ticket count
+      const isProfessional = ['scolaire-privee', 'scolaire-publique', 'association'].includes(userType);
+      const ticketCount = isProfessional 
+        ? (formData.childrenCount || 0) + (formData.accompaniersCount || 0)
+        : (formData.ticketCount || 0);
+      const totalAmount = isProfessional 
+        ? ticketCount * (userType === 'scolaire-privee' ? 100 : 80)
+        : ticketCount * 80;
+
+      // Prepare email data
+      const emailData: ReservationEmailData = {
+        userEmail: user?.email || formData.email,
+        userName: user?.user_metadata?.full_name || `${formData.firstName} ${formData.lastName}`,
+        spectacleName: spectacle.title,
+        sessionDate: session.date,
+        sessionTime: session.time,
+        location: session.location,
+        ticketCount,
+        totalAmount,
+        reservationId
+      };
+
+      // Send confirmation emails
+      const emailSent = await sendConfirmationEmail(emailData);
+      
+      if (!emailSent) {
+        console.warn('Email confirmation failed, but continuing with reservation');
+      }
+
       toast({
-        title: "Réservation envoyée",
-        description: "Votre demande de réservation a été envoyée avec succès.",
+        title: "Réservation confirmée",
+        description: `Votre réservation a été confirmée. ${emailSent ? 'Un email de confirmation vous a été envoyé.' : ''}`,
       });
       
       navigate('/spectacles');
     } catch (error) {
+      console.error('Reservation error:', error);
       toast({
         title: "Erreur",
         description: "Une erreur s'est produite lors de l'envoi de votre réservation.",

@@ -254,8 +254,16 @@ export default function Spectacles() {
   };
 
   useEffect(() => {
+    // Auto-redirect logged-in particulier users directly to spectacles
+    if (user && user.user_metadata?.role === 'b2c') {
+      sessionStorage.setItem('userType', 'particulier');
+      setUserType('particulier');
+      // Don't redirect to user-type-selection, stay on spectacles page
+      return;
+    }
+    
     // Check if user has made a type selection, if not redirect to selection page
-    if (!userType) {
+    if (!userType && !user) {
       navigate('/user-type-selection');
       return;
     }
