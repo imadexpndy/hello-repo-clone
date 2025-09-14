@@ -588,7 +588,16 @@ const ReservationFlow = () => {
                         <div className="flex items-center space-x-4">
                           <Calendar className="h-5 w-5 text-primary" />
                           <div>
-                            <div className="font-medium">{new Date(session.date).toLocaleDateString('fr-FR')}</div>
+                            <div className="font-medium">
+                              {(() => {
+                                const date = new Date(session.date);
+                                const dayNames = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+                                const dayName = dayNames[date.getDay()];
+                                const formattedDate = date.toLocaleDateString('fr-FR');
+                                return `${dayName} ${formattedDate}`;
+                              })()
+                            }
+                            </div>
                             <div className="text-sm text-muted-foreground flex items-center">
                               <Clock className="h-4 w-4 mr-1" />
                               {session.time}
@@ -661,7 +670,16 @@ const ReservationFlow = () => {
                           return (
                             <div className="flex items-center justify-between">
                               <div>
-                                <div className="font-medium">{new Date(session.date).toLocaleDateString('fr-FR')}</div>
+                                <div className="font-medium">
+                                  {(() => {
+                                    const date = new Date(session.date);
+                                    const dayNames = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+                                    const dayName = dayNames[date.getDay()];
+                                    const formattedDate = date.toLocaleDateString('fr-FR');
+                                    return `${dayName} ${formattedDate}`;
+                                  })()
+                                }
+                                </div>
                                 <div className="text-muted-foreground flex items-center">
                                   <Clock className="h-4 w-4 mr-1" />
                                   {session.time}

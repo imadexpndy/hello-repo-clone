@@ -1515,7 +1515,7 @@ export default function Spectacles() {
               <div class="col-lg-6 col-md-6 spectacle-item" data-category="primaire" id="le-petit-prince-ar-card">
                 <div class="spectacle-card fade-in-up visible" style="background: url('https://edjs.art/assets/img/Asset%209@4x.png') center/cover; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); overflow: hidden; width: 100%; height: 400px; display: flex; transition: all 0.4s ease; position: relative; margin: 20px 0;">
                   <!-- Status Badge -->
-                  <div style="position: absolute; top: 15px; right: 15px; z-index: 10;">
+                  <div style="position: absolute; top: 15px; left: 15px; z-index: 10;">
                     <div class="spectacle-card__status" style="background: #BDCF00; color: white; padding: 6px 12px; border-radius: 15px; font-size: 10px; font-weight: 700; text-transform: uppercase;">متاح</div>
                   </div>
                   
@@ -1528,41 +1528,41 @@ export default function Spectacles() {
                   
                   <!-- Right Side: Content -->
                   <div style="width: 50%; padding: 25px 80px 25px 5px; display: flex; flex-direction: column; justify-content: center;">
-                    <div style="width: 100%; margin-left: 30px;">
+                    <div style="width: 100%; margin-left: 30px; direction: rtl; text-align: right;">
                       <!-- Date Badge -->
                       <div style="margin-bottom: 15px;">
-                        <div class="spectacle-card__date" style="color: #999; font-size: 12px; font-weight: 600; text-transform: uppercase;">Oct 2025</div>
+                        <div class="spectacle-card__date" style="color: #999; font-size: 12px; font-weight: 600; text-transform: uppercase;">أكتوبر 2025</div>
                       </div>
                       
                       <!-- Title -->
-                      <h3 class="spectacle-card__title" style="color: #000; font-size: 32px; font-weight: 800; margin-bottom: 15px; line-height: 1.2; font-family: 'Amatic SC', cursive; background: white; padding: 8px 15px; border-radius: 8px; display: inline-block;">الأمير الصغير</h3>
+                      <h3 class="spectacle-card__title" style="color: #000; font-size: 32px; font-weight: 800; margin-bottom: 15px; line-height: 1.2; font-family: 'Amatic SC', cursive; background: white; padding: 8px 15px; border-radius: 8px; display: inline-block; direction: rtl; text-align: right;">الأمير الصغير</h3>
                       
                       <!-- Info badges -->
-                      <div style="margin-bottom: 25px;">
+                      <div style="margin-bottom: 25px; direction: rtl; text-align: right;">
                         <div style="display: flex; justify-content: flex-start; gap: 10px; margin-bottom: 10px; flex-wrap: wrap;">
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                            <i class="fas fa-clock" style="color: #BDCF00;"></i>
+                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600; direction: rtl;">
                             <span>60 دقيقة</span>
+                            <i class="fas fa-clock" style="color: #BDCF00;"></i>
                           </div>
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display le-petit-prince-ar-age-study" id="le-petit-prince-ar-age-study" data-age="7 سنوات وأكثر" data-study-level="CM1, CM2, Collège, Lycée">
-                            <i class="fas fa-child" style="color: #BDCF00;"></i>
+                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600; direction: rtl;" class="age-level-display le-petit-prince-ar-age-study" id="le-petit-prince-ar-age-study" data-age="7 سنوات وأكثر" data-study-level="CM1, CM2, Collège, Lycée">
                             <span class="age-level-text">7 سنوات وأكثر</span>
+                            <i class="fas fa-child" style="color: #BDCF00;"></i>
                           </div>
                         </div>
                         <div style="display: flex; justify-content: flex-start; gap: 10px; flex-wrap: wrap;">
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                            <i class="fas fa-users" style="color: #BDCF00;"></i>
+                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600; direction: rtl;">
                             <span>2 ممثلين</span>
+                            <i class="fas fa-users" style="color: #BDCF00;"></i>
                           </div>
-                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
-                            <i class="fas fa-theater-masks" style="color: #BDCF00;"></i>
+                          <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600; direction: rtl;">
                             <span>حكاية مع الرسم على الرمل</span>
+                            <i class="fas fa-theater-masks" style="color: #BDCF00;"></i>
                           </div>
                         </div>
                       </div>
                       
                       <!-- Buttons -->
-                      <div style="display: flex; gap: 8px; justify-content: flex-start; margin-bottom: 20px; flex-wrap: wrap;">
+                      <div style="display: flex; gap: 8px; justify-content: flex-start; margin-bottom: 20px; flex-wrap: wrap; direction: rtl;">
                         <button class="btn-reserve spectacle-btn" onclick="window.handleReservation('le-petit-prince-ar')" style="background: #BDCF00; color: white; padding: 10px 16px; border-radius: 8px; border: none; font-weight: 600; font-size: 13px; min-width: 100px; cursor: pointer; flex: 1; max-width: 140px;">
                           احجز
                         </button>

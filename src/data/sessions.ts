@@ -16,7 +16,7 @@ export const SESSIONS: Session[] = [
   { id: 'lpp-1', date: '2025-10-04', time: '15:00', location: 'RABAT - THEATRE BAHNINI', audienceType: 'tout-public', spectacleId: 'le-petit-prince', month: 'octobre', capacity: 220 },
   { id: 'lpp-2', date: '2025-10-06', time: '09:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-privee', spectacleId: 'le-petit-prince', month: 'octobre', price: 100, capacity: 400 },
   { id: 'lpp-3', date: '2025-10-06', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-privee', spectacleId: 'le-petit-prince', month: 'octobre', price: 100, capacity: 400 },
-  { id: 'lpp-4', date: '2025-10-07', time: '09:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'association', spectacleId: 'le-petit-prince', month: 'octobre', capacity: 400 },
+  { id: 'lpp-4', date: '2025-10-07', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'association', spectacleId: 'le-petit-prince', month: 'octobre', capacity: 400 },
   { id: 'lpp-5', date: '2025-10-07', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-publique', spectacleId: 'le-petit-prince', month: 'octobre', capacity: 400 },
   
   // CASABLANCA - COMPLEXE EL HASSANI
@@ -32,7 +32,7 @@ export const SESSIONS: Session[] = [
 
   // OCTOBRE - TARA SUR LA LUNE
   // RABAT - THEATRE BAHNINI
-  { id: 'tsl-1', date: '2025-10-11', time: '14:00', location: 'RABAT - THEATRE BAHNINI', audienceType: 'tout-public', spectacleId: 'tara-sur-la-lune', month: 'octobre', capacity: 220 },
+  { id: 'tsl-1', date: '2025-10-11', time: '15:00', location: 'RABAT - THEATRE BAHNINI', audienceType: 'tout-public', spectacleId: 'tara-sur-la-lune', month: 'octobre', capacity: 220 },
   { id: 'tsl-2', date: '2025-10-09', time: '09:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-privee', spectacleId: 'tara-sur-la-lune', month: 'octobre', price: 100, capacity: 400 },
   { id: 'tsl-3', date: '2025-10-09', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-publique', spectacleId: 'tara-sur-la-lune', month: 'octobre', capacity: 400 },
   { id: 'tsl-4', date: '2025-10-10', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'association', spectacleId: 'tara-sur-la-lune', month: 'octobre', capacity: 400 },
@@ -48,7 +48,7 @@ export const SESSIONS: Session[] = [
   { id: 'leau-1', date: '2025-11-08', time: '15:00', location: 'RABAT - SALLE ALLAL EL FASSI', audienceType: 'tout-public', spectacleId: 'leau-la', month: 'novembre', capacity: 220 },
   { id: 'leau-2', date: '2025-11-10', time: '09:30', location: 'RABAT - SALLE ALLAL EL FASSI', audienceType: 'scolaire-privee', spectacleId: 'leau-la', month: 'novembre', price: 100, capacity: 400 },
   { id: 'leau-3', date: '2025-11-10', time: '14:30', location: 'RABAT - SALLE ALLAL EL FASSI', audienceType: 'scolaire-privee', spectacleId: 'leau-la', month: 'novembre', price: 100, capacity: 400 },
-  { id: 'leau-4', date: '2025-11-11', time: '09:30', location: 'RABAT - SALLE ALLAL EL FASSI', audienceType: 'association', spectacleId: 'leau-la', month: 'novembre', capacity: 400 },
+  { id: 'leau-4', date: '2025-11-11', time: '14:30', location: 'RABAT - SALLE ALLAL EL FASSI', audienceType: 'association', spectacleId: 'leau-la', month: 'novembre', capacity: 400 },
   { id: 'leau-5', date: '2025-11-11', time: '14:30', location: 'RABAT - SALLE ALLAL EL FASSI', audienceType: 'scolaire-publique', spectacleId: 'leau-la', month: 'novembre', capacity: 400 },
   
   // CASABLANCA - COMPLEXE EL HASSANI
@@ -78,7 +78,7 @@ export const SESSIONS: Session[] = [
   { id: 'scb-1', date: '2025-12-13', time: '15:00', location: 'RABAT - THEATRE BAHNINI', audienceType: 'tout-public', spectacleId: 'simple-comme-bonjour', month: 'decembre', capacity: 220 },
   { id: 'scb-2', date: '2025-12-15', time: '09:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-privee', spectacleId: 'simple-comme-bonjour', month: 'decembre', price: 100, capacity: 400 },
   { id: 'scb-3', date: '2025-12-15', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-privee', spectacleId: 'simple-comme-bonjour', month: 'decembre', price: 100, capacity: 400 },
-  { id: 'scb-4', date: '2025-12-16', time: '09:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'association', spectacleId: 'simple-comme-bonjour', month: 'decembre', capacity: 400 },
+  { id: 'scb-4', date: '2025-12-16', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'association', spectacleId: 'simple-comme-bonjour', month: 'decembre', capacity: 400 },
   { id: 'scb-5', date: '2025-12-16', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-publique', spectacleId: 'simple-comme-bonjour', month: 'decembre', capacity: 400 },
   
   // CASABLANCA - COMPLEXE EL HASSANI
@@ -93,7 +93,7 @@ export const SESSIONS: Session[] = [
   { id: 'cha-1', date: '2026-01-24', time: '15:00', location: 'RABAT - THEATRE BAHNINI', audienceType: 'tout-public', spectacleId: 'charlotte', month: 'janvier', capacity: 220 },
   { id: 'cha-2', date: '2026-01-26', time: '09:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-privee', spectacleId: 'charlotte', month: 'janvier', price: 100, capacity: 400 },
   { id: 'cha-3', date: '2026-01-26', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-privee', spectacleId: 'charlotte', month: 'janvier', price: 100, capacity: 400 },
-  { id: 'cha-4', date: '2026-01-27', time: '09:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'association', spectacleId: 'charlotte', month: 'janvier', capacity: 400 },
+  { id: 'cha-4', date: '2026-01-27', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'association', spectacleId: 'charlotte', month: 'janvier', capacity: 400 },
   { id: 'cha-5', date: '2026-01-27', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-publique', spectacleId: 'charlotte', month: 'janvier', capacity: 400 },
   
   // CASABLANCA - COMPLEXE EL HASSANI
@@ -107,9 +107,9 @@ export const SESSIONS: Session[] = [
   // RABAT - THEATRE BAHNINI
   { id: 'est-1', date: '2026-02-14', time: '14:00', location: 'RABAT - THEATRE BAHNINI', audienceType: 'tout-public', spectacleId: 'estevanico', month: 'fevrier', capacity: 220 },
   { id: 'est-2', date: '2026-02-16', time: '10:00', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-privee', spectacleId: 'estevanico', month: 'fevrier', price: 100, capacity: 400 },
-  { id: 'est-3', date: '2026-02-16', time: '14:00', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-privee', spectacleId: 'estevanico', month: 'fevrier', price: 100, capacity: 400 },
-  { id: 'est-4', date: '2026-02-17', time: '10:00', location: 'RABAT - THEATRE BAHNINI', audienceType: 'association', spectacleId: 'estevanico', month: 'fevrier', capacity: 400 },
-  { id: 'est-5', date: '2026-02-17', time: '14:00', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-publique', spectacleId: 'estevanico', month: 'fevrier', capacity: 400 },
+  { id: 'est-3', date: '2026-02-16', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-privee', spectacleId: 'estevanico', month: 'fevrier', price: 100, capacity: 400 },
+  { id: 'est-4', date: '2026-02-17', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'association', spectacleId: 'estevanico', month: 'fevrier', capacity: 400 },
+  { id: 'est-5', date: '2026-02-17', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-publique', spectacleId: 'estevanico', month: 'fevrier', capacity: 400 },
   
   // CASABLANCA - COMPLEXE EL HASSANI
   { id: 'est-6', date: '2026-02-19', time: '10:00', location: 'CASABLANCA - COMPLEXE EL HASSANI', audienceType: 'scolaire-privee', spectacleId: 'estevanico', month: 'fevrier', price: 100, capacity: 300 },
@@ -138,7 +138,7 @@ export const SESSIONS: Session[] = [
   { id: 'ant-1', date: '2026-04-18', time: '15:00', location: 'RABAT - THEATRE BAHNINI', audienceType: 'tout-public', spectacleId: 'antigone', month: 'avril', capacity: 220 },
   { id: 'ant-2', date: '2026-04-20', time: '09:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-privee', spectacleId: 'antigone', month: 'avril', price: 100, capacity: 400 },
   { id: 'ant-3', date: '2026-04-20', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-privee', spectacleId: 'antigone', month: 'avril', price: 100, capacity: 400 },
-  { id: 'ant-4', date: '2026-04-21', time: '09:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'association', spectacleId: 'antigone', month: 'avril', capacity: 400 },
+  { id: 'ant-4', date: '2026-04-21', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'association', spectacleId: 'antigone', month: 'avril', capacity: 400 },
   { id: 'ant-5', date: '2026-04-21', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-publique', spectacleId: 'antigone', month: 'avril', capacity: 400 },
   
   // CASABLANCA - THEATRE ZEFZAF
@@ -153,7 +153,7 @@ export const SESSIONS: Session[] = [
   { id: 'ali-1', date: '2026-05-16', time: '15:00', location: 'RABAT - THEATRE BAHNINI', audienceType: 'tout-public', spectacleId: 'alice-chez-les-merveilles', month: 'mai', capacity: 220 },
   { id: 'ali-2', date: '2026-05-18', time: '09:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-privee', spectacleId: 'alice-chez-les-merveilles', month: 'mai', price: 100, capacity: 400 },
   { id: 'ali-3', date: '2026-05-18', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-privee', spectacleId: 'alice-chez-les-merveilles', month: 'mai', price: 100, capacity: 400 },
-  { id: 'ali-4', date: '2026-05-19', time: '09:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'association', spectacleId: 'alice-chez-les-merveilles', month: 'mai', capacity: 400 },
+  { id: 'ali-4', date: '2026-05-19', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'association', spectacleId: 'alice-chez-les-merveilles', month: 'mai', capacity: 400 },
   { id: 'ali-5', date: '2026-05-19', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-publique', spectacleId: 'alice-chez-les-merveilles', month: 'mai', capacity: 400 },
   
   // CASABLANCA - COMPLEXE EL HASSANI

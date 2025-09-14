@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Building, Eye, GraduationCap, Users, School } from 'lucide-react';
+import { Building, Users as FamilyIcon, GraduationCap, Users, School } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function UserTypeSelection() {
@@ -52,7 +52,7 @@ export default function UserTypeSelection() {
             <CardContent className="p-8 text-center">
               <div className="mb-6">
                 <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
-                  <Eye className="w-10 h-10 text-primary" />
+                  <FamilyIcon className="w-10 h-10 text-primary" />
                 </div>
                 <h3 className="text-2xl font-bold text-gray-800 mb-2">PARTICULIER</h3>
                 <p className="text-gray-600 mb-6">
