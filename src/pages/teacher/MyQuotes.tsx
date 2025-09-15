@@ -32,6 +32,18 @@ export default function MyQuotes() {
 
   const fetchQuotes = async () => {
     try {
+      console.log('Fetching quotes for user:', profile?.id);
+      
+      if (!profile?.id) {
+        console.error('No profile ID available');
+        toast({
+          title: "Erreur",
+          description: "Profil utilisateur non disponible",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const { data, error } = await supabase
         .from('bookings')
         .select(`
@@ -48,11 +60,16 @@ export default function MyQuotes() {
             )
           )
         `)
-        .eq('user_id', profile?.user_id)
+        .eq('user_id', profile.id)
         .not('quote_pdf_url', 'is', null)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      console.log('Quotes query result:', { data, error });
+
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
 
       const transformedQuotes: Quote[] = (data || []).map((booking: any) => ({
         id: booking.id,
@@ -66,11 +83,12 @@ export default function MyQuotes() {
       }));
 
       setQuotes(transformedQuotes);
+      console.log('Transformed quotes:', transformedQuotes);
     } catch (error) {
       console.error('Error fetching quotes:', error);
       toast({
         title: "Erreur",
-        description: "Impossible de charger vos devis",
+        description: `Impossible de charger vos devis: ${error.message}`,
         variant: "destructive",
       });
     } finally {
