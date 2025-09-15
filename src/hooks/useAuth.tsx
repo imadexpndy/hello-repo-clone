@@ -85,12 +85,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         console.error('Error fetching profile:', error);
         return null;
       }
-      // Ensure role exists, fallback to b2c_user if missing
-      const profile = data ? {
-        ...data,
-        role: (data.admin_role || 'b2c_user') as Profile['role'],
-        user_type: (data as any).user_type || null,
-        professional_type: (data as any).professional_type || null
+      
+      // Handle the data properly and extract user_type fields
+      const rawData = data as any;
+      const profile = rawData ? {
+        ...rawData,
+        role: (rawData.admin_role || 'b2c_user') as Profile['role'],
+        user_type: rawData.user_type || null,
+        professional_type: rawData.professional_type || null
       } : null;
       
       console.log('fetchProfile - Raw data:', JSON.stringify(data, null, 2));
