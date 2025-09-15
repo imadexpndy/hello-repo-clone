@@ -66,6 +66,7 @@ export function AppSidebar() {
           return [
             ...commonItems,
             { title: "Spectacles", url: "/spectacles", icon: () => <img src="/src/assets/Asset 11@4x.png" alt="Spectacles" className="h-4 w-4" /> },
+            { title: "Mes Réservations", url: "/reservations", icon: ClipboardList },
           ];
 
         case 'association':
