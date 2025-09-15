@@ -65,11 +65,7 @@ export function AppSidebar() {
         case 'teacher_public':
           return [
             ...commonItems,
-            { title: "Tableau de Bord", url: "/teacher/dashboard", icon: LayoutDashboard },
-            { title: "Réserver un Spectacle", url: "/teacher/spectacles", icon: () => <img src="/src/assets/Asset 11@4x.png" alt="Spectacles" className="h-4 w-4" /> },
-            { title: "Mes Réservations", url: "/teacher/bookings", icon: ClipboardList },
-            { title: "Mes Devis", url: "/teacher/quotes", icon: FileText },
-            { title: "Mon École", url: "/teacher/school", icon: GraduationCap },
+            { title: "Spectacles", url: "/spectacles", icon: () => <img src="/src/assets/Asset 11@4x.png" alt="Spectacles" className="h-4 w-4" /> },
           ];
 
         case 'association':
@@ -84,9 +80,7 @@ export function AppSidebar() {
         case 'particulier':
           return [
             ...commonItems,
-            { title: "Spectacles", url: "/b2c/shows", icon: () => <img src="/src/assets/Asset 11@4x.png" alt="Spectacles" className="h-4 w-4" /> },
-            { title: "Mes Réservations", url: "/b2c/bookings", icon: ClipboardList },
-            { title: "Plan des Salles", url: "/b2c/seating", icon: BookOpen },
+            { title: "Spectacles", url: "/spectacles", icon: () => <img src="/src/assets/Asset 11@4x.png" alt="Spectacles" className="h-4 w-4" /> },
           ];
       }
     }
@@ -156,11 +150,10 @@ export function AppSidebar() {
       switch (profile.user_type) {
         case 'teacher_private':
         case 'teacher_public':
-          return '/teacher';
+        case 'particulier':
+          return '/';
         case 'association':
           return '/association';
-        case 'particulier':
-          return '/b2c';
       }
     }
     
@@ -171,13 +164,13 @@ export function AppSidebar() {
         return '/admin';
       case 'teacher_private':
       case 'teacher_public':
-        return '/teacher';
+        return '/';
       case 'association':
         return '/association';
       case 'partner':
         return '/partner';
       case 'b2c_user':
-        return '/b2c';
+        return '/';
       default:
         return '/';
     }
