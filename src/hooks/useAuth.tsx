@@ -95,6 +95,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       
       console.log('fetchProfile - Raw data:', data);
       console.log('fetchProfile - admin_role:', data?.admin_role);
+      console.log('fetchProfile - user_type:', (data as any)?.user_type);
+      console.log('fetchProfile - professional_type:', (data as any)?.professional_type);
       console.log('fetchProfile - Final profile:', profile);
       console.log('fetchProfile - Final role:', profile?.role);
       
@@ -292,40 +294,26 @@ const signOut = async () => {
   }
 };
 
-  const isAdmin = profile?.role ? ['admin_full', 'super_admin', 'admin_spectacles', 'admin_schools', 'admin_partners', 'admin_support', 'admin_notifications', 'admin_editor'].includes(profile.role) : false;
-  const isSuperAdmin = profile?.role === 'super_admin' || profile?.role === 'admin_full';
-  const isTeacher = profile?.role === 'teacher_private' || profile?.role === 'teacher_public';
-  const isAssociation = profile?.role === 'association';
-  const isPartner = profile?.role === 'partner';
-  const isB2C = profile?.role === 'b2c_user';
-  
-  const hasSpectaclePermission = profile?.role === 'super_admin' || profile?.role === 'admin_full' || profile?.role === 'admin_spectacles';
-  const hasSchoolPermission = profile?.role === 'super_admin' || profile?.role === 'admin_full' || profile?.role === 'admin_schools';
-  const hasPartnerPermission = profile?.role === 'super_admin' || profile?.role === 'admin_full' || profile?.role === 'admin_partners';
-  const hasSupportPermission = profile?.role === 'super_admin' || profile?.role === 'admin_full' || profile?.role === 'admin_support';
-  const hasNotificationPermission = profile?.role === 'super_admin' || profile?.role === 'admin_full' || profile?.role === 'admin_notifications';
-  const hasEditorPermission = profile?.role === 'super_admin' || profile?.role === 'admin_full' || profile?.role === 'admin_editor';
+  const refreshProfile = async () => {
+    if (user) {
+      console.log('Manually refreshing profile...');
+      const freshProfile = await fetchProfile(user.id);
+      setProfile(freshProfile);
+    }
+  };
 
   const value = {
     user,
-    session,
     profile,
     loading,
-    signUp,
-    signIn,
     signOut,
-    isAdmin,
-    isSuperAdmin,
-    isTeacher,
-    isAssociation,
-    isPartner,
-    isB2C,
-    hasSpectaclePermission,
-    hasSchoolPermission,
-    hasPartnerPermission,
-    hasSupportPermission,
-    hasNotificationPermission,
-    hasEditorPermission,
+    refreshProfile,
+    isAdmin: profile?.role === 'admin_full' || profile?.role === 'super_admin',
+    updateProfile: (updates: Partial<Profile>) => {
+      if (profile) {
+        setProfile({ ...profile, ...updates });
+      }
+    }
   };
 
   return (

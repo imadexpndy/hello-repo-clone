@@ -5,10 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { useAuth } from '@/hooks/useAuth';
-import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import { User } from 'lucide-react';
+import { useAuth } from "@/hooks/useAuth";
+import { Separator } from "@/components/ui/separator";
+import { supabase } from "@/lib/supabase";
+import { toast } from "@/hooks/use-toast";
+import { ProfileDebug } from "@/components/ProfileDebug";
 import { useNavigate } from 'react-router-dom';
 
 export default function Profile() {
@@ -22,18 +23,22 @@ export default function Profile() {
     name: '',
     phone: '',
     whatsapp: '',
-    email: '',
+    organization_name: '',
   });
 
   useEffect(() => {
     if (profile) {
+      console.log('Profile data in Profile page:', profile);
+      console.log('user_type:', profile.user_type);
+      console.log('professional_type:', profile.professional_type);
+      console.log('admin_role:', profile.role);
+      
       setFormData({
         first_name: profile.first_name || '',
         last_name: profile.last_name || '',
-        name: profile.name || '',
         phone: profile.phone || '',
         whatsapp: profile.whatsapp || '',
-        email: profile.email || '',
+        organization_name: profile.organization_name || '',
       });
     }
   }, [profile]);
