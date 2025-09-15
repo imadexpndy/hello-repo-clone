@@ -52,7 +52,7 @@ export default function MyQuotes() {
           quote_pdf_url,
           quote_generated_at,
           created_at,
-          total_price,
+          total_amount,
           sessions!inner (
             session_date,
             spectacles!inner (
@@ -76,7 +76,7 @@ export default function MyQuotes() {
         id: booking.id,
         spectacle_title: booking.sessions?.spectacles?.title || 'Unknown',
         session_date: booking.sessions?.session_date || '',
-        total_price: booking.total_price || booking.sessions?.spectacles?.price || 15.00,
+        total_price: booking.total_amount || booking.sessions?.spectacles?.price || 15.00,
         status: booking.status || 'pending',
         quote_pdf_url: booking.quote_pdf_url || null,
         quote_generated_at: booking.quote_generated_at || null,
