@@ -52,13 +52,14 @@ export const ProtectedRoute = ({ children, requiredRole, allowedRoles }: Protect
     );
   }
 
-  // Check if user has required role
-  if (requiredRole && profile.role !== requiredRole) {
+  // Check if user has required role - use user_type as primary, fallback to role
+  const userRole = profile.user_type || profile.role;
+  if (requiredRole && userRole !== requiredRole) {
     return <Navigate to="/unauthorized" replace />;
   }
 
-  // Check if user has one of the allowed roles
-  if (allowedRoles && !allowedRoles.includes(profile.role)) {
+  // Check if user has one of the allowed roles - use user_type as primary, fallback to role
+  if (allowedRoles && !allowedRoles.includes(userRole) && !allowedRoles.includes(profile.role)) {
     return <Navigate to="/unauthorized" replace />;
   }
 
