@@ -309,11 +309,25 @@ const signOut = async () => {
 
   const value = {
     user,
+    session,
     profile,
     loading,
+    signUp: async () => ({ error: null }),
+    signIn: async () => ({ error: null }),
     signOut,
     refreshProfile,
     isAdmin: profile?.role === 'admin_full' || profile?.role === 'super_admin',
+    isSuperAdmin: profile?.role === 'super_admin',
+    isTeacher: profile?.role === 'teacher_private' || profile?.role === 'teacher_public',
+    isAssociation: profile?.role === 'association',
+    isPartner: profile?.role === 'partner',
+    isB2C: profile?.role === 'b2c_user',
+    hasSpectaclePermission: false,
+    hasSchoolPermission: false,
+    hasPartnerPermission: false,
+    hasSupportPermission: false,
+    hasNotificationPermission: false,
+    hasEditorPermission: false,
     updateProfile: (updates: Partial<Profile>) => {
       if (profile) {
         setProfile({ ...profile, ...updates });
