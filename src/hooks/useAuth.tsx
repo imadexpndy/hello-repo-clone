@@ -93,11 +93,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         professional_type: (data as any).professional_type || null
       } : null;
       
-      console.log('fetchProfile - Raw data:', data);
+      console.log('fetchProfile - Raw data:', JSON.stringify(data, null, 2));
       console.log('fetchProfile - admin_role:', data?.admin_role);
       console.log('fetchProfile - user_type:', (data as any)?.user_type);
       console.log('fetchProfile - professional_type:', (data as any)?.professional_type);
-      console.log('fetchProfile - Final profile:', profile);
+      console.log('fetchProfile - Final profile:', JSON.stringify(profile, null, 2));
       console.log('fetchProfile - Final role:', profile?.role);
       
       return profile;
