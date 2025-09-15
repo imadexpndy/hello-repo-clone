@@ -16,6 +16,8 @@ interface Profile {
   phone: string | null;
   whatsapp: string | null;
   role: 'admin_spectacles' | 'admin_schools' | 'admin_partners' | 'admin_support' | 'admin_notifications' | 'admin_editor' | 'admin_full' | 'super_admin' | 'teacher_private' | 'teacher_public' | 'association' | 'partner' | 'b2c_user';
+  user_type: 'particulier' | 'teacher_private' | 'teacher_public' | 'association' | null;
+  professional_type: 'scolaire-privee' | 'scolaire-publique' | 'association' | null;
   organization_id: string | null;
   is_verified: boolean;
   verification_status: string | null;
@@ -86,7 +88,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       // Ensure role exists, fallback to b2c_user if missing
       const profile = data ? {
         ...data,
-        role: (data.admin_role || 'b2c_user') as Profile['role']
+        role: (data.admin_role || 'b2c_user') as Profile['role'],
+        user_type: (data as any).user_type || null,
+        professional_type: (data as any).professional_type || null
       } : null;
       
       console.log('fetchProfile - Raw data:', data);

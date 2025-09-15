@@ -3,7 +3,7 @@ import { useAuth } from '@/hooks/useAuth';
 import VideoPopup from '@/components/VideoPopup';
 
 export default function SpectacleTaraSurLaLune() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   const [userType, setUserType] = useState<string>('');
   const [professionalType, setProfessionalType] = useState<string>('');
@@ -28,37 +28,55 @@ export default function SpectacleTaraSurLaLune() {
       }
     };
 
-    loadStylesheet('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Raleway:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Kalam:wght@300;400;700&display=swap');
     loadStylesheet('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
-    loadStylesheet('https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css');
+    loadStylesheet('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap');
+  }, []);
 
-    // Check user type on component mount and set up listeners
+  useEffect(() => {
+    // Check user type from profile data first, then fallback to session storage
     const checkUserType = () => {
-      const storedUserType = sessionStorage.getItem('userType') || localStorage.getItem('userType');
-      const storedProfessionalType = sessionStorage.getItem('professionalType') || localStorage.getItem('professionalType');
-      
-      console.log('Debug - User Type:', storedUserType);
-      console.log('Debug - Professional Type:', storedProfessionalType);
-      
-      setUserType(storedUserType || '');
-      setProfessionalType(storedProfessionalType || '');
+      if (profile?.user_type) {
+        // Use profile data as the authoritative source
+        const profileUserType = profile.user_type;
+        const profileProfessionalType = profile.professional_type;
+        
+        console.log('Debug - Profile User Type:', profileUserType);
+        console.log('Debug - Profile Professional Type:', profileProfessionalType);
+        
+        // Map profile user types to display format
+        if (profileUserType === 'particulier') {
+          setUserType('particulier');
+          setProfessionalType('');
+        } else if (profileUserType === 'teacher_private' || profileUserType === 'teacher_public' || profileUserType === 'association') {
+          setUserType('professional');
+          setProfessionalType(profileProfessionalType || '');
+        }
+      } else {
+        // Fallback to session storage for backward compatibility
+        const storedUserType = sessionStorage.getItem('userType') || localStorage.getItem('userType');
+        const storedProfessionalType = sessionStorage.getItem('professionalType') || localStorage.getItem('professionalType');
+
+        console.log('Debug - Session User Type:', storedUserType);
+        console.log('Debug - Session Professional Type:', storedProfessionalType);
+
+        setUserType(storedUserType || '');
+        setProfessionalType(storedProfessionalType || '');
+      }
     };
 
-    // Initial check
     checkUserType();
-    
-    // Set up event listeners
+
     const handleStorageChange = () => checkUserType();
     const handleUserTypeChange = () => checkUserType();
-    
+
     window.addEventListener('storage', handleStorageChange);
     window.addEventListener('userTypeChanged', handleUserTypeChange);
-    
+
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('userTypeChanged', handleUserTypeChange);
     };
-  }, []);
+  }, [profile]);
 
   const handleReservation = () => {
     if (user) {

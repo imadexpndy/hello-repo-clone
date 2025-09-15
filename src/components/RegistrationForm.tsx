@@ -282,7 +282,11 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
           verification_documents: uploadedDocs.length > 0 ? uploadedDocs : null,
           contact_person: userType === 'association' ? formData.contactPerson : null,
           admin_role: role, // Add the admin_role field which is used by the auth system
-          is_verified: userType === 'teacher_private' ? true : false // Private schools get immediate verification
+          is_verified: userType === 'teacher_private' ? true : false, // Private schools get immediate verification
+          user_type: userType, // Store the user type for proper profile identification
+          professional_type: userType === 'teacher_private' ? 'scolaire-privee' : 
+                            userType === 'teacher_public' ? 'scolaire-publique' : 
+                            userType === 'association' ? 'association' : null // Store professional type based on user type
         })
         .eq('user_id', authData.user.id);
 
