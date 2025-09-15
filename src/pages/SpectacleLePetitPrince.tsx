@@ -3,7 +3,7 @@ import { useAuth } from '@/hooks/useAuth';
 import VideoPopup from '@/components/VideoPopup';
 
 export default function SpectacleLePetitPrince() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   const [userType, setUserType] = useState<string>('');
   const [professionalType, setProfessionalType] = useState<string>('');
@@ -32,16 +32,36 @@ export default function SpectacleLePetitPrince() {
     loadStylesheet('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
     loadStylesheet('https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css');
 
-    // Check user type on component mount and set up listeners
+    // Check user type from profile data instead of storage
     const checkUserType = () => {
-      const storedUserType = sessionStorage.getItem('userType') || localStorage.getItem('userType');
-      const storedProfessionalType = sessionStorage.getItem('professionalType') || localStorage.getItem('professionalType');
+      let detectedUserType = '';
+      let detectedProfessionalType = '';
+      
+      if (profile?.user_type === 'teacher_private') {
+        detectedUserType = 'professional';
+        detectedProfessionalType = 'scolaire-privee';
+      } else if (profile?.user_type === 'teacher_public') {
+        detectedUserType = 'professional';
+        detectedProfessionalType = 'scolaire-publique';
+      } else if (profile?.user_type === 'association') {
+        detectedUserType = 'professional';
+        detectedProfessionalType = 'association';
+      } else if (profile?.professional_type) {
+        detectedUserType = 'professional';
+        detectedProfessionalType = profile.professional_type;
+      } else {
+        // Fallback to storage for non-logged users
+        detectedUserType = sessionStorage.getItem('userType') || localStorage.getItem('userType') || 'particulier';
+        detectedProfessionalType = sessionStorage.getItem('professionalType') || localStorage.getItem('professionalType') || '';
+      }
 
-      console.log('Debug - User Type:', storedUserType);
-      console.log('Debug - Professional Type:', storedProfessionalType);
+      console.log('Debug - User Type:', detectedUserType);
+      console.log('Debug - Professional Type:', detectedProfessionalType);
+      console.log('Debug - Profile user_type:', profile?.user_type);
+      console.log('Debug - Profile professional_type:', profile?.professional_type);
 
-      setUserType(storedUserType || '');
-      setProfessionalType(storedProfessionalType || '');
+      setUserType(detectedUserType);
+      setProfessionalType(detectedProfessionalType);
     };
 
     // Initial check
@@ -58,7 +78,7 @@ export default function SpectacleLePetitPrince() {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('userTypeChanged', handleUserTypeChange);
     };
-  }, []);
+  }, [profile]);
 
   const handleReservation = () => {
     if (user) {

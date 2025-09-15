@@ -28,7 +28,7 @@ WHERE school_id IS NOT NULL
 UPDATE public.profiles 
 SET user_type = 'association',
     professional_type = 'association'
-WHERE association_id IS NOT NULL;
+WHERE association_id IS NOT NULL;√
 
 -- Particulier users (everyone else)
 UPDATE public.profiles 

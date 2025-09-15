@@ -10,6 +10,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { checkSessionCapacity, reserveSeats } from '@/lib/capacity';
+import { generateDevisPDF, DevisData } from '@/utils/devisGenerator';
 import { 
   Select,
   SelectContent,
@@ -22,7 +23,7 @@ import {
   AlertDescription,
   AlertTitle,
 } from '@/components/ui/alert';
-import { Calendar, MapPin, Users, AlertTriangle } from 'lucide-react';
+import { Calendar, MapPin, Users, AlertTriangle, Download, MessageCircle, CheckCircle, ArrowLeft } from 'lucide-react';
 
 interface Spectacle {
   id: string;
@@ -54,9 +55,13 @@ export default function PrivateSchoolBooking() {
   const [selectedSpectacle, setSelectedSpectacle] = useState('');
   const [selectedSession, setSelectedSession] = useState('');
   const [studentCount, setStudentCount] = useState('');
+  const [teacherCount, setTeacherCount] = useState('1');
   const [accompanistCount, setAccompanistCount] = useState('0');
   const [loading, setLoading] = useState(false);
   const [capacityWarning, setCapacityWarning] = useState<any>(null);
+  const [bookingCreated, setBookingCreated] = useState(false);
+  const [devisUrl, setDevisUrl] = useState<string | null>(null);
+  const [currentBookingId, setCurrentBookingId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchSpectacles();
@@ -73,7 +78,7 @@ export default function PrivateSchoolBooking() {
 
   useEffect(() => {
     checkCapacity();
-  }, [selectedSession, studentCount, accompanistCount]);
+  }, [selectedSession, studentCount, teacherCount, accompanistCount]);
 
   const fetchSpectacles = async () => {
     try {
@@ -117,7 +122,7 @@ export default function PrivateSchoolBooking() {
       return;
     }
 
-    const totalSeats = parseInt(studentCount) + parseInt(accompanistCount || '0');
+    const totalSeats = parseInt(studentCount) + parseInt(teacherCount || '0') + parseInt(accompanistCount || '0');
     if (totalSeats <= 0) return;
 
     try {
@@ -133,35 +138,109 @@ export default function PrivateSchoolBooking() {
     }
   };
 
+  const generateDevis = async (bookingId: string, sessionData: Session) => {
+    const devisNumber = `DEV-${Date.now()}`;
+    const dateGenerated = new Date().toLocaleDateString('fr-FR');
+    
+    const studentsNum = parseInt(studentCount);
+    const teachersNum = parseInt(teacherCount || '0');
+    const accompagnateursNum = parseInt(accompanistCount || '0');
+    
+    // Pricing logic - you can adjust these prices
+    const pricePerStudent = sessionData.spectacles.price || 15;
+    const pricePerTeacher = 0; // Teachers usually free
+    const pricePerAccompagnateur = pricePerStudent; // Same as student price
+    
+    const totalAmount = (studentsNum * pricePerStudent) + 
+                       (teachersNum * pricePerTeacher) + 
+                       (accompagnateursNum * pricePerAccompagnateur);
+
+    const devisData: DevisData = {
+      schoolName: profile?.name || 'École Privée',
+      contactName: profile?.full_name || user?.email || '',
+      contactEmail: user?.email || '',
+      contactPhone: profile?.phone || '',
+      schoolAddress: profile?.address || '',
+      
+      spectacleName: sessionData.spectacles.title,
+      spectacleDate: new Date(sessionData.session_date).toLocaleDateString('fr-FR'),
+      spectacleTime: sessionData.session_time,
+      venue: sessionData.venue,
+      venueAddress: sessionData.city || '',
+      
+      studentsCount: studentsNum,
+      teachersCount: teachersNum,
+      accompagnateurCount: accompagnateursNum,
+      
+      pricePerStudent,
+      pricePerTeacher,
+      pricePerAccompagnateur,
+      totalAmount,
+      
+      bookingId,
+      devisNumber,
+      dateGenerated
+    };
+
+    const pdfBytes = generateDevisPDF(devisData);
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    
+    return { url, devisData };
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!user || !selectedSession || !studentCount) return;
 
-    const totalSeats = parseInt(studentCount) + parseInt(accompanistCount || '0');
+    const totalSeats = parseInt(studentCount) + parseInt(teacherCount || '0') + parseInt(accompanistCount || '0');
     
     setLoading(true);
     try {
-      // Reserve seats and create booking
-      const booking = await reserveSeats(
-        selectedSession,
-        user.id,
-        totalSeats,
-        'private_school',
-        profile?.organization_id || undefined
-      );
+      // Create booking with devis_generated status
+      const { data: booking, error: bookingError } = await supabase
+        .from('bookings')
+        .insert({
+          user_id: user.id,
+          session_id: selectedSession,
+          booking_type: 'private_school',
+          number_of_tickets: totalSeats,
+          students_count: parseInt(studentCount),
+          teachers_count: parseInt(teacherCount || '0'),
+          accompagnateurs_count: parseInt(accompanistCount || '0'),
+          total_amount: 0, // Will be updated after devis generation
+          status: 'pending' as const,
+          created_at: new Date().toISOString()
+        })
+        .select()
+        .single();
+
+      if (bookingError) throw bookingError;
+
+      // Generate devis PDF
+      const selectedSessionData = sessions.find(s => s.id === selectedSession);
+      if (!selectedSessionData) throw new Error('Session data not found');
+
+      const { url, devisData } = await generateDevis(booking.id, selectedSessionData);
+      
+      // Update booking with total amount
+      await supabase
+        .from('bookings')
+        .update({ 
+          total_amount: devisData.totalAmount,
+          status: 'pending' as const
+        })
+        .eq('id', booking.id);
+
+      setCurrentBookingId(booking.id);
+      setDevisUrl(url);
+      setBookingCreated(true);
 
       toast({
-        title: "Réservation créée",
-        description: `Votre demande de réservation pour ${totalSeats} places a été créée. Un devis vous sera envoyé sous peu.`,
+        title: "Devis généré",
+        description: `Votre devis a été généré avec succès. Vous pouvez le télécharger et le consulter.`,
       });
-
-      // Reset form
-      setSelectedSpectacle('');
-      setSelectedSession('');
-      setStudentCount('');
-      setAccompanistCount('0');
-      setCapacityWarning(null);
       
     } catch (error: any) {
       toast({
@@ -174,12 +253,55 @@ export default function PrivateSchoolBooking() {
     }
   };
 
-  if (profile?.role !== 'teacher_private') {
+  const downloadDevis = () => {
+    if (devisUrl) {
+      const link = document.createElement('a');
+      link.href = devisUrl;
+      link.download = `devis-${currentBookingId}.pdf`;
+      link.click();
+    }
+  };
+
+  const markAsPaid = async () => {
+    if (!currentBookingId) return;
+    
+    try {
+      await supabase
+        .from('bookings')
+        .update({ status: 'confirmed' as const })
+        .eq('id', currentBookingId);
+
+      toast({
+        title: "Paiement confirmé",
+        description: "Votre paiement a été marqué comme envoyé. Nous vérifierons et confirmerons sous 24h.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Erreur",
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  const startNewBooking = () => {
+    setBookingCreated(false);
+    setDevisUrl(null);
+    setCurrentBookingId(null);
+    setSelectedSpectacle('');
+    setSelectedSession('');
+    setStudentCount('');
+    setTeacherCount('1');
+    setAccompanistCount('0');
+    setCapacityWarning(null);
+  };
+
+  if (profile?.user_type !== 'teacher_private') {
     return <div>Accès réservé aux enseignants d'écoles privées</div>;
   }
 
   const selectedSessionData = sessions.find(s => s.id === selectedSession);
-  const totalRequestedSeats = parseInt(studentCount || '0') + parseInt(accompanistCount || '0');
+  const totalRequestedSeats = parseInt(studentCount || '0') + parseInt(teacherCount || '0') + parseInt(accompanistCount || '0');
 
   return (
     <div className="min-h-screen bg-background flex">
@@ -196,15 +318,16 @@ export default function PrivateSchoolBooking() {
             </p>
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Détails de la réservation</CardTitle>
-              <CardDescription>
-                Sélectionnez un spectacle et une session pour votre école
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
+          {!bookingCreated && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Détails de la réservation</CardTitle>
+                <CardDescription>
+                  Sélectionnez un spectacle et une session pour votre école
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Spectacle Selection */}
                 <div className="space-y-2">
                   <Label htmlFor="spectacle">Spectacle *</Label>
@@ -268,27 +391,40 @@ export default function PrivateSchoolBooking() {
 
                 {/* Attendee Counts */}
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="studentCount">Nombre d'élèves *</Label>
-                    <Input
-                      id="studentCount"
-                      type="number"
-                      min="1"
-                      value={studentCount}
-                      onChange={(e) => setStudentCount(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="accompanistCount">Accompagnateurs (max 5)</Label>
-                    <Input
-                      id="accompanistCount"
-                      type="number"
-                      min="0"
-                      max="5"
-                      value={accompanistCount}
-                      onChange={(e) => setAccompanistCount(e.target.value)}
-                    />
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="studentCount">Nombre d'élèves *</Label>
+                      <Input
+                        id="studentCount"
+                        type="number"
+                        min="1"
+                        value={studentCount}
+                        onChange={(e) => setStudentCount(e.target.value)}
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="teacherCount">Nombre d'enseignants</Label>
+                      <Input
+                        id="teacherCount"
+                        type="number"
+                        min="0"
+                        value={teacherCount}
+                        onChange={(e) => setTeacherCount(e.target.value)}
+                      />
+                    </div>
+
+                    <div>
+                      <Label htmlFor="accompanistCount">Nombre d'accompagnateurs</Label>
+                      <Input
+                        id="accompanistCount"
+                        type="number"
+                        min="0"
+                        value={accompanistCount}
+                        onChange={(e) => setAccompanistCount(e.target.value)}
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -354,9 +490,89 @@ export default function PrivateSchoolBooking() {
                 >
                   {loading ? 'Création...' : 'Créer la demande de réservation'}
                 </Button>
-              </form>
-            </CardContent>
-          </Card>
+                </form>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Devis Generated Success Screen */}
+          {bookingCreated && (
+            <Card className="mt-6">
+              <CardContent className="p-6">
+                <div className="text-center space-y-6">
+                  <div className="flex justify-center">
+                    <CheckCircle className="h-16 w-16 text-green-500" />
+                  </div>
+                  
+                  <div>
+                    <h2 className="text-2xl font-bold text-green-700 mb-2">
+                      Devis généré avec succès !
+                    </h2>
+                    <p className="text-gray-600">
+                      Votre demande de réservation a été créée et un devis détaillé a été généré.
+                    </p>
+                  </div>
+
+                  <div className="bg-blue-50 p-4 rounded-lg">
+                    <h3 className="font-semibold text-blue-800 mb-2">Prochaines étapes :</h3>
+                    <ol className="text-left text-blue-700 space-y-1">
+                      <li>1. Téléchargez et consultez votre devis</li>
+                      <li>2. Contactez-nous via WhatsApp pour coordonner le paiement</li>
+                      <li>3. Effectuez le paiement (virement, chèque ou espèces)</li>
+                      <li>4. Votre réservation sera confirmée après réception du paiement</li>
+                    </ol>
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                    <Button 
+                      onClick={downloadDevis}
+                      className="bg-blue-600 hover:bg-blue-700"
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      Télécharger le devis
+                    </Button>
+                    
+                    <Button 
+                      onClick={() => window.open('https://wa.me/212XXXXXXXXX?text=Bonjour, je souhaite coordonner le paiement pour ma réservation EDJS.', '_blank')}
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      <MessageCircle className="h-4 w-4 mr-2" />
+                      Contacter via WhatsApp
+                    </Button>
+                  </div>
+
+                  <div className="bg-gray-50 p-4 rounded-lg">
+                    <h4 className="font-semibold mb-2">Modes de paiement acceptés :</h4>
+                    <div className="text-sm text-gray-600 space-y-1">
+                      <p>• Virement bancaire</p>
+                      <p>• Chèque à l'ordre d'EDJS</p>
+                      <p>• Paiement en espèces (sur rendez-vous)</p>
+                      <p className="text-red-600 font-medium">• Cartes bancaires non acceptées pour les écoles</p>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-center space-x-4">
+                    <Button 
+                      variant="outline"
+                      onClick={startNewBooking}
+                    >
+                      <ArrowLeft className="h-4 w-4 mr-2" />
+                      Nouvelle réservation
+                    </Button>
+                    
+                    <Button 
+                      onClick={markAsPaid}
+                      variant="outline"
+                      className="border-green-500 text-green-700 hover:bg-green-50"
+                    >
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      J'ai effectué le paiement
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </main>
     </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -12,19 +12,20 @@ import { Separator } from "@/components/ui/separator";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { useAuth } from '@/hooks/useAuth';
-import { useToast } from '@/hooks/use-toast';
+import { generateDevisPDF } from '@/utils/devisGenerator';
+import type { DevisData } from '@/utils/devisGenerator';
 import { Calendar, Clock, Users, MapPin, Building2, User, UserCheck } from 'lucide-react';
 import { getUserTypeSessions } from '@/data/sessions';
 import { supabase } from '@/integrations/supabase/client';
 import { sendConfirmationEmail, checkEmailExists, ReservationEmailData } from '@/services/emailService';
 import { ReservationConfirmationDialog } from '@/components/ReservationConfirmationDialog';
+import { UserTypeDiagnostic } from '@/components/UserTypeDiagnostic';
 
 const ReservationFlow = () => {
   const { spectacleId } = useParams();
   const [searchParams] = useSearchParams();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const navigate = useNavigate();
-  const { toast } = useToast();
   
   const [step, setStep] = useState(1);
   const [userType, setUserType] = useState<string>('');
@@ -35,22 +36,62 @@ const ReservationFlow = () => {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('card');
   const [showConfirmationDialog, setShowConfirmationDialog] = useState(false);
   const [confirmationData, setConfirmationData] = useState<any>(null);
+  const [devisGenerated, setDevisGenerated] = useState(false);
+  const [devisUrl, setDevisUrl] = useState<string | null>(null);
+  const [currentBookingId, setCurrentBookingId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
     email: '',
     phone: '',
+    whatsapp: '',
+    specialRequests: '',
     ticketCount: 1,
     childrenCount: 0,
     accompaniersCount: 0,
-    specialRequests: '',
+    teachersCount: 0,
     cardNumber: '',
-    cardExpiry: '',
-    cardCvv: '',
     cardName: '',
-    rib: '',
-    whatsapp: ''
+    cardExpiry: '',
+    cardCvv: ''
   });
+
+  useEffect(() => {
+    console.log('=== FORM PRE-POPULATION DEBUG ===');
+    console.log('User:', user);
+    console.log('Profile:', profile);
+    console.log('Profile user_type:', profile?.user_type);
+    console.log('Profile professional_type:', profile?.professional_type);
+    console.log('Profile role:', profile?.role);
+    
+    if (user && profile) {
+      console.log('Profile name:', profile.name);
+      console.log('Profile phone:', profile.phone);
+      console.log('User metadata:', user.user_metadata);
+      
+      // Split the name field into firstName and lastName
+      const fullName = profile.name || user.user_metadata?.full_name || '';
+      const nameParts = fullName.split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+      
+      const newFormData = {
+        firstName: firstName,
+        lastName: lastName,
+        email: user.email || '',
+        phone: profile.phone || user.user_metadata?.phone || ''
+      };
+      
+      console.log('Full name from profile:', fullName);
+      console.log('Split into firstName:', firstName, 'lastName:', lastName);
+      console.log('New form data to set:', newFormData);
+      
+      setFormData(prev => ({
+        ...prev,
+        ...newFormData
+      }));
+    }
+  }, [user, profile]);
 
   const spectacleData = {
     'le-petit-prince': { title: 'Le Petit Prince', description: 'Une aventure poétique à travers les étoiles' },
@@ -107,20 +148,57 @@ const ReservationFlow = () => {
       if (userTypeParam) {
         mappedUserType = userTypeParam;
       } else {
-        const role = user.user_metadata?.role;
-        if (role) {
-          if (role === 'private_school' || role === 'private_school_teacher') {
+        // Use profile data for user type detection
+        console.log('=== USER TYPE DETECTION DEBUG ===');
+        console.log('Profile user_type:', profile?.user_type);
+        console.log('Profile professional_type:', profile?.professional_type);
+        console.log('Profile role:', profile?.role);
+        console.log('Profile admin_role:', (profile as any)?.admin_role);
+        console.log('Full profile object:', profile);
+        
+        if (profile?.user_type) {
+          console.log('Using profile.user_type:', profile.user_type);
+          // Use the user_type from profile directly
+          if (profile.user_type === 'teacher_private') {
             mappedUserType = 'scolaire-privee';
-          } else if (role === 'public_school' || role === 'public_school_teacher') {
+            console.log('✅ Mapped to scolaire-privee from user_type');
+          } else if (profile.user_type === 'teacher_public') {
             mappedUserType = 'scolaire-publique';
-          } else if (role === 'association' || role === 'association_member') {
+            console.log('✅ Mapped to scolaire-publique from user_type');
+          } else if (profile.user_type === 'association') {
             mappedUserType = 'association';
+            console.log('✅ Mapped to association from user_type');
           } else {
             mappedUserType = 'particulier';
+            console.log('✅ Mapped to particulier from user_type (default)');
+          }
+        } else if (profile?.professional_type) {
+          console.log('Using profile.professional_type:', profile.professional_type);
+          // Fallback to professional_type
+          mappedUserType = profile.professional_type;
+          console.log('✅ Mapped to', mappedUserType, 'from professional_type');
+        } else if (profile?.role) {
+          console.log('Using profile.role:', profile.role);
+          // Fallback to role-based detection
+          if (profile.role === 'teacher_private') {
+            mappedUserType = 'scolaire-privee';
+            console.log('✅ Mapped to scolaire-privee from role');
+          } else if (profile.role === 'teacher_public') {
+            mappedUserType = 'scolaire-publique';
+            console.log('✅ Mapped to scolaire-publique from role');
+          } else if (profile.role === 'association') {
+            mappedUserType = 'association';
+            console.log('✅ Mapped to association from role');
+          } else {
+            mappedUserType = 'particulier';
+            console.log('✅ Mapped to particulier from role (default)');
           }
         } else {
           mappedUserType = 'particulier';
+          console.log('❌ No user type found, defaulting to particulier');
         }
+        
+        console.log('Final mappedUserType:', mappedUserType);
       }
       
       setUserType(mappedUserType);
@@ -144,7 +222,7 @@ const ReservationFlow = () => {
 
   const checkSessionCapacity = async (sessionId: string) => {
     try {
-      const sessions = getUserTypeSessions(userType || 'particulier', spectacleId || '');
+      const sessions = getUserTypeSessions(spectacleId || '', userType || 'particulier');
       const sessionInfo = sessions.find(s => s.id === sessionId);
       
       if (!sessionInfo) {
@@ -214,12 +292,9 @@ const ReservationFlow = () => {
       
       if (field === 'ticketCount') {
         // Use full available capacity (no artificial 10 ticket limit)
+        const maxTickets = 10;
         if (numValue > sessionCapacity.available) {
-          toast({
-            title: 'Limite atteinte',
-            description: `Vous ne pouvez réserver que ${sessionCapacity.available} tickets maximum pour cette séance.`,
-            variant: 'destructive'
-          });
+          toast.error(`Limite atteinte - Vous ne pouvez pas réserver plus de ${maxTickets} billets pour cette session.`);
           // Don't update the form data if limit exceeded
           return;
         }
@@ -235,11 +310,7 @@ const ReservationFlow = () => {
       const totalParticipants = currentChildren + currentAccompaniers;
       
       if (totalParticipants > sessionCapacity.available) {
-        toast({
-          title: 'Capacité insuffisante',
-          description: 'Le nombre total de participants dépasse la capacité disponible pour cette séance.',
-          variant: 'destructive'
-        });
+        toast.error(`Capacité insuffisante - Il ne reste que ${sessionCapacity.available} places disponibles pour cette session.`);
         return;
       }
       
@@ -252,19 +323,68 @@ const ReservationFlow = () => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
+  const generateDevis = async (bookingId: string, sessionData: any) => {
+    const devisNumber = `DEV-${Date.now()}`;
+    const dateGenerated = new Date().toLocaleDateString('fr-FR');
+    
+    const studentsNum = formData.childrenCount || 0;
+    const teachersNum = formData.teachersCount || 0;
+    const accompagnateursNum = formData.accompaniersCount || 0;
+    
+    const pricePerStudent = 100; // Private school price
+    const pricePerTeacher = 0; // Teachers usually free
+    const pricePerAccompagnateur = pricePerStudent;
+    
+    const totalAmount = (studentsNum * pricePerStudent) + 
+                       (teachersNum * pricePerTeacher) + 
+                       (accompagnateursNum * pricePerAccompagnateur);
+
+    const devisData: DevisData = {
+      schoolName: profile?.name || 'École Privée',
+      contactName: profile?.full_name || user?.email || formData.firstName + ' ' + formData.lastName,
+      contactEmail: user?.email || formData.email,
+      contactPhone: profile?.phone || formData.phone,
+      schoolAddress: profile?.address || '',
+      
+      spectacleName: spectacle?.title || '',
+      spectacleDate: sessionData.date,
+      spectacleTime: sessionData.time,
+      venue: sessionData.location,
+      venueAddress: sessionData.city || '',
+      
+      studentsCount: studentsNum,
+      teachersCount: teachersNum,
+      accompagnateurCount: accompagnateursNum,
+      
+      pricePerStudent,
+      pricePerTeacher,
+      pricePerAccompagnateur,
+      totalAmount,
+      
+      bookingId,
+      devisNumber,
+      dateGenerated
+    };
+
+    const pdfBytes = generateDevisPDF(devisData);
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const url = URL.createObjectURL(blob);
+    
+    return { url, devisData };
+  };
+
   const handleSubmit = async () => {
     setLoading(true);
     
     try {
+      // Check if this is a private school user - if so, generate devis instead
+      const isPrivateSchool = profile?.user_type === 'teacher_private' || userType === 'scolaire-privee';
+      
       // Check for duplicate email if user is not logged in
       if (!user && formData.email) {
         const emailExists = await checkEmailExists(formData.email);
         if (emailExists) {
-          toast({
-            title: "Email déjà utilisé",
-            description: "Cet email est déjà enregistré. Veuillez vous connecter ou utiliser un autre email.",
-            variant: "destructive"
-          });
+          toast.error("Email déjà utilisé - Cet email est déjà enregistré. Veuillez vous connecter ou utiliser un autre email.");
           setLoading(false);
           return;
         }
@@ -374,6 +494,50 @@ const ReservationFlow = () => {
       console.log('User ID used:', currentUserId);
       console.log('=== END BOOKING DEBUG ===');
 
+      // For private school users, generate devis and update booking status
+      if (isPrivateSchool && booking?.id) {
+        try {
+          const { url: devisUrl, devisData } = await generateDevis(booking.id, session);
+          
+          // Update booking status to pending (will be updated to devis_generated later)
+          await supabase
+            .from('bookings')
+            .update({ 
+              status: 'pending',
+              teachers_count: formData.teachersCount || 0,
+              accompagnateurs_count: formData.accompaniersCount || 0
+            })
+            .eq('id', booking.id);
+
+          // Show devis success screen instead of regular confirmation
+          setConfirmationData({
+            reservationId,
+            spectacleName: spectacle.title,
+            sessionDate: session.date,
+            sessionTime: session.time,
+            location: session.location,
+            ticketCount,
+            totalAmount,
+            paymentMethod: 'devis',
+            userEmail: user?.email || formData.email,
+            userName: user?.user_metadata?.full_name || `${formData.firstName} ${formData.lastName}`,
+            userPhone: formData.phone,
+            devisUrl,
+            devisData,
+            bookingId: booking.id,
+            isPrivateSchool: true
+          });
+          
+          setShowConfirmationDialog(true);
+          setLoading(false);
+          return;
+        } catch (devisError) {
+          console.error('Error generating devis:', devisError);
+          toast.error("Erreur lors de la génération du devis - La réservation a été créée mais le devis n'a pas pu être généré. Contactez-nous.");
+        }
+      }
+
+      // Regular flow for non-private school users
       // Prepare email data
       const emailData: ReservationEmailData = {
         userEmail: user?.email || formData.email,
@@ -414,17 +578,11 @@ const ReservationFlow = () => {
       setConfirmationData(confirmationInfo);
       setShowConfirmationDialog(true);
       
-      toast({
-        title: "Réservation confirmée",
-        description: `Votre réservation a été confirmée. ${emailSent ? 'Un email de confirmation vous a été envoyé.' : ''}`,
-      });
+      toast.success("Réservation confirmée - Votre réservation a été enregistrée avec succès!");
+      
     } catch (error) {
       console.error('Reservation error:', error);
-      toast({
-        title: "Erreur",
-        description: "Une erreur s'est produite lors de l'envoi de votre réservation.",
-        variant: "destructive"
-      });
+      toast.error("Erreur - Une erreur s'est produite lors de l'envoi de votre réservation.");
     } finally {
       setLoading(false);
     }
@@ -455,13 +613,20 @@ const ReservationFlow = () => {
       if (professionalTypeParam) {
         userTypeForSessions = professionalTypeParam;
       } else {
-        // Try to get from user metadata
-        const role = user?.user_metadata?.role;
-        if (role === 'private_school' || role === 'private_school_teacher') {
+        // Use profile data for user type detection
+        if (profile?.user_type === 'teacher_private') {
           userTypeForSessions = 'scolaire-privee';
-        } else if (role === 'public_school' || role === 'public_school_teacher') {
+        } else if (profile?.user_type === 'teacher_public') {
           userTypeForSessions = 'scolaire-publique';
-        } else if (role === 'association' || role === 'association_member') {
+        } else if (profile?.user_type === 'association') {
+          userTypeForSessions = 'association';
+        } else if (profile?.professional_type) {
+          userTypeForSessions = profile.professional_type;
+        } else if (profile?.role === 'teacher_private') {
+          userTypeForSessions = 'scolaire-privee';
+        } else if (profile?.role === 'teacher_public') {
+          userTypeForSessions = 'scolaire-publique';
+        } else if (profile?.role === 'association') {
           userTypeForSessions = 'association';
         } else {
           userTypeForSessions = 'particulier'; // Default fallback
@@ -475,21 +640,24 @@ const ReservationFlow = () => {
       sessions = getUserTypeSessions(spectacleId, userTypeForSessions);
     } else {
       // Get user's city from profile for professional users
-      const userCity = user?.user_metadata?.city || user?.user_metadata?.location || 'rabat';
+      const userCity = profile?.city || user?.user_metadata?.city || user?.user_metadata?.location || 'rabat';
       sessions = getUserTypeSessions(spectacleId, userTypeForSessions, userCity);
     }
     
-    console.log('Debug - Available sessions:', {
-      spectacleId,
-      userTypeForSessions,
-      userTypeParam,
-      professionalTypeParam,
-      userType,
-      isGuest,
-      user: user ? 'logged' : 'guest',
-      sessionsCount: sessions.length,
-      sessions: sessions.map(s => ({ id: s.id, audienceType: s.audienceType, date: s.date, location: s.location }))
-    });
+    console.log('=== SESSION FILTERING DEBUG ===');
+    console.log('spectacleId:', spectacleId);
+    console.log('userTypeForSessions:', userTypeForSessions);
+    console.log('userTypeParam:', userTypeParam);
+    console.log('professionalTypeParam:', professionalTypeParam);
+    console.log('userType state:', userType);
+    console.log('isGuest:', isGuest);
+    console.log('user:', user ? 'logged' : 'guest');
+    console.log('profile in getAvailableSessions:', profile);
+    console.log('profile?.user_type:', profile?.user_type);
+    console.log('profile?.professional_type:', profile?.professional_type);
+    console.log('profile?.role:', profile?.role);
+    console.log('sessionsCount:', sessions.length);
+    console.log('sessions found:', sessions.map(s => ({ id: s.id, audienceType: s.audienceType, date: s.date, location: s.location })));
 
     // Force console log for debugging
     if (sessions.length === 0) {
@@ -510,7 +678,9 @@ const ReservationFlow = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/8 via-primary/4 to-primary/12 p-4 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-primary/8 via-primary/4 to-primary/12 p-4 relative overflow-hidden">
+      <UserTypeDiagnostic />
+      <div className="min-h-screen flex items-center justify-center">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-3xl animate-pulse" />
@@ -824,31 +994,51 @@ const ReservationFlow = () => {
                   </Button>
                   <Button 
                     onClick={() => {
-                      // Final validation before proceeding
+                      console.log('=== CONTINUER BUTTON CLICKED ===');
+                      console.log('Current step:', step);
+                      console.log('User type:', userType);
+                      console.log('Form data:', formData);
+                      console.log('Selected session:', selectedSession);
+                      
+                      // Validation before proceeding to payment
                       const isProfessional = ['scolaire-privee', 'scolaire-publique', 'association'].includes(userType);
                       const totalRequested = isProfessional 
                         ? (formData.childrenCount || 0) + (formData.accompaniersCount || 0)
                         : (formData.ticketCount || 0);
                       
+                      console.log('Is professional:', isProfessional);
+                      console.log('Total requested:', totalRequested);
+                      console.log('Session capacity:', sessionCapacity);
+                      
+                      // Check if user has filled required fields for this step
+                      if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone) {
+                        console.log('Missing required fields');
+                        toast.error('Informations manquantes - Veuillez remplir tous les champs obligatoires.');
+                        return;
+                      }
+                      
+                      // Check if user has selected tickets/participants
                       if (totalRequested === 0) {
-                        toast({
-                          title: 'Informations manquantes',
-                          description: 'Veuillez indiquer le nombre de participants.',
-                          variant: 'destructive'
-                        });
+                        console.log('No tickets/participants selected');
+                        toast.error('Veuillez sélectionner au moins un ticket ou participant.');
                         return;
                       }
-                      
+                        
+                      // Check capacity with correct total for user type
                       if (sessionCapacity && totalRequested > sessionCapacity.available) {
-                        toast({
-                          title: 'Capacité insuffisante',
-                          description: 'Le nombre de participants dépasse la capacité disponible.',
-                          variant: 'destructive'
-                        });
+                        console.log('Capacity exceeded');
+                        toast.error(`Capacité insuffisante - Il ne reste que ${sessionCapacity.available} places disponibles.`);
                         return;
                       }
                       
-                      setStep(4);
+                      // For private school users, go to devis step first
+                      if (userType === 'scolaire-privee' || profile?.user_type === 'teacher_private') {
+                        console.log('Private school user - proceeding to devis step (step 5)');
+                        setStep(5);
+                      } else {
+                        console.log('Regular user - proceeding to payment step (step 4)');
+                        setStep(4);
+                      }
                     }}
                     variant="glow"
                     size="xl"
@@ -886,11 +1076,187 @@ const ReservationFlow = () => {
               </div>
             )}
 
+            {/* Step 5: Devis Generation (Private Schools Only) */}
+            {step === 5 && (
+              <div className="space-y-6">
+                <div className="text-center">
+                  <h3 className="text-xl font-semibold mb-2">Génération du devis</h3>
+                  <p className="text-muted-foreground">Votre devis personnalisé pour cette réservation</p>
+                </div>
+                
+                <div className="bg-primary/5 p-6 rounded-lg border border-primary/20">
+                  <h4 className="font-semibold mb-4 text-primary">Récapitulatif de votre réservation</h4>
+                  
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Spectacle:</span>
+                      <span className="font-medium">{spectacle.title}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">École:</span>
+                      <span className="font-medium">{formData.firstName} {formData.lastName}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Email:</span>
+                      <span className="font-medium">{formData.email}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Téléphone:</span>
+                      <span className="font-medium">{formData.phone}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Enfants:</span>
+                      <span className="font-medium">{formData.childrenCount || 0}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Accompagnateurs:</span>
+                      <span className="font-medium">{formData.accompaniersCount || 0}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Enseignants:</span>
+                      <span className="font-medium">{formData.teachersCount || 0}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Total participants:</span>
+                      <span className="font-medium">{(formData.childrenCount || 0) + (formData.accompaniersCount || 0)}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-muted-foreground">Prix unitaire:</span>
+                      <span className="font-medium">100 MAD</span>
+                    </div>
+                    <div className="border-t pt-2 flex justify-between font-semibold text-lg">
+                      <span>Total:</span>
+                      <span className="text-primary">{((formData.childrenCount || 0) + (formData.accompaniersCount || 0)) * 100} MAD</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex space-x-4">
+                  <Button 
+                    onClick={() => setStep(3)}
+                    variant="outline"
+                    size="xl"
+                    className="flex-1"
+                  >
+                    Retour
+                  </Button>
+                  <Button 
+                    onClick={async () => {
+                      try {
+                        console.log('Generating devis for private school...');
+                        
+                        // Create booking first
+                        const availableSessions = getAvailableSessions();
+                        const selectedSessionData = availableSessions?.find(s => s.id === selectedSession);
+                        
+                        if (!selectedSessionData) {
+                          toast.error('Session non trouvée');
+                          return;
+                        }
+
+                        const bookingData = {
+                          user_id: user.id,
+                          session_id: selectedSession,
+                          spectacle_id: spectacleId,
+                          booking_type: 'scolaire-privee',
+                          status: 'pending' as const,
+                          number_of_tickets: (formData.childrenCount || 0) + (formData.accompaniersCount || 0),
+                          children_count: formData.childrenCount || 0,
+                          accompanists_count: formData.accompaniersCount || 0,
+                          teachers_count: formData.teachersCount || 0,
+                          total_amount: ((formData.childrenCount || 0) + (formData.accompaniersCount || 0)) * 100,
+                          contact_name: `${formData.firstName} ${formData.lastName}`,
+                          contact_email: formData.email,
+                          contact_phone: formData.phone,
+                          notes: formData.specialRequests || null
+                        };
+
+                        console.log('Creating booking with data:', bookingData);
+
+                        const { data: booking, error: bookingError } = await supabase
+                          .from('bookings')
+                          .insert([bookingData])
+                          .select()
+                          .single();
+
+                        if (bookingError) {
+                          console.error('Booking creation error:', bookingError);
+                          toast.error('Erreur lors de la création de la réservation');
+                          return;
+                        }
+
+                        console.log('Booking created successfully:', booking);
+                        setCurrentBookingId(booking.id);
+
+                        // Generate devis PDF
+                        const devisData = {
+                          // Client info
+                          schoolName: `${formData.firstName} ${formData.lastName}`,
+                          contactName: `${formData.firstName} ${formData.lastName}`,
+                          contactEmail: formData.email,
+                          contactPhone: formData.phone,
+                          schoolAddress: '',
+                          
+                          // Spectacle info
+                          spectacleName: spectacle.title,
+                          spectacleDate: selectedSessionData.date,
+                          spectacleTime: selectedSessionData.time,
+                          venue: selectedSessionData.location || 'À définir',
+                          venueAddress: '',
+                          
+                          // Participants
+                          studentsCount: formData.childrenCount || 0,
+                          teachersCount: formData.teachersCount || 0,
+                          accompagnateurCount: formData.accompaniersCount || 0,
+                          
+                          // Pricing
+                          pricePerStudent: 100,
+                          pricePerTeacher: 0,
+                          pricePerAccompagnateur: 100,
+                          totalAmount: ((formData.childrenCount || 0) + (formData.accompaniersCount || 0)) * 100,
+                          
+                          // Booking info
+                          bookingId: booking.id,
+                          devisNumber: `DEV-${booking.id.slice(0, 8).toUpperCase()}`,
+                          dateGenerated: new Date().toLocaleDateString('fr-FR')
+                        };
+
+                        console.log('Generating devis with data:', devisData);
+
+                        // Generate PDF using the existing devis generation logic
+                        const { generateDevisPDF } = await import('@/utils/devisGenerator');
+                        const pdfBytes = generateDevisPDF(devisData);
+                        const pdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
+                        const pdfUrl = URL.createObjectURL(pdfBlob);
+                        
+                        setDevisUrl(pdfUrl);
+                        setDevisGenerated(true);
+                        
+                        toast.success('Devis généré avec succès!');
+                        
+                        // Proceed to payment step
+                        setStep(4);
+                        
+                      } catch (error) {
+                        console.error('Error generating devis:', error);
+                        toast.error('Erreur lors de la génération du devis');
+                      }
+                    }}
+                    variant="glow"
+                    size="xl"
+                    className="flex-1"
+                  >
+                    Générer le devis
+                  </Button>
+                </div>
+              </div>
+            )}
+
             {/* Step 4: Payment */}
             {step === 4 && (
               <div className="space-y-6">
-                <div className="text-center mb-6">
-                  <h3 className="text-xl font-semibold text-foreground mb-2">Paiement</h3>
+                <div className="text-center">
+                  <h3 className="text-xl font-semibold mb-2">Paiement</h3>
                   <p className="text-muted-foreground">Choisissez votre mode de paiement</p>
                 </div>
                 
@@ -950,75 +1316,82 @@ const ReservationFlow = () => {
                 <div className="space-y-4">
                   <h4 className="font-semibold text-foreground">Mode de paiement</h4>
                   <div className="grid gap-3">
-                    <div className="border rounded-lg">
-                      <label className="flex items-center space-x-3 p-4 cursor-pointer hover:bg-muted/50 transition-colors">
-                        <input
-                          type="radio"
-                          name="paymentMethod"
-                          value="card"
-                          className="w-4 h-4 text-primary"
-                          checked={selectedPaymentMethod === 'card'}
-                          onChange={(e) => setSelectedPaymentMethod(e.target.value)}
-                        />
-                        <div className="flex items-center space-x-3">
-                          <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
-                            💳
-                          </div>
-                          <div>
-                            <div className="font-medium">Carte bancaire</div>
-                            <div className="text-sm text-muted-foreground">Visa, Mastercard, American Express</div>
-                          </div>
-                        </div>
-                      </label>
-                      {selectedPaymentMethod === 'card' && (
-                        <div className="px-4 pb-4 space-y-3 border-t bg-muted/20">
-                          <div className="grid grid-cols-2 gap-3">
-                            <div>
-                              <label className="block text-sm font-medium mb-1">Numéro de carte</label>
-                              <input
-                                type="text"
-                                placeholder="1234 5678 9012 3456"
-                                className="w-full p-2 border rounded"
-                                value={formData.cardNumber}
-                                onChange={(e) => setFormData({...formData, cardNumber: e.target.value})}
-                              />
+                    {/* Hide credit card option for private school users */}
+                    {!(profile?.user_type === 'teacher_private' || userType === 'scolaire-privee') && (
+                      <div className="border rounded-lg">
+                        <label className="flex items-center space-x-3 p-4 cursor-pointer hover:bg-muted/50 transition-colors">
+                          <input
+                            type="radio"
+                            name="paymentMethod"
+                            value="card"
+                            className="w-4 h-4 text-primary"
+                            checked={selectedPaymentMethod === 'card'}
+                            onChange={(e) => setSelectedPaymentMethod(e.target.value)}
+                          />
+                          <div className="flex items-center space-x-3">
+                            <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
+                              💳
                             </div>
                             <div>
-                              <label className="block text-sm font-medium mb-1">Nom sur la carte</label>
-                              <input
-                                type="text"
-                                placeholder="John Doe"
-                                className="w-full p-2 border rounded"
-                                value={formData.cardName}
-                                onChange={(e) => setFormData({...formData, cardName: e.target.value})}
-                              />
+                              <div className="font-medium">Carte bancaire</div>
+                              <div className="text-sm text-muted-foreground">Visa, Mastercard, American Express</div>
                             </div>
                           </div>
-                          <div className="grid grid-cols-2 gap-3">
-                            <div>
-                              <label className="block text-sm font-medium mb-1">Date d'expiration</label>
-                              <input
-                                type="text"
-                                placeholder="MM/YY"
-                                className="w-full p-2 border rounded"
-                                value={formData.cardExpiry}
-                                onChange={(e) => setFormData({...formData, cardExpiry: e.target.value})}
-                              />
+                        </label>
+                        {selectedPaymentMethod === 'card' && (
+                          <div className="px-4 pb-4 space-y-3 border-t bg-muted/20">
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <label htmlFor="cardNumber" className="block text-sm font-medium mb-1">Numéro de carte</label>
+                                <input
+                                  id="cardNumber"
+                                  type="text"
+                                  placeholder="1234 5678 9012 3456"
+                                  className="w-full p-2 border rounded"
+                                  value={formData.cardNumber}
+                                  onChange={(e) => setFormData({...formData, cardNumber: e.target.value})}
+                                />
+                              </div>
+                              <div>
+                                <label htmlFor="cardName" className="block text-sm font-medium mb-1">Nom sur la carte</label>
+                                <input
+                                  id="cardName"
+                                  type="text"
+                                  placeholder="John Doe"
+                                  className="w-full p-2 border rounded"
+                                  value={formData.cardName}
+                                  onChange={(e) => setFormData({...formData, cardName: e.target.value})}
+                                />
+                              </div>
                             </div>
-                            <div>
-                              <label className="block text-sm font-medium mb-1">CVV</label>
-                              <input
-                                type="text"
-                                placeholder="123"
-                                className="w-full p-2 border rounded"
-                                value={formData.cardCvv}
-                                onChange={(e) => setFormData({...formData, cardCvv: e.target.value})}
-                              />
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <label htmlFor="cardExpiry" className="block text-sm font-medium mb-1">Date d'expiration</label>
+                                <input
+                                  id="cardExpiry"
+                                  type="text"
+                                  placeholder="MM/YY"
+                                  className="w-full p-2 border rounded"
+                                  value={formData.cardExpiry}
+                                  onChange={(e) => setFormData({...formData, cardExpiry: e.target.value})}
+                                />
+                              </div>
+                              <div>
+                                <label htmlFor="cardCvv" className="block text-sm font-medium mb-1">CVV</label>
+                                <input
+                                  id="cardCvv"
+                                  type="text"
+                                  placeholder="123"
+                                  className="w-full p-2 border rounded"
+                                  value={formData.cardCvv}
+                                  onChange={(e) => setFormData({...formData, cardCvv: e.target.value})}
+                                />
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      )}
-                    </div>
+                        )}
+                      </div>
+                    )}
                     
                     <div className="border rounded-lg">
                       <label className="flex items-center space-x-3 p-4 cursor-pointer hover:bg-muted/50 transition-colors">
@@ -1081,8 +1454,9 @@ const ReservationFlow = () => {
                       </label>
                       {selectedPaymentMethod === 'cash' && (
                         <div className="px-4 pb-4 border-t bg-muted/20">
-                          <label className="block text-sm font-medium mb-1">WhatsApp pour confirmation</label>
+                          <label htmlFor="whatsappNumber" className="block text-sm font-medium mb-1">WhatsApp pour confirmation</label>
                           <input
+                            id="whatsappNumber"
                             type="text"
                             placeholder="+212 6XX XXX XXX"
                             className="w-full p-2 border rounded mb-3"
@@ -1148,6 +1522,7 @@ const ReservationFlow = () => {
           reservationData={confirmationData}
         />
       )}
+    </div>
     </div>
   );
 };

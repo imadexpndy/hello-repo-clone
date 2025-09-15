@@ -6,7 +6,7 @@ import { ArrowLeft, User, Building } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export default function Spectacles() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const navigate = useNavigate();
   const [guestModal, setGuestModal] = useState({
     isOpen: false,
@@ -26,24 +26,54 @@ export default function Spectacles() {
     delete (window as any).handleReservation;
   }, []);
 
-  // Get user type from session storage
-  const [userType, setUserType] = useState(sessionStorage.getItem('userType'));
-  const [professionalType, setProfessionalType] = useState(sessionStorage.getItem('professionalType'));
+  // Get user type from profile data
+  const [userType, setUserType] = useState('');
+  const [professionalType, setProfessionalType] = useState('');
+
+  // Update user type from profile data
+  const updateUserTypeFromProfile = () => {
+    let detectedUserType = '';
+    let detectedProfessionalType = '';
+    
+    if (profile?.user_type === 'teacher_private') {
+      detectedUserType = 'professional';
+      detectedProfessionalType = 'scolaire-privee';
+    } else if (profile?.user_type === 'teacher_public') {
+      detectedUserType = 'professional';
+      detectedProfessionalType = 'scolaire-publique';
+    } else if (profile?.user_type === 'association') {
+      detectedUserType = 'professional';
+      detectedProfessionalType = 'association';
+    } else if (profile?.professional_type) {
+      detectedUserType = 'professional';
+      detectedProfessionalType = profile.professional_type;
+    } else {
+      // Fallback to storage for non-logged users
+      detectedUserType = sessionStorage.getItem('userType') || 'particulier';
+      detectedProfessionalType = sessionStorage.getItem('professionalType') || '';
+    }
+
+    console.log('📊 Detected User type:', detectedUserType, 'Professional type:', detectedProfessionalType);
+    console.log('📊 Profile user_type:', profile?.user_type);
+    console.log('📊 Profile professional_type:', profile?.professional_type);
+
+    setUserType(detectedUserType);
+    setProfessionalType(detectedProfessionalType);
+    
+    return { detectedUserType, detectedProfessionalType };
+  };
 
   // Update age/study level display based on user type
   const updateAgeStudyDisplay = () => {
     console.log('🔄 updateAgeStudyDisplay called');
-    const currentUserType = sessionStorage.getItem('userType');
-    const currentProfessionalType = sessionStorage.getItem('professionalType');
-    
-    console.log('📊 User type:', currentUserType, 'Professional type:', currentProfessionalType);
+    const { detectedUserType, detectedProfessionalType } = updateUserTypeFromProfile();
     
     // Wait for DOM to be fully loaded
     setTimeout(() => {
       const elements = document.querySelectorAll('.age-level-display');
       console.log('🎯 Found', elements.length, 'age-level-display elements');
       
-      if (currentUserType === 'professional' && currentProfessionalType === 'scolaire-privee') {
+      if (detectedUserType === 'professional' && detectedProfessionalType === 'scolaire-privee') {
         console.log('🏫 Updating to study levels for private schools');
         elements.forEach((element, index) => {
           const studyLevel = element.getAttribute('data-study-level');
@@ -71,18 +101,17 @@ export default function Spectacles() {
 
   // Update spectacle visibility for private schools
   const updateSpectacleVisibility = () => {
-    const currentUserType = sessionStorage.getItem('userType');
-    const currentProfessionalType = sessionStorage.getItem('professionalType');
+    const { detectedUserType, detectedProfessionalType } = updateUserTypeFromProfile();
     const frenchCard = document.getElementById('le-petit-prince-fr-card') as HTMLElement;
     const arabicCard = document.getElementById('le-petit-prince-ar-card') as HTMLElement;
     
     console.log('=== SPECTACLE VISIBILITY DEBUG ===');
-    console.log('Current user type:', currentUserType);
-    console.log('Current professional type:', currentProfessionalType);
+    console.log('Current user type:', detectedUserType);
+    console.log('Current professional type:', detectedProfessionalType);
     console.log('French card found:', !!frenchCard);
     console.log('Arabic card found:', !!arabicCard);
 
-    if (currentUserType === 'professional' && currentProfessionalType !== 'scolaire-privee') {
+    if (detectedUserType === 'professional' && detectedProfessionalType !== 'scolaire-privee') {
       // Hide French version for non-private schools
       if (frenchCard) {
         frenchCard.style.setProperty('display', 'none', 'important');
@@ -96,7 +125,7 @@ export default function Spectacles() {
         arabicCard.style.opacity = '1';
         console.log('✅ Shown Arabic Le Petit Prince for non-private school');
       }
-    } else if (currentUserType === 'professional' && currentProfessionalType === 'scolaire-privee') {
+    } else if (detectedUserType === 'professional' && detectedProfessionalType === 'scolaire-privee') {
       // Show French version for private schools
       if (frenchCard) {
         frenchCard.style.setProperty('display', 'block', 'important');
@@ -110,7 +139,7 @@ export default function Spectacles() {
         arabicCard.style.setProperty('display', 'none', 'important');
         console.log('✅ Hidden Arabic Le Petit Prince for private school');
       }
-    } else if (currentUserType === 'particulier') {
+    } else if (detectedUserType === 'particulier') {
       // Show BOTH French and Arabic versions for individual users
       if (frenchCard) {
         frenchCard.style.setProperty('display', 'block', 'important');
@@ -135,35 +164,21 @@ export default function Spectacles() {
     updateSpectacleVisibility();
   };
 
-  // Effect to handle user type changes and initial load
+  // Effect to handle profile changes and initial load
   useEffect(() => {
-    console.log('DOM loaded, calling updateDisplayForUserType');
+    console.log('Profile changed, updating user type and display');
     updateDisplayForUserType();
 
-    // Set up event listeners for user type changes
-    const handleUserTypeChange = () => {
-      const newUserType = sessionStorage.getItem('userType');
-      const newProfessionalType = sessionStorage.getItem('professionalType');
-      setUserType(newUserType);
-      setProfessionalType(newProfessionalType);
-      updateDisplayForUserType();
-    };
-
-    window.addEventListener('userTypeChanged', handleUserTypeChange);
-    window.addEventListener('storage', handleUserTypeChange);
-
     // Run updates with delays to ensure DOM is ready
-    const timeouts = [500, 1000, 2000, 3000, 5000].map(delay => 
+    const timeouts = [500, 1000, 2000].map(delay => 
       setTimeout(updateDisplayForUserType, delay)
     );
 
     // Cleanup
     return () => {
-      window.removeEventListener('userTypeChanged', handleUserTypeChange);
-      window.removeEventListener('storage', handleUserTypeChange);
       timeouts.forEach(timeout => clearTimeout(timeout));
     };
-  }, []);
+  }, [profile]);
 
   // Effect to update display when user type changes
   useEffect(() => {

@@ -95,6 +95,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         professional_type: rawData.professional_type || null
       } : null;
       
+      console.log('=== PROFILE FETCH DEBUG ===');
       console.log('fetchProfile - Raw data keys:', Object.keys(data || {}));
       console.log('fetchProfile - Raw data:', data);
       console.log('fetchProfile - admin_role:', data?.admin_role);
@@ -104,6 +105,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.log('fetchProfile - Has professional_type key:', 'professional_type' in (data || {}));
       console.log('fetchProfile - Final profile:', profile);
       console.log('fetchProfile - Final role:', profile?.role);
+      console.log('fetchProfile - Final user_type:', profile?.user_type);
+      console.log('fetchProfile - Final professional_type:', profile?.professional_type);
       
       return profile;
     } catch (error) {
