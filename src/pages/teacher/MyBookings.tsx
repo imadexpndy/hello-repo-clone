@@ -70,9 +70,10 @@ export default function MyBookings() {
           special_requirements,
           contact_phone,
           school_address,
-          spectacle_sessions!inner (
-            date,
-            time,
+          session_id,
+          sessions!inner (
+            session_date,
+            session_time,
             venue,
             spectacles!inner (
               title
@@ -91,10 +92,10 @@ export default function MyBookings() {
 
       const transformedBookings: Booking[] = (data || []).map((booking: any) => ({
         id: booking.id,
-        spectacle_title: booking.spectacle_sessions?.spectacles?.title || 'Unknown',
-        session_date: booking.spectacle_sessions?.date || '',
-        session_time: booking.spectacle_sessions?.time || '',
-        venue: booking.spectacle_sessions?.venue || '',
+        spectacle_title: booking.sessions?.spectacles?.title || 'Unknown',
+        session_date: booking.sessions?.session_date || '',
+        session_time: booking.sessions?.session_time || '',
+        venue: booking.sessions?.venue || '',
         student_count: booking.student_count || booking.students_count || 0,
         teacher_count: booking.teacher_count || 0,
         grade_level: booking.grade_level || '',

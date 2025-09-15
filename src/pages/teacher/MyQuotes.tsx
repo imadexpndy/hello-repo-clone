@@ -52,7 +52,8 @@ export default function MyQuotes() {
           quote_pdf_url,
           quote_generated_at,
           created_at,
-          spectacle_sessions!inner (
+          total_price,
+          sessions!inner (
             session_date,
             spectacles!inner (
               title,
@@ -73,9 +74,9 @@ export default function MyQuotes() {
 
       const transformedQuotes: Quote[] = (data || []).map((booking: any) => ({
         id: booking.id,
-        spectacle_title: booking.spectacle_sessions?.spectacles?.title || 'Unknown',
-        session_date: booking.spectacle_sessions?.session_date || '',
-        total_price: booking.spectacle_sessions?.spectacles?.price || 15.00,
+        spectacle_title: booking.sessions?.spectacles?.title || 'Unknown',
+        session_date: booking.sessions?.session_date || '',
+        total_price: booking.total_price || booking.sessions?.spectacles?.price || 15.00,
         status: booking.status || 'pending',
         quote_pdf_url: booking.quote_pdf_url || null,
         quote_generated_at: booking.quote_generated_at || null,
