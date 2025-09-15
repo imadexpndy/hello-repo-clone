@@ -80,7 +80,19 @@ export default function Profile() {
     setFormData(prev => ({ ...prev, [field]: e.target.value }));
   };
 
-  const getRoleDisplayName = (role: string) => {
+  const getUserTypeDisplayName = () => {
+    // Use user_type as primary source, fallback to admin_role
+    if (profile?.user_type) {
+      const userTypeNames = {
+        particulier: 'Client Particulier',
+        teacher_private: 'École Privée',
+        teacher_public: 'École Publique',
+        association: 'Association'
+      };
+      return userTypeNames[profile.user_type as keyof typeof userTypeNames] || profile.user_type;
+    }
+    
+    // Fallback to admin_role for backward compatibility
     const roleNames = {
       admin: 'Administrateur',
       teacher_private: 'Enseignant École Privée',
@@ -89,7 +101,7 @@ export default function Profile() {
       partner: 'Partenaire',
       b2c_user: 'Client Particulier'
     };
-    return roleNames[role as keyof typeof roleNames] || role;
+    return roleNames[profile?.role as keyof typeof roleNames] || profile?.role || 'Non défini';
   };
 
   if (!profile) {
@@ -126,8 +138,8 @@ export default function Profile() {
                     <p className="text-sm">{profile.email}</p>
                   </div>
                   <div>
-                    <Label className="text-sm font-medium text-muted-foreground">Rôle</Label>
-                    <p className="text-sm">{getRoleDisplayName(profile.role)}</p>
+                    <Label className="text-sm font-medium text-muted-foreground">Type d'utilisateur</Label>
+                    <p className="text-sm">{getUserTypeDisplayName()}</p>
                   </div>
                 </div>
                 

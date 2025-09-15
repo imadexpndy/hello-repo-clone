@@ -28,7 +28,24 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     return name.split(' ').map(n => n[0]).join('').toUpperCase();
   };
 
-  const getRoleBadgeVariant = () => {
+  const getUserTypeBadgeVariant = () => {
+    // Use user_type as primary source
+    if (profile?.user_type) {
+      switch (profile.user_type) {
+        case 'teacher_private':
+          return 'default';
+        case 'teacher_public':
+          return 'secondary';
+        case 'association':
+          return 'outline';
+        case 'particulier':
+          return 'secondary';
+        default:
+          return 'secondary';
+      }
+    }
+    
+    // Fallback to admin_role for admins
     switch (profile?.role) {
       case 'admin_full':
       case 'super_admin':
@@ -46,7 +63,24 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     }
   };
 
-  const getRoleDisplayName = () => {
+  const getUserTypeDisplayName = () => {
+    // Use user_type as primary source
+    if (profile?.user_type) {
+      switch (profile.user_type) {
+        case 'teacher_private':
+          return 'École Privée';
+        case 'teacher_public':
+          return 'École Publique';
+        case 'association':
+          return 'Association';
+        case 'particulier':
+          return 'Client';
+        default:
+          return profile.user_type;
+      }
+    }
+    
+    // Fallback to admin_role for admins and other roles
     switch (profile?.role) {
       case 'admin_full':
         return 'Administrateur';
@@ -102,8 +136,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                     <p className="text-sm font-medium">
                       {profile?.full_name || profile?.first_name || 'Utilisateur'}
                     </p>
-                    <Badge variant={getRoleBadgeVariant()} className="text-xs">
-                      {getRoleDisplayName()}
+                    <Badge variant={getUserTypeBadgeVariant()} className="text-xs">
+                      {getUserTypeDisplayName()}
                     </Badge>
                   </div>
                   <Avatar className="h-8 w-8 cursor-pointer hover:ring-2 hover:ring-primary/20 transition-all">

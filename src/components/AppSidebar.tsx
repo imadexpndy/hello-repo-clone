@@ -47,8 +47,10 @@ export function AppSidebar() {
 
   const isActive = (path: string) => location.pathname === path;
 
-  // Navigation items based on user role
+  // Navigation items based on user type
   const getNavigationItems = () => {
+    // Use user_type as primary source, fallback to admin_role
+    const userType = profile?.user_type;
     const role = profile?.role;
     
     const commonItems = [
@@ -56,6 +58,40 @@ export function AppSidebar() {
       { title: "Profil", url: "/profile", icon: UserCheck },
     ];
 
+    // Check user_type first
+    if (userType) {
+      switch (userType) {
+        case 'teacher_private':
+        case 'teacher_public':
+          return [
+            ...commonItems,
+            { title: "Tableau de Bord", url: "/teacher/dashboard", icon: LayoutDashboard },
+            { title: "Réserver un Spectacle", url: "/teacher/spectacles", icon: () => <img src="/src/assets/Asset 11@4x.png" alt="Spectacles" className="h-4 w-4" /> },
+            { title: "Mes Réservations", url: "/teacher/bookings", icon: ClipboardList },
+            { title: "Mes Devis", url: "/teacher/quotes", icon: FileText },
+            { title: "Mon École", url: "/teacher/school", icon: GraduationCap },
+          ];
+
+        case 'association':
+          return [
+            ...commonItems,
+            { title: "Spectacles", url: "/association/shows", icon: () => <img src="/src/assets/Asset 11@4x.png" alt="Spectacles" className="h-4 w-4" /> },
+            { title: "Réserver", url: "/association/new-booking", icon: Ticket },
+            { title: "Mes Réservations", url: "/association/bookings", icon: ClipboardList },
+            { title: "Mon Association", url: "/association/info", icon: Heart },
+          ];
+
+        case 'particulier':
+          return [
+            ...commonItems,
+            { title: "Spectacles", url: "/b2c/shows", icon: () => <img src="/src/assets/Asset 11@4x.png" alt="Spectacles" className="h-4 w-4" /> },
+            { title: "Mes Réservations", url: "/b2c/bookings", icon: ClipboardList },
+            { title: "Plan des Salles", url: "/b2c/seating", icon: BookOpen },
+          ];
+      }
+    }
+
+    // Fallback to admin_role for admin users and others
     switch (role) {
       case 'admin_full':
       case 'super_admin':
@@ -115,6 +151,20 @@ export function AppSidebar() {
   };
 
   const getDashboardPath = () => {
+    // Use user_type as primary source
+    if (profile?.user_type) {
+      switch (profile.user_type) {
+        case 'teacher_private':
+        case 'teacher_public':
+          return '/teacher';
+        case 'association':
+          return '/association';
+        case 'particulier':
+          return '/b2c';
+      }
+    }
+    
+    // Fallback to admin_role
     switch (profile?.role) {
       case 'admin_full':
       case 'super_admin':
