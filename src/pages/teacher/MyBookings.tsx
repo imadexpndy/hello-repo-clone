@@ -43,6 +43,18 @@ export default function MyBookings() {
 
   const fetchBookings = async () => {
     try {
+      console.log('Fetching bookings for user:', profile?.id);
+      
+      if (!profile?.id) {
+        console.error('No profile ID available');
+        toast({
+          title: "Erreur",
+          description: "Profil utilisateur non disponible",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const { data, error } = await supabase
         .from('bookings')
         .select(`
@@ -67,10 +79,15 @@ export default function MyBookings() {
             )
           )
         `)
-        .eq('user_id', profile?.user_id)
+        .eq('user_id', profile.id)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      console.log('Bookings query result:', { data, error });
+
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
 
       const transformedBookings: Booking[] = (data || []).map((booking: any) => ({
         id: booking.id,
@@ -92,11 +109,12 @@ export default function MyBookings() {
       }));
 
       setBookings(transformedBookings);
+      console.log('Transformed bookings:', transformedBookings);
     } catch (error) {
       console.error('Error fetching bookings:', error);
       toast({
         title: "Erreur",
-        description: "Impossible de charger vos réservations",
+        description: `Impossible de charger vos réservations: ${error.message}`,
         variant: "destructive",
       });
     } finally {
