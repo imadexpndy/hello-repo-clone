@@ -1,26 +1,25 @@
 import React from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import { 
-  Calendar, 
-  Users, 
-  Settings, 
-  LogOut, 
-  ChevronUp, 
-  Building2, 
-  Mail, 
-  Shield, 
-  BarChart3, 
-  Ticket, 
-  ClipboardList, 
-  GraduationCap, 
-  FileText, 
-  Heart, 
-  ShoppingCart, 
-  BookOpen, 
-  LayoutDashboard, 
-  Home, 
-  UserCheck 
+import {
+  Home,
+  UserCheck,
+  Calendar,
+  ClipboardList,
+  Users,
+  Building2,
+  Mail,
+  Shield,
+  BarChart3,
+  LayoutDashboard,
+  Ticket,
+  FileText,
+  GraduationCap,
+  Heart,
+  BookOpen,
+  Receipt,
+  Settings,
+  LogOut,
 } from "lucide-react";
 
 import {
@@ -67,6 +66,9 @@ export function AppSidebar() {
             ...commonItems,
             { title: "Spectacles", url: "/spectacles", icon: () => <img src="/src/assets/Asset 11@4x.png" alt="Spectacles" className="h-4 w-4" /> },
             { title: "Mes Réservations", url: "/reservations", icon: ClipboardList },
+            { title: "Mes Devis", url: "/devis", icon: FileText },
+            { title: "Mes Factures", url: "/factures", icon: Receipt },
+            { title: "Mon École", url: "/school", icon: GraduationCap },
           ];
 
         case 'association':
