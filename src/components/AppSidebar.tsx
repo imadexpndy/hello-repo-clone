@@ -67,6 +67,8 @@ export function AppSidebar() {
             { title: "Spectacles", url: "/spectacles", icon: () => <img src="/src/assets/Asset 11@4x.png" alt="Spectacles" className="h-4 w-4" /> },
             { title: "Sessions", url: "/sessions", icon: Calendar },
             { title: "Nouvelle Réservation", url: "/teacher/new-booking", icon: Ticket },
+            { title: "Mes Réservations", url: "/teacher/bookings", icon: ClipboardList },
+            { title: "Mes Devis", url: "/teacher/quotes", icon: FileText },
           ];
 
         case 'association':

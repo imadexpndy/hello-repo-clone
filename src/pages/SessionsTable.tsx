@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar, MapPin, Users, Clock, Search } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
 
 interface Session {
   id: string;
@@ -28,15 +29,17 @@ export default function SessionsTable() {
   const [searchTerm, setSearchTerm] = useState('');
   const [cityFilter, setCityFilter] = useState('all');
   const [typeFilter, setTypeFilter] = useState('all');
+  const { profile } = useAuth();
 
   useEffect(() => {
     fetchSessions();
-  }, []);
+  }, [profile]);
 
   const fetchSessions = async () => {
     try {
-      console.log('Fetching sessions...');
-      const { data, error } = await supabase
+      console.log('Fetching sessions for user type:', profile?.user_type);
+      
+      let query = supabase
         .from('sessions')
         .select(`
           id,
@@ -49,8 +52,20 @@ export default function SessionsTable() {
           total_capacity,
           status,
           spectacles(title)
-        `)
-        .order('session_date', { ascending: true });
+        `);
+
+      // Filter sessions based on user type
+      if (profile?.user_type === 'teacher_private') {
+        query = query.eq('session_type', 'scolaire-privee');
+      } else if (profile?.user_type === 'teacher_public') {
+        query = query.eq('session_type', 'scolaire-publique');
+      } else if (profile?.user_type === 'association') {
+        query = query.eq('session_type', 'association');
+      } else if (profile?.user_type === 'particulier') {
+        query = query.eq('session_type', 'tout-public');
+      }
+
+      const { data, error } = await query.order('session_date', { ascending: true });
 
       if (error) {
         console.error('Supabase error:', error);
