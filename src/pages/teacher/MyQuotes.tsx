@@ -49,8 +49,6 @@ export default function MyQuotes() {
         .select(`
           id,
           status,
-          quote_pdf_url,
-          quote_generated_at,
           created_at,
           total_amount,
           sessions!inner (
@@ -62,7 +60,6 @@ export default function MyQuotes() {
           )
         `)
         .eq('user_id', profile.id)
-        .not('quote_pdf_url', 'is', null)
         .order('created_at', { ascending: false });
 
       console.log('Quotes query result:', { data, error });
@@ -78,8 +75,8 @@ export default function MyQuotes() {
         session_date: booking.sessions?.session_date || '',
         total_price: booking.total_amount || booking.sessions?.spectacles?.price || 15.00,
         status: booking.status || 'pending',
-        quote_pdf_url: booking.quote_pdf_url || null,
-        quote_generated_at: booking.quote_generated_at || null,
+        quote_pdf_url: null,
+        quote_generated_at: null,
         created_at: booking.created_at
       }));
 
