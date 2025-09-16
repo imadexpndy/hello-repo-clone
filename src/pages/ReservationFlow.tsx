@@ -147,6 +147,10 @@ const ReservationFlow = () => {
       let mappedUserType = '';
       if (userTypeParam) {
         mappedUserType = userTypeParam;
+      } else if (profile?.user_type === 'teacher_private') {
+        // Direct override for teacher_private users
+        mappedUserType = 'scolaire-privee';
+        console.log('🎯 DIRECT OVERRIDE: teacher_private -> scolaire-privee');
       } else {
         // Use profile data for user type detection
         console.log('=== USER TYPE DETECTION DEBUG ===');
@@ -159,10 +163,7 @@ const ReservationFlow = () => {
         if (profile?.user_type) {
           console.log('Using profile.user_type:', profile.user_type);
           // Use the user_type from profile directly
-          if (profile.user_type === 'teacher_private') {
-            mappedUserType = 'scolaire-privee';
-            console.log('✅ Mapped to scolaire-privee from user_type');
-          } else if (profile.user_type === 'teacher_public') {
+          if (profile.user_type === 'teacher_public') {
             mappedUserType = 'scolaire-publique';
             console.log('✅ Mapped to scolaire-publique from user_type');
           } else if (profile.user_type === 'association') {
@@ -203,6 +204,7 @@ const ReservationFlow = () => {
       
       setUserType(mappedUserType);
       console.log('Auto-detected user type for logged user:', mappedUserType);
+      console.log('🔧 Setting userType state to:', mappedUserType);
       
       // If session is pre-selected, go to form, otherwise go to session selection
       if (sessionParam) {
@@ -218,11 +220,11 @@ const ReservationFlow = () => {
       setIsGuest(true);
       console.log('Set default user type for guest: particulier');
     }
-  }, [user, spectacle, navigate, searchParams, selectedSession, userType]);
+  }, [user, profile, spectacle, navigate, searchParams, selectedSession]);
 
   const checkSessionCapacity = async (sessionId: string) => {
     try {
-      const sessions = getUserTypeSessions(spectacleId || '', userType || 'particulier');
+      const sessions = getUserTypeSessions(spectacleId || '', userType || 'particulier', profile?.professional_type);
       const sessionInfo = sessions.find(s => s.id === sessionId);
       
       if (!sessionInfo) {
@@ -589,6 +591,16 @@ const ReservationFlow = () => {
   };
 
   const getAvailableSessions = () => {
+    console.log('=== SESSION FILTERING DEBUG ===');
+    console.log('spectacleId:', spectacleId);
+    console.log('userType state:', userType);
+    console.log('isGuest:', isGuest);
+    console.log('user:', user ? 'logged' : 'guest');
+    console.log('profile in getAvailableSessions:', profile);
+    console.log('profile?.user_type:', profile?.user_type);
+    console.log('profile?.professional_type:', profile?.professional_type);
+    console.log('profile?.role:', profile?.role);
+    
     if (!spectacleId) return [];
     
     // Check URL parameter first, then user profile
@@ -596,16 +608,26 @@ const ReservationFlow = () => {
     const professionalTypeParam = searchParams.get('professionalType');
     let userTypeForSessions = '';
     
+    console.log('URL params - userType:', userTypeParam, 'professionalType:', professionalTypeParam);
+    
     // Priority: URL parameter > user profile > guest default
     if (userTypeParam && userTypeParam !== 'null') {
       userTypeForSessions = userTypeParam;
+      console.log('🔗 Using userType from URL:', userTypeForSessions);
     } else if (professionalTypeParam && professionalTypeParam !== 'null') {
       userTypeForSessions = professionalTypeParam;
+      console.log('🔗 Using professionalType from URL:', userTypeForSessions);
+    } else if (user && profile && profile.user_type === 'teacher_private') {
+      // Direct override for teacher_private users
+      userTypeForSessions = 'scolaire-privee';
+      console.log('🎯 DIRECT OVERRIDE: teacher_private -> scolaire-privee');
     } else if (user && userType && userType !== 'null') {
       userTypeForSessions = userType;
+      console.log('📝 Using userType state:', userTypeForSessions);
     } else {
       // Default for guests and users without specific type
       userTypeForSessions = 'particulier';
+      console.log('🔄 Default fallback -> particulier');
     }
     
     // Map professional types to correct session filtering
@@ -634,40 +656,16 @@ const ReservationFlow = () => {
       }
     }
     
-    // For particulier users, show sessions from all cities (no city filtering)
-    let sessions;
-    if (userTypeForSessions === 'particulier') {
-      sessions = getUserTypeSessions(spectacleId, userTypeForSessions);
-    } else {
-      // Get user's city from profile for professional users
-      const userCity = profile?.city || user?.user_metadata?.city || user?.user_metadata?.location || 'rabat';
-      sessions = getUserTypeSessions(spectacleId, userTypeForSessions, userCity);
-    }
+    console.log('🎯 Final userTypeForSessions:', userTypeForSessions);
     
-    console.log('=== SESSION FILTERING DEBUG ===');
-    console.log('spectacleId:', spectacleId);
-    console.log('userTypeForSessions:', userTypeForSessions);
-    console.log('userTypeParam:', userTypeParam);
-    console.log('professionalTypeParam:', professionalTypeParam);
-    console.log('userType state:', userType);
-    console.log('isGuest:', isGuest);
-    console.log('user:', user ? 'logged' : 'guest');
-    console.log('profile in getAvailableSessions:', profile);
-    console.log('profile?.user_type:', profile?.user_type);
-    console.log('profile?.professional_type:', profile?.professional_type);
-    console.log('profile?.role:', profile?.role);
+    const sessions = getUserTypeSessions(spectacleId, userTypeForSessions, profile?.professional_type);
     console.log('sessionsCount:', sessions.length);
-    console.log('sessions found:', sessions.map(s => ({ id: s.id, audienceType: s.audienceType, date: s.date, location: s.location })));
-
-    // Force console log for debugging
+    console.log('sessions found:', sessions);
+    
     if (sessions.length === 0) {
-      console.error('❌ NO SESSIONS FOUND - Debug info:', {
-        spectacleId,
-        userTypeForSessions,
-        allParams: { userTypeParam, professionalTypeParam, userType, isGuest }
-      });
+      console.log('❌ No sessions found for userType:', userTypeForSessions);
     } else {
-      console.log('✅ Sessions found:', sessions.length);
+      console.log('✅ Sessions found:', sessions.length, 'for userType:', userTypeForSessions);
     }
     
     return sessions;
@@ -679,7 +677,6 @@ const ReservationFlow = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/8 via-primary/4 to-primary/12 p-4 relative overflow-hidden">
-      <UserTypeDiagnostic />
       <div className="min-h-screen flex items-center justify-center">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -923,7 +920,7 @@ const ReservationFlow = () => {
                   </div>
 
                   <div className="grid grid-cols-1 gap-6">
-                    {(userType === 'scolaire-privee' || userType === 'scolaire-publique' || userType === 'association') ? (
+                    {(userType === 'scolaire-privee' || userType === 'scolaire-publique' || userType === 'association' || profile?.user_type === 'teacher_private') ? (
                       // Professional users - show children and accompaniers fields
                       <>
                         <div className="space-y-2">
@@ -1154,9 +1151,29 @@ const ReservationFlow = () => {
                           return;
                         }
 
+                        // Get the mapped session UUID from the database using raw SQL
+                        console.log('Looking up session mapping for:', selectedSession);
+                        const { data: sessionMappingResult, error: mappingError } = await supabase
+                          .from('sessions')
+                          .select(`
+                            id,
+                            session_id_mapping!inner(frontend_id)
+                          `)
+                          .eq('session_id_mapping.frontend_id', selectedSession)
+                          .single();
+
+                        if (mappingError || !sessionMappingResult) {
+                          console.error('Session mapping error:', mappingError);
+                          toast.error('Session non trouvée dans la base de données');
+                          return;
+                        }
+
+                        const sessionUUID = sessionMappingResult.id;
+                        console.log('Found session UUID:', sessionUUID);
+
                         const bookingData = {
                           user_id: user.id,
-                          session_id: selectedSession,
+                          session_id: sessionUUID,
                           spectacle_id: spectacleId,
                           booking_type: 'scolaire-privee',
                           status: 'pending' as const,

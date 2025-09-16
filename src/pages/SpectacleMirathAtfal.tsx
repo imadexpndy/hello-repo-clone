@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useAuth } from '@/hooks/useAuth';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 import VideoPopup from '@/components/VideoPopup';
+import { SessionsList } from '@/components/SessionsList';
+import { getInfoPills, getSidebarInfo } from '@/data/spectacleData';
 
 export default function SpectacleMirathAtfal() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const navigate = useNavigate();
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   const [userType, setUserType] = useState<string>('');
@@ -113,8 +115,8 @@ export default function SpectacleMirathAtfal() {
     return null;
   };
 
-  const goBackToSelection = () => {
-    window.location.href = '/user-type-selection';
+  const goBackToSpectacles = () => {
+    navigate('/spectacles');
   };
 
   // Review form handlers
@@ -435,7 +437,7 @@ export default function SpectacleMirathAtfal() {
               </div>
             </div>
             <button 
-              onClick={goBackToSelection}
+              onClick={goBackToSpectacles}
               style={{
                 background: 'transparent',
                 border: '1px solid #ccc',
@@ -464,30 +466,11 @@ export default function SpectacleMirathAtfal() {
               <h1 className="hero-title">Mirath Atfal</h1>
               <p className="hero-subtitle">Découvrez le riche patrimoine culturel marocain à travers les yeux des enfants</p>
               <div className="info-pills">
-                <span className="info-pill">
-                  <i className="fas fa-clock"></i>55 minutes
-                </span>
-                <span className="info-pill">
-                  <i className="fas fa-users"></i>4 comédiens
-                </span>
-                {/* Debug conditional rendering */}
-                {/* Show study levels only for private schools */}
-                {userType === 'professional' && professionalType === 'scolaire-privee' && (
-                  <span className="info-pill">
-                    <i className="fas fa-child"></i>CE2, CM1, CM2, Collège
+                {getInfoPills('mirath-atfal', userType, professionalType)?.map((pill, index) => (
+                  <span key={index} className="info-pill">
+                    <i className={pill.icon}></i>{pill.text}
                   </span>
-                )}
-                {/* Show age ranges for public schools, associations, and particulier */}
-                {(userType === 'particulier' || 
-                  (userType === 'professional' && professionalType === 'scolaire-publique') ||
-                  (userType === 'professional' && professionalType === 'association')) && (
-                  <span className="info-pill">
-                    <i className="fas fa-child"></i>8 ans et +
-                  </span>
-                )}
-                <span className="info-pill">
-                  <i className="fas fa-theater-masks"></i>Patrimoine culturel
-                </span>
+                ))}
               </div>
               <div className="hero-buttons">
                 <button className="btn-primary" onClick={handleReservationClick}>
@@ -792,133 +775,12 @@ export default function SpectacleMirathAtfal() {
                   Séances Disponibles
                 </h3>
                 
-                {/* Tout public sessions - show for particulier */}
-                {(userType === 'particulier' || !userType) && (
-                  <>
-                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Samedi 08 Novembre 2025 à 15:00</div>
-                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>Casablanca, Théâtre Zefzaf</div>
-                      <button 
-                        onClick={() => window.location.href = '/reservation/mirath-atfal?session=casablanca-nov-8-15h00'}
-                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
-                      >
-                        <i className="fas fa-ticket-alt"></i>
-                        Réserver
-                      </button>
-                    </div>
-                    
-                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Samedi 15 Novembre 2025 à 15:00</div>
-                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>Rabat, Théâtre Bahnini</div>
-                      <button 
-                        onClick={handleReservationClick}
-                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
-                      >
-                        <i className="fas fa-ticket-alt"></i>
-                        Réserver
-                      </button>
-                    </div>
-                  </>
-                )}
-                
-                {/* Private school sessions - show for scolaire-privee */}
-                {professionalType === 'scolaire-privee' && (
-                  <>
-                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Lundi 10 Novembre 2025 à 09:30</div>
-                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>Casablanca, Théâtre Zefzaf</div>
-                      <button 
-                        onClick={handleReservationClick}
-                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
-                      >
-                        <i className="fas fa-ticket-alt"></i>
-                        Réserver
-                      </button>
-                    </div>
-                    
-                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Lundi 10 Novembre 2025 à 14:30</div>
-                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>Casablanca, Théâtre Zefzaf</div>
-                      <button 
-                        onClick={handleReservationClick}
-                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
-                      >
-                        <i className="fas fa-ticket-alt"></i>
-                        Réserver
-                      </button>
-                    </div>
-                  </>
-                )}
-                
-                {/* Public school sessions - show for scolaire-publique */}
-                {professionalType === 'scolaire-publique' && (
-                  <>
-                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 13 Novembre 2025 à 09:30</div>
-                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>Casablanca, Théâtre Zefzaf</div>
-                      <button 
-                        onClick={() => window.location.href = '/reservation/mirath-atfal?session=casablanca-nov-11-09h30'}
-                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
-                      >
-                        <i className="fas fa-ticket-alt"></i>
-                        Réserver
-                      </button>
-                    </div>
-                    
-                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 13 Novembre 2025 à 14:30</div>
-                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>Rabat, Théâtre Bahnini</div>
-                      <button 
-                        onClick={() => window.location.href = '/reservation/mirath-atfal?session=rabat-nov-13-14h30'}
-                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
-                      >
-                        <i className="fas fa-ticket-alt"></i>
-                        Réserver
-                      </button>
-                    </div>
-                  </>
-                )}
-                
-                {/* Association sessions - show for association */}
-                {professionalType === 'association' && (
-                  <>
-                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mardi 11 Novembre 2025 à 14:30</div>
-                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>Casablanca, Théâtre Zefzaf</div>
-                      <button 
-                        onClick={() => window.location.href = '/reservation/mirath-atfal?session=casablanca-nov-11-14h30'}
-                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
-                      >
-                        <i className="fas fa-ticket-alt"></i>
-                        Réserver
-                      </button>
-                    </div>
-                    
-                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Vendredi 14 Novembre 2025 à 09:30</div>
-                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>Rabat, Théâtre Bahnini</div>
-                      <button 
-                        onClick={() => window.location.href = '/reservation/mirath-atfal?session=rabat-nov-14-09h30'}
-                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
-                      >
-                        <i className="fas fa-ticket-alt"></i>
-                        Réserver
-                      </button>
-                    </div>
-                    
-                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Vendredi 14 Novembre 2025 à 14:30</div>
-                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>Rabat - Salle Allal El Fassi</div>
-                      <button 
-                        onClick={() => window.location.href = '/reservation/mirath-atfal?session=rabat-nov-14-14h30'}
-                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
-                      >
-                        <i className="fas fa-ticket-alt"></i>
-                        Réserver
-                      </button>
-                    </div>
-                  </>
-                )}
+                <SessionsList
+                  spectacleId="mirath-atfal"
+                  userType={userType || 'particulier'}
+                  professionalType={professionalType}
+                  onReservationClick={handleReservationClick}
+                />
               </div>
 
               {/* Booking Info Card */}
@@ -927,41 +789,12 @@ export default function SpectacleMirathAtfal() {
                   <i className="fas fa-info-circle"></i>
                   Informations pratiques
                 </h3>
-                <div className="info-item">
-                  <i className="fas fa-clock"></i>
-                  <span>Durée : 55 minutes</span>
-                </div>
-                <div className="info-item">
-                  <i className="fas fa-users"></i>
-                  <span>Distribution : 4 comédiens</span>
-                </div>
-                {/* Age recommendation - hidden for private schools */}
-                {professionalType !== 'scolaire-privee' && (
-                  <div className="info-item">
-                    <i className="fas fa-child"></i>
-                    <span>Âge recommandé : 8 ans et +</span>
+                {getSidebarInfo('mirath-atfal', userType, professionalType)?.map((info, index) => (
+                  <div key={index} className="info-item">
+                    <i className={info.icon}></i>
+                    <span>{info.label} : {info.value}</span>
                   </div>
-                )}
-                
-                {/* Study level - visible only for private schools */}
-                {professionalType === 'scolaire-privee' && (
-                  <div className="info-item">
-                    <i className="fas fa-graduation-cap"></i>
-                    <span>Niveaux scolaires : CE2, CM1, CM2, Collège</span>
-                  </div>
-                )}
-                <div className="info-item">
-                  <i className="fas fa-calendar"></i>
-                  <span>Période : Novembre 2025</span>
-                </div>
-                <div className="info-item">
-                  <i className="fas fa-heart"></i>
-                  <span>Genre : Patrimoine culturel</span>
-                </div>
-                <div className="info-item">
-                  <i className="fas fa-language"></i>
-                  <span>Langue : Français</span>
-                </div>
+                ))}
               </div>
 
             </div>

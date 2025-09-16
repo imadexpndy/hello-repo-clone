@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import VideoPopup from '@/components/VideoPopup';
+import { SessionsList } from '@/components/SessionsList';
+import { getInfoPills, getSidebarInfo } from '@/data/spectacleData';
 
 export default function SpectacleTemplate() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
+  const navigate = useNavigate();
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   const [userType, setUserType] = useState<string>('');
   const [professionalType, setProfessionalType] = useState<string>('');
@@ -74,8 +78,8 @@ export default function SpectacleTemplate() {
     return null;
   };
 
-  const goBackToSelection = () => {
-    window.location.href = '/user-type-selection';
+  const goBackToSpectacles = () => {
+    navigate('/spectacles');
   };
 
   const userTypeDisplay = getUserTypeDisplay();
@@ -368,7 +372,7 @@ export default function SpectacleTemplate() {
               </div>
             </div>
             <button 
-              onClick={goBackToSelection}
+              onClick={goBackToSpectacles}
               style={{
                 background: 'transparent',
                 border: '1px solid #ccc',
@@ -397,30 +401,11 @@ export default function SpectacleTemplate() {
               <h1 className="hero-title">Le Petit Prince</h1>
               <p className="hero-subtitle">Un voyage poétique à travers les étoiles et les rencontres extraordinaires</p>
               <div className="info-pills">
-                <span className="info-pill">
-                  <i className="fas fa-clock"></i>60 minutes
-                </span>
-                <span className="info-pill">
-                  <i className="fas fa-users"></i>2 comédiens
-                </span>
-                {/* Debug conditional rendering */}
-                {/* Show study levels only for private schools */}
-                {userType === 'professional' && professionalType === 'scolaire-privee' && (
-                  <span className="info-pill">
-                    <i className="fas fa-child"></i>CM1, CM2, Collège, Lycée
+                {getInfoPills('le-petit-prince', userType, professionalType)?.map((pill, index) => (
+                  <span key={index} className="info-pill">
+                    <i className={pill.icon}></i>{pill.text}
                   </span>
-                )}
-                {/* Show age ranges for public schools, associations, and particulier */}
-                {(userType === 'particulier' || 
-                  (userType === 'professional' && professionalType === 'scolaire-publique') ||
-                  (userType === 'professional' && professionalType === 'association')) && (
-                  <span className="info-pill">
-                    <i className="fas fa-child"></i>7 ans et +
-                  </span>
-                )}
-                <span className="info-pill">
-                  <i className="fas fa-theater-masks"></i>Conte / Dessin sur Table
-                </span>
+                ))}
               </div>
               <div className="hero-buttons">
                 <button className="btn-primary" onClick={handleReservation}>
@@ -713,145 +698,12 @@ export default function SpectacleTemplate() {
                   Séances Disponibles
                 </h3>
                 
-                {/* Tout public sessions - show for particulier */}
-                {(userType === 'particulier' || !userType) && (
-                  <>
-                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Samedi 04 Octobre 2025</div>
-                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>15:00 - Rabat, Théâtre Bahnini</div>
-                      <button 
-                        onClick={() => window.location.href = '/reservation/le-petit-prince?session=rabat-oct-4-15h00'}
-                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
-                      >
-                        <i className="fas fa-ticket-alt"></i>
-                        Réserver
-                      </button>
-                    </div>
-                    
-                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Samedi 11 Octobre 2025</div>
-                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>15:00 - Casablanca, Complexe El Hassani</div>
-                      <button 
-                        onClick={() => window.location.href = '/reservation/le-petit-prince?session=casablanca-oct-11-15h00'}
-                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
-                      >
-                        <i className="fas fa-ticket-alt"></i>
-                        Réserver
-                      </button>
-                    </div>
-                  </>
-                )}
-                
-                {/* Private school sessions - show for scolaire-privee */}
-                {professionalType === 'scolaire-privee' && (
-                  <>
-                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Lundi 06 Octobre 2025</div>
-                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09:30 - Rabat, Théâtre Bahnini</div>
-                      <button 
-                        onClick={() => window.location.href = '/reservation/le-petit-prince?session=rabat-oct-6-09h30'}
-                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
-                      >
-                        <i className="fas fa-ticket-alt"></i>
-                        Réserver
-                      </button>
-                    </div>
-                    
-                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Lundi 06 Octobre 2025</div>
-                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14:30 - Rabat, Théâtre Bahnini</div>
-                      <button 
-                        onClick={() => window.location.href = '/reservation/le-petit-prince?session=rabat-oct-6-14h30'}
-                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
-                      >
-                        <i className="fas fa-ticket-alt"></i>
-                        Réserver
-                      </button>
-                    </div>
-                    
-                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Vendredi 10 Octobre 2025</div>
-                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09:30 - Casablanca, Complexe El Hassani</div>
-                      <button 
-                        onClick={() => window.location.href = '/reservation/le-petit-prince?session=casablanca-oct-10-09h30'}
-                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
-                      >
-                        <i className="fas fa-ticket-alt"></i>
-                        Réserver
-                      </button>
-                    </div>
-                    
-                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Vendredi 10 Octobre 2025</div>
-                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14:30 - Casablanca, Complexe El Hassani</div>
-                      <button 
-                        onClick={() => window.location.href = '/reservation/le-petit-prince?session=casablanca-oct-10-14h30'}
-                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
-                      >
-                        <i className="fas fa-ticket-alt"></i>
-                        Réserver
-                      </button>
-                    </div>
-                  </>
-                )}
-                
-                {/* Public school sessions - show for scolaire-publique */}
-                {professionalType === 'scolaire-publique' && (
-                  <>
-                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mardi 07 Octobre 2025</div>
-                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14:30 - Rabat, Théâtre Bahnini</div>
-                      <button 
-                        onClick={() => window.location.href = '/reservation/le-petit-prince?session=rabat-oct-7-14h30'}
-                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
-                      >
-                        <i className="fas fa-ticket-alt"></i>
-                        Réserver
-                      </button>
-                    </div>
-                    
-                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 09 Octobre 2025</div>
-                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>09:30 - Casablanca, Complexe El Hassani</div>
-                      <button 
-                        onClick={() => window.location.href = '/reservation/le-petit-prince?session=casablanca-oct-9-09h30'}
-                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
-                      >
-                        <i className="fas fa-ticket-alt"></i>
-                        Réserver
-                      </button>
-                    </div>
-                  </>
-                )}
-                
-                {/* Association sessions - show for association */}
-                {professionalType === 'association' && (
-                  <>
-                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Mardi 07 Octobre 2025</div>
-                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14:30 - Rabat, Théâtre Bahnini</div>
-                      <button 
-                        onClick={() => window.location.href = '/reservation/le-petit-prince?session=rabat-oct-7-14h30'}
-                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
-                      >
-                        <i className="fas fa-ticket-alt"></i>
-                        Réserver
-                      </button>
-                    </div>
-                    
-                    <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 09 Octobre 2025</div>
-                      <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>14:30 - Casablanca, Complexe El Hassani</div>
-                      <button 
-                        onClick={() => window.location.href = '/reservation/le-petit-prince?session=casablanca-oct-9-14h30'}
-                        style={{background: 'var(--primary-color)', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '0.5rem', fontSize: '0.9rem', fontWeight: 500, textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '0.25rem', transition: 'all 0.3s ease', fontFamily: 'Raleway, sans-serif', cursor: 'pointer'}}
-                      >
-                        <i className="fas fa-ticket-alt"></i>
-                        Réserver
-                      </button>
-                    </div>
-                  </>
-                )}
+                <SessionsList
+                  spectacleId="le-petit-prince"
+                  userType={userType || 'particulier'}
+                  professionalType={professionalType}
+                  onReservationClick={handleReservation}
+                />
               </div>
 
               {/* Booking Info Card */}
@@ -860,55 +712,14 @@ export default function SpectacleTemplate() {
                   <i className="fas fa-info-circle"></i>
                   Informations pratiques
                 </h3>
-                <div className="info-item">
-                  <i className="fas fa-clock"></i>
-                  <span>Durée : 60 minutes</span>
-                </div>
-                <div className="info-item">
-                  <i className="fas fa-users"></i>
-                  <span>Distribution : 2 comédiens</span>
-                </div>
-                {/* Age recommendation - hidden for private schools */}
-                {professionalType !== 'scolaire-privee' && (
-                  <div className="info-item">
-                    <i className="fas fa-child"></i>
-                    <span>Âge recommandé : 7 ans et +</span>
+                {getSidebarInfo('le-petit-prince', userType, professionalType)?.map((info, index) => (
+                  <div key={index} className="info-item">
+                    <i className={info.icon}></i>
+                    <span>{info.label} : {info.value}</span>
                   </div>
-                )}
-                
-                {/* Study level - visible only for private schools */}
-                {professionalType === 'scolaire-privee' && (
-                  <div className="info-item">
-                    <i className="fas fa-graduation-cap"></i>
-                    <span>Niveau d'étude : Primaire (CE1-CM2)</span>
-                  </div>
-                )}
-                <div className="info-item">
-                  <i className="fas fa-calendar"></i>
-                  <span>Période : Octobre 2025</span>
-                </div>
-                <div className="info-item">
-                  <i className="fas fa-language"></i>
-                  <span>Langue : Français</span>
-                </div>
-                <div className="info-item">
-                  <i className="fas fa-heart"></i>
-                  <span>Genre : Conte / Dessin sur Sable</span>
-                </div>
+                ))}
               </div>
 
-              {/* Reservation Card */}
-              <div className="sidebar-card">
-                <h3>
-                  <i className="fas fa-ticket-alt"></i>
-                  Réservation
-                </h3>
-                <p style={{color: 'var(--text-light)', marginBottom: '1.5rem'}}>Réservez dès maintenant vos places pour cette adaptation magique du Petit Prince.</p>
-                <button className="btn-primary w-100" onClick={handleReservation} style={{width: '100%'}}>
-                  <i className="fas fa-ticket-alt"></i>
-                  {user ? 'Réserver Maintenant' : 'Se connecter pour réserver'}
-                </button>
-              </div>
             </div>
           </div>
         </div>

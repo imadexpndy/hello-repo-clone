@@ -128,9 +128,9 @@ const spectacleSessions: { [key: string]: SpectacleSession[] } = {
 };
 
 export default function ReservationWithSessions() {
-  const { spectacleId } = useParams<{ spectacleId: string }>();
-  const { user } = useAuth();
+  const { spectacleId } = useParams();
   const navigate = useNavigate();
+  const { user, profile } = useAuth();
   
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -161,7 +161,7 @@ export default function ReservationWithSessions() {
     if (spectacleId) {
       // Get sessions for particulier users (tout-public sessions)
       const userType = 'particulier';
-      const sessions = getUserTypeSessions(spectacleId, userType);
+      const sessions = getUserTypeSessions(spectacleId, userType, profile?.professional_type);
       
       // Convert sessions to SpectacleSession format
       const convertedSessions: SpectacleSession[] = sessions.map(session => ({

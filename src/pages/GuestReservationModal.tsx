@@ -54,7 +54,7 @@ export default function GuestReservationModal({
 
   const handleGuestReservation = () => {
     // Load available sessions for particulier users
-    const sessions = getUserTypeSessions(spectacleId, 'particulier');
+    const sessions = getUserTypeSessions(spectacleId, 'particulier', undefined);
     setAvailableSessions(sessions);
     setStep('guest-form');
   };

@@ -7,30 +7,48 @@ import { useAuth } from '@/hooks/useAuth';
 
 export default function UserTypeSelection() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
 
-  // Redirect logged-in users directly to spectacles
+  // Only redirect logged-in users if they have a complete profile
   useEffect(() => {
-    if (user) {
+    if (user && profile && profile.user_type) {
+      console.log('User logged in with profile, redirecting to spectacles');
       navigate('/spectacles');
     }
-  }, [user, navigate]);
+  }, [user, profile, navigate]);
 
-  // Don't render the selection page if user is logged in
-  if (user) {
+  // Don't render the selection page if user is logged in with complete profile
+  if (user && profile && profile.user_type) {
     return null;
   }
 
   const handleParticulierChoice = () => {
-    // Set user type in session storage for later use
-    sessionStorage.setItem('userType', 'particulier');
-    // Dispatch custom event to notify components of user type change
-    window.dispatchEvent(new CustomEvent('userTypeChanged'));
-    navigate('/spectacles');
+    console.log('Particulier button clicked');
+    try {
+      // Clear any existing storage data first
+      sessionStorage.clear();
+      localStorage.removeItem('userType');
+      localStorage.removeItem('professionalType');
+      
+      // Set user type in session storage for later use
+      sessionStorage.setItem('userType', 'particulier');
+      // Dispatch custom event to notify components of user type change
+      window.dispatchEvent(new CustomEvent('userTypeChanged'));
+      console.log('Navigating to /spectacles');
+      navigate('/spectacles');
+    } catch (error) {
+      console.error('Error in handleParticulierChoice:', error);
+    }
   };
 
   const handleProfessionalChoice = () => {
-    navigate('/professional-type-selection');
+    console.log('Professional button clicked');
+    try {
+      console.log('Navigating to /professional-type-selection');
+      navigate('/professional-type-selection');
+    } catch (error) {
+      console.error('Error in handleProfessionalChoice:', error);
+    }
   };
 
   return (

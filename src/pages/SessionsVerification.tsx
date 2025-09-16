@@ -3,11 +3,13 @@ import { SESSIONS, getUserTypeSessions } from '../data/sessions';
 
 const SessionsVerification: React.FC = () => {
   const [selectedUserType, setSelectedUserType] = useState<string>('all');
+  const [selectedProfessionalType, setSelectedProfessionalType] = useState<string>('all');
   const [selectedCity, setSelectedCity] = useState<string>('all');
   const [selectedSpectacle, setSelectedSpectacle] = useState<string>('all');
 
   // Get unique values for filters
   const userTypes = ['all', 'tout-public', 'scolaire-privee', 'scolaire-publique', 'association'];
+  const professionalTypes = ['all', 'professional', 'non-professional'];
   const cities = ['all', ...Array.from(new Set(SESSIONS.map(s => s.location)))];
   const spectacles = ['all', ...Array.from(new Set(SESSIONS.map(s => s.spectacleId)))];
 

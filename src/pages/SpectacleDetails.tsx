@@ -212,16 +212,6 @@ const SpectacleDetails = () => {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <h3 className="text-2xl font-bold mb-4 text-gray-900" style={{ fontFamily: 'Amatic SC, cursive' }}>
-                Distribution
-              </h3>
-              <ul className="space-y-2">
-                {spectacle.cast.map((actor, index) => (
-                  <li key={index} className="text-gray-700">• {actor}</li>
-                ))}
-              </ul>
-            </div>
 
             <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 rounded-lg p-6 text-center">
               <h3 className="text-2xl font-bold mb-4 text-black" style={{ fontFamily: 'Amatic SC, cursive' }}>

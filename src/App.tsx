@@ -74,6 +74,7 @@ import SessionsTable from "./pages/SessionsTable";
 import SessionsVerification from "./pages/SessionsVerification";
 import SeedDataPage from "./pages/SeedDataPage";
 import MyReservations from "./pages/MyReservations";
+import MesDevis from "./pages/MesDevis";
 import TestReservations from "./pages/TestReservations";
 import Payment from "./pages/Payment";
 import PaymentMethodSelection from "./pages/PaymentMethodSelection";
@@ -306,7 +307,7 @@ const App = () => {
                 path="/teacher/quotes" 
                 element={
                   <ProtectedRoute requiredRole="teacher_private">
-                    <MyQuotes />
+                    <MesDevis />
                   </ProtectedRoute>
                 } 
               />
@@ -314,7 +315,15 @@ const App = () => {
                 path="/teacher/quotes" 
                 element={
                   <ProtectedRoute requiredRole="teacher_public">
-                    <MyQuotes />
+                    <MesDevis />
+                  </ProtectedRoute>
+                } 
+              />
+              <Route 
+                path="/mes-devis" 
+                element={
+                  <ProtectedRoute allowedRoles={['teacher_private', 'teacher_public']}>
+                    <MesDevis />
                   </ProtectedRoute>
                 } 
               />

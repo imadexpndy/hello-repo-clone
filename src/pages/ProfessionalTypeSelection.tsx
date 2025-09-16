@@ -8,18 +8,29 @@ export default function ProfessionalTypeSelection() {
   const navigate = useNavigate();
 
   const handleProfessionalTypeChoice = (type: string) => {
-    // Set professional type in session storage
-    sessionStorage.setItem('userType', 'professional');
-    sessionStorage.setItem('professionalType', type);
-    
-    console.log('ProfessionalTypeSelection - Setting:', {
-      userType: 'professional',
-      professionalType: type
-    });
-    
-    // Dispatch custom event to notify components of user type change
-    window.dispatchEvent(new CustomEvent('userTypeChanged'));
-    navigate('/spectacles');
+    console.log(`${type} button clicked`);
+    try {
+      // Clear any existing storage data first
+      sessionStorage.clear();
+      localStorage.removeItem('userType');
+      localStorage.removeItem('professionalType');
+      
+      // Set professional type in session storage
+      sessionStorage.setItem('userType', 'professional');
+      sessionStorage.setItem('professionalType', type);
+      
+      console.log('ProfessionalTypeSelection - Setting:', {
+        userType: 'professional',
+        professionalType: type
+      });
+      
+      // Dispatch custom event to notify components of user type change
+      window.dispatchEvent(new CustomEvent('userTypeChanged'));
+      console.log('Navigating to /spectacles');
+      navigate('/spectacles');
+    } catch (error) {
+      console.error(`Error in handleProfessionalTypeChoice for ${type}:`, error);
+    }
   };
 
   const goBack = () => {

@@ -107,6 +107,17 @@ export default function Spectacles() {
     
     console.log('=== SPECTACLE VISIBILITY DEBUG ===');
     console.log('Current user type:', detectedUserType);
+    
+    // Hide Arabic Le Petit Prince for particulier users
+    if (detectedUserType === 'particulier' || detectedUserType === 'individual') {
+      if (arabicCard) {
+        arabicCard.style.display = 'none';
+      }
+    } else {
+      if (arabicCard) {
+        arabicCard.style.display = 'block';
+      }
+    }
     console.log('Current professional type:', detectedProfessionalType);
     console.log('French card found:', !!frenchCard);
     console.log('Arabic card found:', !!arabicCard);
@@ -278,8 +289,16 @@ export default function Spectacles() {
   };
 
   const goBackToSelection = () => {
-    sessionStorage.removeItem('userType');
-    sessionStorage.removeItem('professionalType');
+    // Clear all user type data from storage
+    sessionStorage.clear();
+    localStorage.removeItem('userType');
+    localStorage.removeItem('professionalType');
+    
+    // Reset local state
+    setUserType('');
+    setProfessionalType('');
+    
+    // Navigate to user type selection
     navigate('/user-type-selection');
   };
 
@@ -292,11 +311,21 @@ export default function Spectacles() {
       return;
     }
     
-    // Check if user has made a type selection, if not redirect to selection page
-    if (!userType && !user) {
-      navigate('/user-type-selection');
+    // Check sessionStorage for user type first
+    const storedUserType = sessionStorage.getItem('userType');
+    if (storedUserType && !userType) {
+      setUserType(storedUserType);
       return;
     }
+    
+    // Only redirect if no user type is found after a delay to allow state to initialize
+    const redirectTimer = setTimeout(() => {
+      if (!userType && !user && !sessionStorage.getItem('userType')) {
+        navigate('/user-type-selection');
+      }
+    }, 100);
+
+    return () => clearTimeout(redirectTimer);
 
     // Immediate filtering for non-private schools - hide French Le Petit Prince
     if (userType === 'professional' && professionalType !== 'scolaire-privee') {
@@ -378,6 +407,12 @@ export default function Spectacles() {
       if (authGateSection) authGateSection.style.display = 'none';
       if (spectaclesSection) spectaclesSection.style.display = 'block';
     };
+
+    // Make goBackToSelection available globally for inline onclick handlers
+    (window as any).goBackToSelection = goBackToSelection;
+    
+    // Debug: Log function exposure
+    console.log('goBackToSelection function exposed:', typeof (window as any).goBackToSelection);
 
     // Initialize JavaScript functionality after DOM is ready
     const initializeDropdown = () => {
@@ -1425,7 +1460,7 @@ export default function Spectacles() {
                 <span style="color: #666; margin-left: 8px; font-size: 14px;">• ${userTypeInfo.description}</span>
               </div>
             </div>
-            <button onclick="goBackToSelection()" style="background: transparent; border: 1px solid #ccc; color: #666; padding: 8px 16px; border-radius: 6px; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+            <button onclick="window.goBackToSelection()" style="background: transparent; border: 1px solid #ccc; color: #666; padding: 8px 16px; border-radius: 6px; font-size: 14px; cursor: pointer; display: flex; align-items: center; gap: 6px;">
               <i class="fas fa-arrow-left"></i>
               Changer de profil
             </button>
@@ -2037,7 +2072,7 @@ export default function Spectacles() {
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display antigone-age-study" id="antigone-age-study" data-age="12 ans et +" data-study-level="Collège, Lycée">
                           <i class="fas fa-child" style="color: #6f42c1;"></i>
-                          <span class="age-level-text">Collège, Lycée</span>
+                          <span class="age-level-text">12 ans et +</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-users" style="color: #6f42c1;"></i>

@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import VideoPopup from '@/components/VideoPopup';
+import { SessionsList } from '@/components/SessionsList';
+import { getInfoPills, getSidebarInfo } from '@/data/spectacleData';
 
 export default function SpectacleTaraSurLaLune() {
   const { user, profile } = useAuth();
+  const navigate = useNavigate();
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   const [userType, setUserType] = useState<string>('');
   const [professionalType, setProfessionalType] = useState<string>('');
-  
+
   // Review form state
   const [reviewForm, setReviewForm] = useState({
     name: '',
@@ -28,44 +32,48 @@ export default function SpectacleTaraSurLaLune() {
       }
     };
 
+    loadStylesheet('https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&family=Raleway:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Kalam:wght@300;400;700&display=swap');
     loadStylesheet('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css');
-    loadStylesheet('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700&display=swap');
+    loadStylesheet('https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css');
   }, []);
 
   useEffect(() => {
-    // Check user type from profile data first, then fallback to session storage
+    // Check user type from profile data instead of storage
     const checkUserType = () => {
-      if (profile?.user_type) {
-        // Use profile data as the authoritative source
-        const profileUserType = profile.user_type;
-        const profileProfessionalType = profile.professional_type;
-        
-        console.log('Debug - Profile User Type:', profileUserType);
-        console.log('Debug - Profile Professional Type:', profileProfessionalType);
-        
-        // Map profile user types to display format
-        if (profileUserType === 'particulier') {
-          setUserType('particulier');
-          setProfessionalType('');
-        } else if (profileUserType === 'teacher_private' || profileUserType === 'teacher_public' || profileUserType === 'association') {
-          setUserType('professional');
-          setProfessionalType(profileProfessionalType || '');
-        }
+      let detectedUserType = '';
+      let detectedProfessionalType = '';
+      
+      if (profile?.user_type === 'teacher_private') {
+        detectedUserType = 'professional';
+        detectedProfessionalType = 'scolaire-privee';
+      } else if (profile?.user_type === 'teacher_public') {
+        detectedUserType = 'professional';
+        detectedProfessionalType = 'scolaire-publique';
+      } else if (profile?.user_type === 'association') {
+        detectedUserType = 'professional';
+        detectedProfessionalType = 'association';
+      } else if (profile?.professional_type) {
+        detectedUserType = 'professional';
+        detectedProfessionalType = profile.professional_type;
       } else {
-        // Fallback to session storage for backward compatibility
-        const storedUserType = sessionStorage.getItem('userType') || localStorage.getItem('userType');
-        const storedProfessionalType = sessionStorage.getItem('professionalType') || localStorage.getItem('professionalType');
-
-        console.log('Debug - Session User Type:', storedUserType);
-        console.log('Debug - Session Professional Type:', storedProfessionalType);
-
-        setUserType(storedUserType || '');
-        setProfessionalType(storedProfessionalType || '');
+        // Fallback to storage for non-logged users
+        detectedUserType = sessionStorage.getItem('userType') || localStorage.getItem('userType') || 'particulier';
+        detectedProfessionalType = sessionStorage.getItem('professionalType') || localStorage.getItem('professionalType') || '';
       }
+
+      console.log('Debug - User Type:', detectedUserType);
+      console.log('Debug - Professional Type:', detectedProfessionalType);
+      console.log('Debug - Profile user_type:', profile?.user_type);
+      console.log('Debug - Profile professional_type:', profile?.professional_type);
+
+      setUserType(detectedUserType);
+      setProfessionalType(detectedProfessionalType);
     };
 
+    // Initial check
     checkUserType();
 
+    // Set up event listeners
     const handleStorageChange = () => checkUserType();
     const handleUserTypeChange = () => checkUserType();
 
@@ -103,8 +111,9 @@ export default function SpectacleTaraSurLaLune() {
     return null;
   };
 
-  const goBackToSelection = () => {
-    window.location.href = '/user-type-selection';
+  const goBackToSpectacles = () => {
+    // Simply navigate back to spectacles page without clearing user type data
+    navigate('/spectacles');
   };
 
   // Review form handlers
@@ -425,7 +434,7 @@ export default function SpectacleTaraSurLaLune() {
               </div>
             </div>
             <button 
-              onClick={goBackToSelection}
+              onClick={goBackToSpectacles}
               style={{
                 background: 'transparent',
                 border: '1px solid #ccc',
@@ -452,32 +461,13 @@ export default function SpectacleTaraSurLaLune() {
           <div className="hero-left">
             <div className="hero-content">
               <h1 className="hero-title">Tara sur la Lune</h1>
-              <p className="hero-subtitle">Une aventure spatiale captivante avec Tara qui découvre les mystères de la lune</p>
+              <p className="hero-subtitle">Une aventure spatiale extraordinaire qui éveille l'imagination</p>
               <div className="info-pills">
-                <span className="info-pill">
-                  <i className="fas fa-clock"></i>55 mins
-                </span>
-                <span className="info-pill">
-                  <i className="fas fa-users"></i>1 comédien
-                </span>
-                {/* Debug conditional rendering */}
-                {/* Show study levels only for private schools */}
-                {userType === 'professional' && professionalType === 'scolaire-privee' && (
-                  <span className="info-pill">
-                    <i className="fas fa-child"></i>Maternelles, Primaires
+                {getInfoPills('tara-sur-la-lune', userType, professionalType)?.map((pill, index) => (
+                  <span key={index} className="info-pill">
+                    <i className={pill.icon}></i>{pill.text}
                   </span>
-                )}
-                {/* Show age ranges for public schools, associations, and particulier */}
-                {(userType === 'particulier' || 
-                  (userType === 'professional' && professionalType === 'scolaire-publique') ||
-                  (userType === 'professional' && professionalType === 'association')) && (
-                  <span className="info-pill">
-                    <i className="fas fa-child"></i>5 ans et +
-                  </span>
-                )}
-                <span className="info-pill">
-                  <i className="fas fa-theater-masks"></i>Théâtre avec projection
-                </span>
+                ))}
               </div>
               <div className="hero-buttons">
                 <button className="btn-primary" onClick={handleReservation}>
@@ -786,7 +776,7 @@ export default function SpectacleTaraSurLaLune() {
                 {(userType === 'particulier' || !userType) && (
                   <>
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Samedi 18 Octobre 2025 à 15:00</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Samedi 23 Novembre 2025 à 15:00</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>Casablanca, Complexe El Hassani</div>
                       <button 
                         onClick={() => window.location.href = '/reservation/tara-sur-la-lune?session=casablanca-oct-18-15h00'}
@@ -798,7 +788,7 @@ export default function SpectacleTaraSurLaLune() {
                     </div>
                     
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Samedi 11 Octobre 2025 à 15:00</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Samedi 30 Novembre 2025 à 15:00</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>Rabat, Théâtre Bahnini</div>
                       <button 
                         onClick={handleReservation}
@@ -816,7 +806,7 @@ export default function SpectacleTaraSurLaLune() {
                   <>
                     {/* Casablanca Sessions */}
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Lundi 13 Octobre 2025 à 14:30</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Lundi 24 Novembre 2025 à 10:00</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>Casablanca, Complexe El Hassani</div>
                       <button 
                         onClick={handleReservation}
@@ -829,7 +819,7 @@ export default function SpectacleTaraSurLaLune() {
                     
                     {/* Rabat Sessions */}
                     <div className="showtime-item" style={{background: 'var(--bg-light)', borderRadius: '0.5rem', padding: '1rem', marginBottom: '1rem', borderLeft: '4px solid var(--primary-color)'}}>
-                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 09 Octobre 2025 à 09:30</div>
+                      <div className="showtime-date" style={{fontWeight: 600, color: 'var(--text-dark)', marginBottom: '0.25rem', fontFamily: 'Raleway, sans-serif'}}>Jeudi 27 Novembre 2025 à 10:00</div>
                       <div className="showtime-time" style={{color: 'var(--text-light)', fontSize: '0.9rem', marginBottom: '0.75rem', fontFamily: 'Raleway, sans-serif'}}>Rabat, Théâtre Bahnini</div>
                       <button 
                         onClick={handleReservation}
@@ -895,6 +885,13 @@ export default function SpectacleTaraSurLaLune() {
                       </button>
                     </div>
                 </div>
+                
+                <SessionsList
+                  spectacleId="tara-sur-la-lune"
+                  userType={userType || 'particulier'}
+                  professionalType={professionalType}
+                  onReservationClick={handleReservation}
+                />
               </div>
 
               {/* Booking Info Card */}
@@ -903,110 +900,65 @@ export default function SpectacleTaraSurLaLune() {
                   <i className="fas fa-info-circle"></i>
                   Informations pratiques
                 </h3>
-                <div className="info-item">
-                  <i className="fas fa-clock"></i>
-                  <span>Durée : 45 minutes</span>
-                </div>
-                <div className="info-item">
-                  <i className="fas fa-users"></i>
-                  <span>Distribution : 4 acteurs</span>
-                </div>
-                {/* Age recommendation - hidden for private schools */}
-                {professionalType !== 'scolaire-privee' && (
-                  <div className="info-item">
-                    <i className="fas fa-child"></i>
-                    <span>Âge recommandé : 5 ans et +</span>
+                {getSidebarInfo('tara-sur-la-lune', userType, professionalType)?.map((info, index) => (
+                  <div key={index} className="info-item">
+                    <i className={info.icon}></i>
+                    <span>{info.label} : {info.value}</span>
                   </div>
-                )}
-                
-                {/* Study level - visible only for private schools */}
-                {professionalType === 'scolaire-privee' && (
-                  <div className="info-item">
-                    <i className="fas fa-graduation-cap"></i>
-                    <span>Niveaux scolaires : Maternelle, Primaire</span>
-                  </div>
-                )}
-                <div className="info-item">
-                  <i className="fas fa-calendar"></i>
-                  <span>Période : Octobre 2026</span>
-                </div>
-                <div className="info-item">
-                  <i className="fas fa-map-marker-alt"></i>
-                  <span>Lieux : Casablanca & Rabat</span>
-                </div>
-                <div className="info-item">
-                  <i className="fas fa-theater-masks"></i>
-                  <span>Genre : Théâtre avec projection</span>
-                </div>
-                <div className="info-item">
-                  <i className="fas fa-language"></i>
-                  <span>Langue : Darija</span>
-                </div>
+                ))}
               </div>
 
-              {/* Reservation Card */}
-              <div className="sidebar-card">
-                <h3>
-                  <i className="fas fa-ticket-alt"></i>
-                  Réservation
-                </h3>
-                <p style={{color: 'var(--text-light)', marginBottom: '1.5rem'}}>Réservez dès maintenant vos places pour cette aventure spatiale avec Tara sur la Lune.</p>
-                <button className="btn-primary w-100" onClick={handleReservation} style={{width: '100%'}}>
-                  <i className="fas fa-ticket-alt"></i>
-                  {user ? 'Réserver Maintenant' : 'Se connecter pour réserver'}
-                </button>
-              </div>
             </div>
           </div>
         </div>
       </section>
 
       {/* Next Spectacle Card Section */}
-      <section style={{padding: '4rem 0', background: '#f8f9fa'}}>
+      <section style={{padding: '2rem 0', background: '#f8f9fa'}}>
         <div className="container">
           <div className="row justify-content-center">
-            <div className="col-lg-8">
+            <div className="col-lg-6">
               <div className="content-card" style={{textAlign: 'center'}}>
-                <h2 className="card-title" style={{marginBottom: '2rem'}}>
+                <h2 className="card-title" style={{marginBottom: '1.5rem', fontSize: '1.8rem'}}>
                   <i className="fas fa-forward"></i>
                   Prochain Spectacle
                 </h2>
                 <div className="row align-items-center">
-                  <div className="col-md-4">
+                  <div className="col-md-5">
                     <img 
                       src="/src/assets/spectacles affiches/l'eau la.png" 
                       alt="L'eau Là" 
                       style={{
                         width: '100%',
+                        maxWidth: '200px',
                         height: 'auto',
-                        borderRadius: '12px',
-                        boxShadow: '0 8px 25px rgba(0,0,0,0.15)'
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 15px rgba(0,0,0,0.1)'
                       }}
                     />
                   </div>
-                  <div className="col-md-8" style={{textAlign: 'left', paddingLeft: '2rem'}}>
-                    <h3 style={{color: '#BDCF00', fontSize: '2rem', marginBottom: '1rem'}}>L'eau Là</h3>
-                    <p style={{color: '#666', fontSize: '1.1rem', lineHeight: '1.6', marginBottom: '1.5rem'}}>
-                      Un spectacle poétique et musical qui explore la relation entre l'homme et l'eau, 
-                      élément vital et source d'inspiration. Une aventure sensorielle unique.
+                  <div className="col-md-7" style={{textAlign: 'left', paddingLeft: '1rem'}}>
+                    <h3 style={{color: '#BDCF00', fontSize: '1.5rem', marginBottom: '0.75rem'}}>L'eau Là</h3>
+                    <p style={{color: '#666', fontSize: '0.95rem', lineHeight: '1.5', marginBottom: '1rem'}}>
+                      Un spectacle poétique et musical qui explore la relation entre l'homme et l'eau.
                     </p>
-                    <div style={{display: 'flex', gap: '1rem', marginBottom: '1.5rem', flexWrap: 'wrap'}}>
-                      <span style={{background: '#e3f2fd', color: '#1976d2', padding: '0.5rem 1rem', borderRadius: '20px', fontSize: '0.9rem'}}>
-                        <i className="fas fa-clock"></i> 55 min
+                    <div style={{display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap'}}>
+                      <span style={{background: '#e3f2fd', color: '#1976d2', padding: '0.25rem 0.75rem', borderRadius: '15px', fontSize: '0.8rem'}}>
+                        <i className="fas fa-clock"></i> 50 min
                       </span>
-                      <span style={{background: '#f3e5f5', color: '#7b1fa2', padding: '0.5rem 1rem', borderRadius: '20px', fontSize: '0.9rem'}}>
-                        <i className="fas fa-users"></i> 3 comédiens
+                      <span style={{background: '#f3e5f5', color: '#7b1fa2', padding: '0.25rem 0.75rem', borderRadius: '15px', fontSize: '0.8rem'}}>
+                        <i className="fas fa-users"></i> 2 comédiens
                       </span>
-                      <span style={{background: '#e8f5e8', color: '#388e3c', padding: '0.5rem 1rem', borderRadius: '20px', fontSize: '0.9rem'}}>
-                        <i className="fas fa-child"></i> 8 ans et +
+                      <span style={{background: '#e8f5e8', color: '#388e3c', padding: '0.25rem 0.75rem', borderRadius: '15px', fontSize: '0.8rem'}}>
+                        <i className="fas fa-child"></i> 5 ans et +
                       </span>
                     </div>
                     <button 
                       className="btn-primary"
-                      onClick={() => window.location.href = '/spectacle/leaula'}
+                      onClick={() => window.location.href = '/spectacle/leau-la'}
                       style={{
-                        padding: '0.75rem 2rem', 
-                        fontSize: '1rem',
+                        padding: '0.5rem 1.5rem', 
+                        fontSize: '0.9rem',
                         display: 'inline-flex',
                         alignItems: 'center',
                         gap: '0.5rem'

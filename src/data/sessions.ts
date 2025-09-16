@@ -19,12 +19,12 @@ export const SESSIONS: Session[] = [
   { id: 'lpp-4', date: '2025-10-07', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'association', spectacleId: 'le-petit-prince', month: 'octobre', capacity: 400 },
   { id: 'lpp-5', date: '2025-10-07', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-publique', spectacleId: 'le-petit-prince', month: 'octobre', capacity: 400 },
   
-  // CASABLANCA - COMPLEXE EL HASSANI
-  { id: 'lpp-6', date: '2025-10-09', time: '09:30', location: 'CASABLANCA - COMPLEXE EL HASSANI', audienceType: 'scolaire-publique', spectacleId: 'le-petit-prince', month: 'octobre', capacity: 300 },
-  { id: 'lpp-7', date: '2025-10-09', time: '14:30', location: 'CASABLANCA - COMPLEXE EL HASSANI', audienceType: 'association', spectacleId: 'le-petit-prince', month: 'octobre', capacity: 300 },
-  { id: 'lpp-8', date: '2025-10-10', time: '09:30', location: 'CASABLANCA - COMPLEXE EL HASSANI', audienceType: 'scolaire-privee', spectacleId: 'le-petit-prince', month: 'octobre', price: 100, capacity: 300 },
-  { id: 'lpp-9', date: '2025-10-10', time: '14:30', location: 'CASABLANCA - COMPLEXE EL HASSANI', audienceType: 'scolaire-privee', spectacleId: 'le-petit-prince', month: 'octobre', price: 100, capacity: 300 },
-  { id: 'lpp-10', date: '2025-10-11', time: '15:00', location: 'CASABLANCA - COMPLEXE EL HASSANI', audienceType: 'tout-public', spectacleId: 'le-petit-prince', month: 'octobre', capacity: 220 },
+  // CASABLANCA - THEATRE ZEFZAF
+  { id: 'lpp-6', date: '2025-10-09', time: '09:30', location: 'CASABLANCA - THEATRE ZEFZAF', audienceType: 'scolaire-publique', spectacleId: 'le-petit-prince', month: 'octobre', capacity: 300 },
+  { id: 'lpp-7', date: '2025-10-09', time: '14:30', location: 'CASABLANCA - THEATRE ZEFZAF', audienceType: 'association', spectacleId: 'le-petit-prince', month: 'octobre', capacity: 300 },
+  { id: 'lpp-8', date: '2025-10-10', time: '09:30', location: 'CASABLANCA - THEATRE ZEFZAF', audienceType: 'scolaire-privee', spectacleId: 'le-petit-prince', month: 'octobre', price: 100, capacity: 300 },
+  { id: 'lpp-9', date: '2025-10-10', time: '14:30', location: 'CASABLANCA - THEATRE ZEFZAF', audienceType: 'scolaire-privee', spectacleId: 'le-petit-prince', month: 'octobre', price: 100, capacity: 300 },
+  { id: 'lpp-10', date: '2025-10-11', time: '15:00', location: 'CASABLANCA - THEATRE ZEFZAF', audienceType: 'tout-public', spectacleId: 'le-petit-prince', month: 'octobre', capacity: 220 },
   
   // LE PETIT PRINCE ARABIC VERSION
   { id: 'lpp-ar-1', date: '2025-10-05', time: '15:00', location: 'RABAT - THEATRE BAHNINI', audienceType: 'tout-public', spectacleId: 'le-petit-prince-ar', month: 'octobre', capacity: 220 },
@@ -32,7 +32,7 @@ export const SESSIONS: Session[] = [
 
   // OCTOBRE - TARA SUR LA LUNE
   // RABAT - THEATRE BAHNINI
-  { id: 'tsl-1', date: '2025-10-11', time: '15:00', location: 'RABAT - THEATRE BAHNINI', audienceType: 'tout-public', spectacleId: 'tara-sur-la-lune', month: 'octobre', capacity: 220 },
+  { id: 'tsl-1', date: '2025-10-11', time: '14:00', location: 'RABAT - THEATRE BAHNINI', audienceType: 'tout-public', spectacleId: 'tara-sur-la-lune', month: 'octobre', capacity: 220 },
   { id: 'tsl-2', date: '2025-10-09', time: '09:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-privee', spectacleId: 'tara-sur-la-lune', month: 'octobre', price: 100, capacity: 400 },
   { id: 'tsl-3', date: '2025-10-09', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-publique', spectacleId: 'tara-sur-la-lune', month: 'octobre', capacity: 400 },
   { id: 'tsl-4', date: '2025-10-10', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'association', spectacleId: 'tara-sur-la-lune', month: 'octobre', capacity: 400 },
@@ -107,9 +107,9 @@ export const SESSIONS: Session[] = [
   // RABAT - THEATRE BAHNINI
   { id: 'est-1', date: '2026-02-14', time: '14:00', location: 'RABAT - THEATRE BAHNINI', audienceType: 'tout-public', spectacleId: 'estevanico', month: 'fevrier', capacity: 220 },
   { id: 'est-2', date: '2026-02-16', time: '10:00', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-privee', spectacleId: 'estevanico', month: 'fevrier', price: 100, capacity: 400 },
-  { id: 'est-3', date: '2026-02-16', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-privee', spectacleId: 'estevanico', month: 'fevrier', price: 100, capacity: 400 },
-  { id: 'est-4', date: '2026-02-17', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'association', spectacleId: 'estevanico', month: 'fevrier', capacity: 400 },
-  { id: 'est-5', date: '2026-02-17', time: '14:30', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-publique', spectacleId: 'estevanico', month: 'fevrier', capacity: 400 },
+  { id: 'est-3', date: '2026-02-16', time: '14:00', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-privee', spectacleId: 'estevanico', month: 'fevrier', price: 100, capacity: 400 },
+  { id: 'est-4', date: '2026-02-17', time: '14:00', location: 'RABAT - THEATRE BAHNINI', audienceType: 'association', spectacleId: 'estevanico', month: 'fevrier', capacity: 400 },
+  { id: 'est-5', date: '2026-02-17', time: '14:00', location: 'RABAT - THEATRE BAHNINI', audienceType: 'scolaire-publique', spectacleId: 'estevanico', month: 'fevrier', capacity: 400 },
   
   // CASABLANCA - COMPLEXE EL HASSANI
   { id: 'est-6', date: '2026-02-19', time: '10:00', location: 'CASABLANCA - COMPLEXE EL HASSANI', audienceType: 'scolaire-privee', spectacleId: 'estevanico', month: 'fevrier', price: 100, capacity: 300 },
@@ -165,7 +165,7 @@ export const SESSIONS: Session[] = [
 
 ];
 
-export const getUserTypeSessions = (spectacleId: string, userType?: string, userCity?: string) => {
+export const getUserTypeSessions = (spectacleId: string, userType?: string, professionalType?: string, userCity?: string) => {
   let filteredSessions = SESSIONS.filter(session => session.spectacleId === spectacleId);
 
   // Filter out Arabic version of Le Petit Prince for private schools only
@@ -173,14 +173,14 @@ export const getUserTypeSessions = (spectacleId: string, userType?: string, user
     return [];
   }
 
-  console.log('getUserTypeSessions called with:', { spectacleId, userType, userCity, totalSessions: filteredSessions.length });
+  console.log('getUserTypeSessions called with:', { spectacleId, userType, professionalType, userCity, totalSessions: filteredSessions.length });
 
   if (!userType || userType === '') {
     console.log('No userType provided, returning all sessions');
     return filteredSessions;
   }
 
-  // Filter by user type
+  // Filter by user type and professional type
   if (userType === 'individual' || userType === 'particulier') {
     // Individual users see only "tout-public" sessions
     filteredSessions = filteredSessions.filter(session => 
@@ -191,24 +191,44 @@ export const getUserTypeSessions = (spectacleId: string, userType?: string, user
     // Don't filter by city for particulier - they should see both Rabat and Casablanca sessions
     // This allows them to choose their preferred city
     console.log('Particulier sees all cities - no city filtering applied');
+  } else if (userType === 'professional') {
+    // Professional users are filtered by their professional type
+    if (professionalType === 'scolaire-privee') {
+      filteredSessions = filteredSessions.filter(session => 
+        session.audienceType === 'scolaire-privee'
+      );
+      console.log('Filtered for professional scolaire-privee:', filteredSessions.length);
+    } else if (professionalType === 'scolaire-publique') {
+      filteredSessions = filteredSessions.filter(session => 
+        session.audienceType === 'scolaire-publique'
+      );
+      console.log('Filtered for professional scolaire-publique:', filteredSessions.length);
+    } else if (professionalType === 'association') {
+      filteredSessions = filteredSessions.filter(session => 
+        session.audienceType === 'association'
+      );
+      console.log('Filtered for professional association:', filteredSessions.length);
+    } else {
+      console.log('Unknown professionalType:', professionalType, 'returning all sessions');
+    }
   } else if (userType === 'scolaire-privee') {
-    // Private schools see only their specific sessions
+    // Legacy support - direct userType mapping
     filteredSessions = filteredSessions.filter(session => 
       session.audienceType === 'scolaire-privee'
     );
-    console.log('Filtered for scolaire-privee:', filteredSessions.length);
+    console.log('Filtered for legacy scolaire-privee:', filteredSessions.length);
   } else if (userType === 'scolaire-publique') {
-    // Public schools see only their specific sessions
+    // Legacy support - direct userType mapping
     filteredSessions = filteredSessions.filter(session => 
       session.audienceType === 'scolaire-publique'
     );
-    console.log('Filtered for scolaire-publique:', filteredSessions.length);
+    console.log('Filtered for legacy scolaire-publique:', filteredSessions.length);
   } else if (userType === 'association') {
-    // Associations see only their specific sessions
+    // Legacy support - direct userType mapping
     filteredSessions = filteredSessions.filter(session => 
       session.audienceType === 'association'
     );
-    console.log('Filtered for association:', filteredSessions.length);
+    console.log('Filtered for legacy association:', filteredSessions.length);
   } else {
     console.log('Unknown userType:', userType, 'returning all sessions');
   }
