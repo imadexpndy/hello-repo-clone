@@ -41,10 +41,10 @@ export default function SpectacleLePetitPrince() {
       let detectedUserType = '';
       let detectedProfessionalType = '';
       
-      if (profile.user_type === "scolaire-privee") {
+      if (profile?.user_type === "scolaire-privee") {
         detectedUserType = 'professional';
         detectedProfessionalType = 'scolaire-privee';
-      } else if (profile.user_type === "scolaire-publique") {
+      } else if (profile?.user_type === "scolaire-publique") {
         detectedUserType = 'professional';
         detectedProfessionalType = 'scolaire-publique';
       } else if (profile?.user_type === 'association') {
@@ -52,7 +52,7 @@ export default function SpectacleLePetitPrince() {
         detectedProfessionalType = 'association';
       } else if (profile?.professional_type) {
         detectedUserType = 'professional';
-        detectedProfessionalType = profile.professional_type;
+        detectedProfessionalType = profile?.professional_type;
       } else {
         // Fallback to storage for non-logged users
         detectedUserType = sessionStorage.getItem('userType') || localStorage.getItem('userType') || 'particulier';

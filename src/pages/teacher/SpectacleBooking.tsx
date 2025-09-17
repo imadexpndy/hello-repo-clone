@@ -112,7 +112,7 @@ export default function SpectacleBooking() {
       const { data, error } = await supabase
         .from('bookings')
         .insert({
-          user_id: profile.user_id,
+          user_id: profile?.user_id,
           spectacle_id: selectedSpectacle.id,
           session_id: selectedSession.id,
           booking_type: 'school',
