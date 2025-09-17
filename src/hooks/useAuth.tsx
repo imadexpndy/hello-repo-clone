@@ -284,13 +284,15 @@ const signOut = async () => {
 
     // Clean up local/session storage and attempt global sign out
     cleanupAuthState();
-    try {
-      await supabase.auth.signOut({ scope: 'global' } as any);
-    } catch {}
-
+    
+    // Clear state immediately
     setUser(null);
     setSession(null);
     setProfile(null);
+    
+    try {
+      await supabase.auth.signOut({ scope: 'global' } as any);
+    } catch {}
 
     // Force full reload to the auth page for a clean state
     window.location.href = '/auth';

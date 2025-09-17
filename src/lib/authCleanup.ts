@@ -2,6 +2,12 @@
 // Prevents limbo states when switching accounts or after failed auth attempts
 export const cleanupAuthState = () => {
   try {
+    // Remove admin bypass tokens that prevent proper logout
+    try { localStorage.removeItem('admin_bypass'); } catch {}
+    try { localStorage.removeItem('admin_user'); } catch {}
+    try { sessionStorage.removeItem('adminAccess'); } catch {}
+    try { sessionStorage.removeItem('adminTimestamp'); } catch {}
+    
     // Remove known Supabase auth keys
     try { localStorage.removeItem('supabase.auth.token'); } catch {}
 
