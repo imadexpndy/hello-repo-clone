@@ -57,7 +57,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
         });
 
         // Generate appropriate document
-        const documentType = userRole === 'teacher_private' ? 'devis' : 'invoice';
+        const documentType = userRole === 'scolaire-privee' ? 'devis' : 'invoice';
         await supabase.functions.invoke('generate-document', {
           body: {
             bookingId,
@@ -96,7 +96,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({
       );
     }
 
-    // All other user types (teacher_private, teacher_public, association) use bank transfer
+    // All other user types (scolaire-privee, scolaire-publique, association) use bank transfer
     return (
       <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
         <div className="flex items-center space-x-2 p-4 border rounded-lg hover:bg-accent">

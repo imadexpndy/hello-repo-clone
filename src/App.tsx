@@ -242,7 +242,7 @@ const App = () => {
               <Route 
                 path="/teacher" 
                 element={
-                  <ProtectedRoute allowedRoles={['teacher_private', 'teacher_public']}>
+                  <ProtectedRoute allowedRoles={['scolaire-privee', 'scolaire-publique']}>
                     <TeacherDashboard />
                   </ProtectedRoute>
                 } 
@@ -250,7 +250,7 @@ const App = () => {
               <Route 
                 path="/teacher/new-booking" 
                 element={
-                  <ProtectedRoute requiredRole="teacher_private">
+                  <ProtectedRoute requiredRole="scolaire-privee">
                     <PrivateSchoolBooking />
                   </ProtectedRoute>
                 } 
@@ -258,7 +258,7 @@ const App = () => {
               <Route 
                 path="/teacher/dashboard" 
                 element={
-                  <ProtectedRoute requiredRole="teacher_private">
+                  <ProtectedRoute requiredRole="scolaire-privee">
                     <TeacherDashboard />
                   </ProtectedRoute>
                 } 
@@ -266,7 +266,7 @@ const App = () => {
               <Route 
                 path="/teacher/dashboard" 
                 element={
-                  <ProtectedRoute requiredRole="teacher_public">
+                  <ProtectedRoute requiredRole="scolaire-publique">
                     <TeacherDashboard />
                   </ProtectedRoute>
                 } 
@@ -274,7 +274,7 @@ const App = () => {
               <Route 
                 path="/teacher/spectacles" 
                 element={
-                  <ProtectedRoute requiredRole="teacher_private">
+                  <ProtectedRoute requiredRole="scolaire-privee">
                     <SpectacleBooking />
                   </ProtectedRoute>
                 } 
@@ -282,7 +282,7 @@ const App = () => {
               <Route 
                 path="/teacher/spectacles" 
                 element={
-                  <ProtectedRoute requiredRole="teacher_public">
+                  <ProtectedRoute requiredRole="scolaire-publique">
                     <SpectacleBooking />
                   </ProtectedRoute>
                 } 
@@ -290,7 +290,7 @@ const App = () => {
               <Route 
                 path="/teacher/bookings" 
                 element={
-                  <ProtectedRoute requiredRole="teacher_private">
+                  <ProtectedRoute requiredRole="scolaire-privee">
                     <MyBookings />
                   </ProtectedRoute>
                 } 
@@ -298,7 +298,7 @@ const App = () => {
               <Route 
                 path="/teacher/bookings" 
                 element={
-                  <ProtectedRoute requiredRole="teacher_public">
+                  <ProtectedRoute requiredRole="scolaire-publique">
                     <MyBookings />
                   </ProtectedRoute>
                 } 
@@ -306,7 +306,7 @@ const App = () => {
               <Route 
                 path="/teacher/quotes" 
                 element={
-                  <ProtectedRoute requiredRole="teacher_private">
+                  <ProtectedRoute requiredRole="scolaire-privee">
                     <MesDevis />
                   </ProtectedRoute>
                 } 
@@ -314,7 +314,7 @@ const App = () => {
               <Route 
                 path="/teacher/quotes" 
                 element={
-                  <ProtectedRoute requiredRole="teacher_public">
+                  <ProtectedRoute requiredRole="scolaire-publique">
                     <MesDevis />
                   </ProtectedRoute>
                 } 
@@ -322,7 +322,7 @@ const App = () => {
               <Route 
                 path="/mes-devis" 
                 element={
-                  <ProtectedRoute allowedRoles={['teacher_private', 'teacher_public']}>
+                  <ProtectedRoute allowedRoles={['scolaire-privee', 'scolaire-publique']}>
                     <MesDevis />
                   </ProtectedRoute>
                 } 
@@ -330,7 +330,7 @@ const App = () => {
               <Route 
                 path="/teacher/public-school-booking" 
                 element={
-                  <ProtectedRoute requiredRole="teacher_public">
+                  <ProtectedRoute requiredRole="scolaire-publique">
                     <PublicSchoolBooking />
                   </ProtectedRoute>
                 } 

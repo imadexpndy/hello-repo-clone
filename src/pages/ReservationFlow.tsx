@@ -147,10 +147,10 @@ const ReservationFlow = () => {
       let mappedUserType = '';
       if (userTypeParam) {
         mappedUserType = userTypeParam;
-      } else if (profile?.user_type === 'teacher_private') {
-        // Direct override for teacher_private users
+      } else if (profile?.user_type === 'scolaire-privee') {
+        // Direct override for scolaire-privee users
         mappedUserType = 'scolaire-privee';
-        console.log('🎯 DIRECT OVERRIDE: teacher_private -> scolaire-privee');
+        console.log('🎯 DIRECT OVERRIDE: scolaire-privee -> scolaire-privee');
       } else {
         // Use profile data for user type detection
         console.log('=== USER TYPE DETECTION DEBUG ===');
@@ -163,7 +163,7 @@ const ReservationFlow = () => {
         if (profile?.user_type) {
           console.log('Using profile.user_type:', profile.user_type);
           // Use the user_type from profile directly
-          if (profile.user_type === 'teacher_public') {
+          if (profile.user_type === "scolaire-publique") {
             mappedUserType = 'scolaire-publique';
             console.log('✅ Mapped to scolaire-publique from user_type');
           } else if (profile.user_type === 'association') {
@@ -181,10 +181,10 @@ const ReservationFlow = () => {
         } else if (profile?.role) {
           console.log('Using profile.role:', profile.role);
           // Fallback to role-based detection
-          if (profile.role === 'teacher_private') {
+          if (profile.role === 'scolaire-privee') {
             mappedUserType = 'scolaire-privee';
             console.log('✅ Mapped to scolaire-privee from role');
-          } else if (profile.role === 'teacher_public') {
+          } else if (profile.role === 'scolaire-publique') {
             mappedUserType = 'scolaire-publique';
             console.log('✅ Mapped to scolaire-publique from role');
           } else if (profile.role === 'association') {
@@ -380,7 +380,7 @@ const ReservationFlow = () => {
     
     try {
       // Check if this is a private school user - if so, generate devis instead
-      const isPrivateSchool = profile?.user_type === 'teacher_private' || userType === 'scolaire-privee';
+      const isPrivateSchool = profile?.user_type === 'scolaire-privee' || userType === 'scolaire-privee';
       
       // Check for duplicate email if user is not logged in
       if (!user && formData.email) {
@@ -617,10 +617,10 @@ const ReservationFlow = () => {
     } else if (professionalTypeParam && professionalTypeParam !== 'null') {
       userTypeForSessions = professionalTypeParam;
       console.log('🔗 Using professionalType from URL:', userTypeForSessions);
-    } else if (user && profile && profile.user_type === 'teacher_private') {
-      // Direct override for teacher_private users
+    } else if (user && profile && profile.user_type === "scolaire-privee") {
+      // Direct override for scolaire-privee users
       userTypeForSessions = 'scolaire-privee';
-      console.log('🎯 DIRECT OVERRIDE: teacher_private -> scolaire-privee');
+      console.log('🎯 DIRECT OVERRIDE: scolaire-privee -> scolaire-privee');
     } else if (user && userType && userType !== 'null') {
       userTypeForSessions = userType;
       console.log('📝 Using userType state:', userTypeForSessions);
@@ -636,17 +636,17 @@ const ReservationFlow = () => {
         userTypeForSessions = professionalTypeParam;
       } else {
         // Use profile data for user type detection
-        if (profile?.user_type === 'teacher_private') {
+        if (profile?.user_type === 'scolaire-privee') {
           userTypeForSessions = 'scolaire-privee';
-        } else if (profile?.user_type === 'teacher_public') {
+        } else if (profile?.user_type === 'scolaire-publique') {
           userTypeForSessions = 'scolaire-publique';
         } else if (profile?.user_type === 'association') {
           userTypeForSessions = 'association';
         } else if (profile?.professional_type) {
           userTypeForSessions = profile.professional_type;
-        } else if (profile?.role === 'teacher_private') {
+        } else if (profile?.role === 'scolaire-privee') {
           userTypeForSessions = 'scolaire-privee';
-        } else if (profile?.role === 'teacher_public') {
+        } else if (profile?.role === 'scolaire-publique') {
           userTypeForSessions = 'scolaire-publique';
         } else if (profile?.role === 'association') {
           userTypeForSessions = 'association';
@@ -914,7 +914,7 @@ const ReservationFlow = () => {
                   </div>
 
                   <div className="grid grid-cols-1 gap-6">
-                    {(userType === 'scolaire-privee' || userType === 'scolaire-publique' || userType === 'association' || profile?.user_type === 'teacher_private') ? (
+                    {(userType === 'scolaire-privee' || userType === 'scolaire-publique' || userType === 'association' || profile?.user_type === 'scolaire-privee') ? (
                       // Professional users - show children and accompaniers fields
                       <>
                         <div className="space-y-2">
@@ -1023,7 +1023,7 @@ const ReservationFlow = () => {
                       }
                       
                       // For private school users, go to devis step first
-                      if (userType === 'scolaire-privee' || profile?.user_type === 'teacher_private') {
+                      if (userType === 'scolaire-privee' || profile?.user_type === 'scolaire-privee') {
                         console.log('Private school user - proceeding to devis step (step 5)');
                         setStep(5);
                       } else {
@@ -1325,7 +1325,7 @@ const ReservationFlow = () => {
                   <h4 className="font-semibold text-foreground">Mode de paiement</h4>
                   <div className="grid gap-3">
                     {/* Hide credit card option for private school users */}
-                    {!(profile?.user_type === 'teacher_private' || userType === 'scolaire-privee') && (
+                    {!(profile?.user_type === 'scolaire-privee' || userType === 'scolaire-privee') && (
                       <div className="border rounded-lg">
                         <label className="flex items-center space-x-3 p-4 cursor-pointer hover:bg-muted/50 transition-colors">
                           <input

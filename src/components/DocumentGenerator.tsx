@@ -37,7 +37,7 @@ export const DocumentGenerator: React.FC<DocumentGeneratorProps> = ({
 
   const canGenerateInvoice = bookingData.status === 'confirmed' || bookingData.status === 'paid';
   const canGenerateTickets = bookingData.status === 'confirmed' || bookingData.status === 'paid';
-  const showFinancialDocs = userRole === 'teacher_private' || userRole === 'admin_full' || userRole === 'super_admin';
+  const showFinancialDocs = userRole === 'scolaire-privee' || userRole === 'admin_full' || userRole === 'super_admin';
 
   return (
     <Card>

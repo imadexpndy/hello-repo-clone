@@ -68,14 +68,14 @@ export default function ReservationSimple() {
   // Determine profile type based on user role
   const getProfileTypeFromRole = (role: string | undefined) => {
     if (!role) return '';
-    if (['teacher_private', 'teacher_public', 'association'].includes(role)) return 'PRO';
+    if (['scolaire-privee', 'scolaire-publique', 'association'].includes(role)) return 'PRO';
     if (role === 'b2c_user') return 'Particulier';
     return '';
   };
 
   const getPublicTypeFromRole = (role: string | undefined) => {
-    if (role === 'teacher_private') return 'Écoles privées';
-    if (role === 'teacher_public') return 'Écoles publiques';
+    if (role === 'scolaire-privee') return 'Écoles privées';
+    if (role === 'scolaire-publique') return 'Écoles publiques';
     if (role === 'association') return 'Associations';
     return '';
   };

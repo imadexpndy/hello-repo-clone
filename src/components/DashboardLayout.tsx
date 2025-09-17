@@ -83,9 +83,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     // Use user_type as primary source
     if (profile?.user_type) {
       switch (profile.user_type) {
-        case 'teacher_private':
-          return 'default';
-        case 'teacher_public':
+        case 'scolaire-privee':
+        case 'scolaire-publique':
           return 'secondary';
         case 'association':
           return 'outline';
@@ -101,9 +100,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       case 'admin_full':
       case 'super_admin':
         return 'destructive';
-      case 'teacher_private':
-        return 'default';
-      case 'teacher_public':
+      case 'scolaire-privee':
+      case 'scolaire-publique':
         return 'secondary';
       case 'association':
         return 'outline';
@@ -118,9 +116,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     // Use user_type as primary source
     if (profile?.user_type) {
       switch (profile.user_type) {
-        case 'teacher_private':
+        case 'scolaire-privee':
           return 'École Privée';
-        case 'teacher_public':
+        case 'scolaire-publique':
           return 'École Publique';
         case 'association':
           return 'Association';
@@ -137,9 +135,9 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         return 'Administrateur';
       case 'super_admin':
         return 'Super Admin';
-      case 'teacher_private':
+      case 'scolaire-privee':
         return 'École Privée';
-      case 'teacher_public':
+      case 'scolaire-publique':
         return 'École Publique';
       case 'association':
         return 'Association';

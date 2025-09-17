@@ -22,8 +22,8 @@ import {
 export default function TeacherDashboard() {
   const { profile } = useAuth();
   
-  const isPrivateTeacher = profile?.verification_status === 'teacher_private';
-  const isPublicTeacher = profile?.verification_status === 'teacher_public';
+  const isPrivateTeacher = profile?.verification_status === 'scolaire-privee';
+  const isPublicTeacher = profile?.verification_status === 'scolaire-publique';
   const schoolType = isPrivateTeacher ? 'privée' : 'publique';
 
   const headerActions = (

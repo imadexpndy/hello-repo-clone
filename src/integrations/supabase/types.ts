@@ -824,8 +824,8 @@ export type Database = {
       ticket_status: "active" | "used" | "cancelled"
       user_role:
         | "b2c_user"
-        | "teacher_private"
-        | "teacher_public"
+        | "scolaire-privee"
+        | "scolaire-publique"
         | "association"
         | "partner"
         | "admin_spectacles"
@@ -985,8 +985,8 @@ export const Constants = {
       ticket_status: ["active", "used", "cancelled"],
       user_role: [
         "b2c_user",
-        "teacher_private",
-        "teacher_public",
+        "scolaire-privee",
+        "scolaire-publique",
         "association",
         "partner",
         "admin_spectacles",

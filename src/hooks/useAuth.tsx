@@ -15,7 +15,7 @@ interface Profile {
   name: string | null;
   phone: string | null;
   whatsapp: string | null;
-  role: 'admin_spectacles' | 'admin_schools' | 'admin_partners' | 'admin_support' | 'admin_notifications' | 'admin_editor' | 'admin_full' | 'super_admin' | 'teacher_private' | 'teacher_public' | 'association' | 'partner' | 'b2c_user';
+  role: 'admin_spectacles' | 'admin_schools' | 'admin_partners' | 'admin_support' | 'admin_notifications' | 'admin_editor' | 'admin_full' | 'super_admin' | 'scolaire-privee' | 'scolaire-publique' | 'association' | 'partner' | 'b2c_user';
   user_type: 'particulier' | 'scolaire-privee' | 'scolaire-publique' | 'association' | null;
   professional_type: 'scolaire-privee' | 'scolaire-publique' | 'association' | null;
   organization_id: string | null;
@@ -27,6 +27,7 @@ interface Profile {
   school_id: string | null;
   association_id: string | null;
   contact_person: string | null;
+  admin_role: string | null;
   created_at: string;
 }
 
@@ -321,7 +322,7 @@ const signOut = async () => {
     refreshProfile,
     isAdmin: profile?.role === 'admin_full' || profile?.role === 'super_admin',
     isSuperAdmin: profile?.role === 'super_admin',
-    isTeacher: profile?.role === 'teacher_private' || profile?.role === 'teacher_public',
+    isTeacher: profile?.role === 'scolaire-privee' || profile?.role === 'scolaire-publique' || profile?.user_type === 'scolaire-privee' || profile?.user_type === 'scolaire-publique',
     isAssociation: profile?.role === 'association',
     isPartner: profile?.role === 'partner',
     isB2C: profile?.role === 'b2c_user',

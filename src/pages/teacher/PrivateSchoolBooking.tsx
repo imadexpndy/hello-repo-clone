@@ -296,7 +296,7 @@ export default function PrivateSchoolBooking() {
     setCapacityWarning(null);
   };
 
-  if (profile?.user_type !== 'teacher_private') {
+  if (profile?.user_type === "scolaire-privee") {
     return <div>Accès réservé aux enseignants d'écoles privées</div>;
   }
 

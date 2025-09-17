@@ -21,11 +21,11 @@ export const QuickRoleSwitch = () => {
         return;
       }
 
-      // Update profile to teacher_public
+      // Update profile to scolaire-publique
       const { error } = await supabase
         .from('profiles')
         .update({ 
-          role: 'teacher_public',
+          role: 'scolaire-publique',
           organization_type: 'public_school',
           organization_name: 'École Publique Test',
           verification_status: 'approved'

@@ -38,8 +38,8 @@ export const RoleBasedRouter = () => {
     case 'super_admin':
       console.log('Routing to AdminDashboard');
       return <AdminDashboard />;
-    case 'teacher_private':
-    case 'teacher_public':
+    case 'scolaire-privee':
+    case 'scolaire-publique':
       console.log('Routing to TeacherDashboard');
       return <TeacherDashboard />;
     case 'association':

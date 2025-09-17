@@ -68,7 +68,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
   });
 
   useEffect(() => {
-    if (userType === 'teacher_private' || userType === 'teacher_public') {
+    if (userType === 'scolaire-privee' || userType === 'scolaire-publique') {
       fetchSchools();
     }
   }, [userType]);
@@ -144,7 +144,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
     }
 
     // Email validation for teachers
-    if ((userType === 'teacher_private' || userType === 'teacher_public') && formData.schoolId !== 'other') {
+    if ((userType === 'scolaire-privee' || userType === 'scolaire-publique') && formData.schoolId !== 'other') {
       const selectedSchool = schools.find(s => s.id === formData.schoolId);
       if (selectedSchool?.domain && !validateEmail(formData.professionalEmail, selectedSchool.domain)) {
         toast({
@@ -219,7 +219,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
       let schoolId = formData.schoolId;
       let associationId = null;
 
-      if ((userType === 'teacher_private' || userType === 'teacher_public') && formData.schoolId === 'other') {
+      if ((userType === 'scolaire-privee' || userType === 'scolaire-publique') && formData.schoolId === 'other') {
         const { data: newSchool, error: schoolError } = await supabase
           .from('schools')
           .insert({
@@ -256,17 +256,17 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
       }
 
       // 3. Create profile with appropriate role
-      let role: 'admin' | 'teacher_private' | 'teacher_public' | 'association' | 'partner' | 'b2c_user' | 'super_admin' = 'b2c_user';
-      if (userType === 'teacher_private' || userType === 'teacher_public') {
-        role = userType as 'teacher_private' | 'teacher_public';
+      let role: 'admin' | 'scolaire-privee' | 'scolaire-publique' | 'association' | 'partner' | 'b2c_user' | 'super_admin' = 'b2c_user';
+      if (userType === 'scolaire-privee' || userType === 'scolaire-publique') {
+        role = userType as 'scolaire-privee' | 'scolaire-publique';
       } else if (userType === 'association') {
         role = 'association';
       }
 
       const verificationStatus = 
-        userType === 'teacher_public' ? 'pending' :
+        userType === 'scolaire-publique' ? 'pending' :
         userType === 'association' ? 'pending' :
-        userType === 'teacher_private' ? 'approved' :
+        userType === 'scolaire-privee' ? 'approved' :
         'approved';
 
       const { error: profileError } = await supabase
@@ -282,13 +282,13 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
           verification_documents: uploadedDocs.length > 0 ? uploadedDocs : null,
           contact_person: userType === 'association' ? formData.contactPerson : null,
           admin_role: role, // Add the admin_role field which is used by the auth system
-          is_verified: userType === 'teacher_private' ? true : false, // Private schools get immediate verification
-          user_type: userType === 'teacher_private' ? 'scolaire-privee' : 
-                     userType === 'teacher_public' ? 'scolaire-publique' : 
+          is_verified: userType === 'scolaire-privee' ? true : false, // Private schools get immediate verification
+          user_type: userType === 'scolaire-privee' ? 'scolaire-privee' : 
+                     userType === 'scolaire-publique' ? 'scolaire-publique' : 
                      userType === 'association' ? 'association' : 
                      userType === 'b2c' ? 'particulier' : 'particulier', // Store the correct user type for AdminUsers component
-          professional_type: userType === 'teacher_private' ? 'scolaire-privee' : 
-                            userType === 'teacher_public' ? 'scolaire-publique' : 
+          professional_type: userType === 'scolaire-privee' ? 'scolaire-privee' : 
+                            userType === 'scolaire-publique' ? 'scolaire-publique' : 
                             userType === 'association' ? 'association' : null // Store professional type based on user type
         })
         .eq('user_id', authData.user.id);
@@ -307,7 +307,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
             description: "Votre compte sera activé après validation par un administrateur",
           });
         }, 1000);
-      } else if (userType === 'teacher_private') {
+      } else if (userType === 'scolaire-privee') {
         setTimeout(() => {
           toast({
             title: "Compte activé",
@@ -531,7 +531,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
           {
-            type: 'teacher_private',
+            type: 'scolaire-privee',
             icon: GraduationCap,
             title: 'École Privée',
             description: 'Vérification par email du domaine',
@@ -539,7 +539,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
             delay: '0ms'
           },
           {
-            type: 'teacher_public',
+            type: 'scolaire-publique',
             icon: GraduationCap,
             title: 'École Publique',
             description: 'Documents officiels requis',
@@ -751,8 +751,8 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
       );
     }
 
-          if (userType === 'teacher_private' || userType === 'teacher_public') {
-            const organizationType = userType === 'teacher_private' ? 'private_school' : 'public_school';
+          if (userType === 'scolaire-privee' || userType === 'scolaire-publique') {
+            const organizationType = userType === 'scolaire-privee' ? 'private_school' : 'public_school';
             const availableOrganizations = formData.city ? getOrganizationsByTypeAndCity(organizationType, formData.city) : [];
             
             return (
@@ -831,7 +831,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
                   )}
                 </div>
 
-                {userType === 'teacher_public' && (
+                {userType === 'scolaire-publique' && (
                   <div>
                     <Label htmlFor="documents">Documents de vérification *</Label>
                     <Input
@@ -853,7 +853,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
                   </div>
                 )}
 
-                {userType === 'teacher_public' ? (
+                {userType === 'scolaire-publique' ? (
                   <Alert className="border-orange-200 bg-orange-50">
                     <AlertDescription>
                       <strong>École Publique:</strong> Votre compte nécessite une validation manuelle avec documents officiels. 
@@ -876,7 +876,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
                   </Button>
                   <Button 
                     onClick={handleSubmit} 
-                    disabled={loading || !formData.organizationId || !formData.professionalEmail || (userType === 'teacher_public' && uploadedDocs.length === 0)}
+                    disabled={loading || !formData.organizationId || !formData.professionalEmail || (userType === 'scolaire-publique' && uploadedDocs.length === 0)}
                   >
                     {loading ? "Création..." : "Créer mon compte"}
                   </Button>
@@ -1013,7 +1013,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
       case 3: return "Type professionnel";
       case 4: return "Informations personnelles";
       case 5: 
-        if (userType === 'teacher_private' || userType === 'teacher_public') return "Informations scolaires";
+        if (userType === 'scolaire-privee' || userType === 'scolaire-publique') return "Informations scolaires";
         if (userType === 'association') return "Informations association";
         if (userType === 'b2c') return "Finalisation";
         return "Informations spécifiques";

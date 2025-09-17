@@ -71,8 +71,8 @@ export async function fixPublicSchoolTeacherRole(email: string): Promise<boolean
     console.log('Current user profile:', user);
 
     // If user is a public school teacher but has wrong role
-    if (user.organization_type === 'public_school' && user.role !== 'teacher_public') {
-      const success = await updateUserRole(user.user_id, 'teacher_public');
+    if (user.organization_type === 'public_school' && user.role !== 'scolaire-publique') {
+      const success = await updateUserRole(user.user_id, 'scolaire-publique');
       if (success) {
         console.log(`Fixed role for public school teacher: ${email}`);
         return true;
@@ -82,15 +82,15 @@ export async function fixPublicSchoolTeacherRole(email: string): Promise<boolean
     // If user has admin role but shouldn't
     if (user.role === 'admin' || user.role === 'super_admin' || user.role === 'admin_full') {
       if (user.organization_type === 'public_school') {
-        const success = await updateUserRole(user.user_id, 'teacher_public');
+        const success = await updateUserRole(user.user_id, 'scolaire-publique');
         if (success) {
-          console.log(`Corrected admin role to teacher_public for: ${email}`);
+          console.log(`Corrected admin role to scolaire-publique for: ${email}`);
           return true;
         }
       } else if (user.organization_type === 'private_school') {
-        const success = await updateUserRole(user.user_id, 'teacher_private');
+        const success = await updateUserRole(user.user_id, 'scolaire-privee');
         if (success) {
-          console.log(`Corrected admin role to teacher_private for: ${email}`);
+          console.log(`Corrected admin role to scolaire-privee for: ${email}`);
           return true;
         }
       }

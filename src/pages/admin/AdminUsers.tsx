@@ -59,8 +59,7 @@ export default function AdminUsers() {
     'particulier': 'Particulier',
     'scolaire-privee': 'Scolaire Privé',
     'scolaire-publique': 'Scolaire Public',
-    'association': 'Association',
-    'teacher_private': 'Enseignant Privé'
+    'association': 'Association'
   };
 
   const getUserTypeBadgeColor = (userType) => {
@@ -69,7 +68,6 @@ export default function AdminUsers() {
       case 'scolaire-privee': return 'bg-green-100 text-green-800';
       case 'scolaire-publique': return 'bg-purple-100 text-purple-800';
       case 'association': return 'bg-orange-100 text-orange-800';
-      case 'teacher_private': return 'bg-indigo-100 text-indigo-800';
       default: return 'bg-gray-100 text-gray-800';
     }
   };
@@ -361,7 +359,7 @@ export default function AdminUsers() {
   };
 
   return (
-    <DashboardLayout>
+    <DashboardLayout title="Gestion des Utilisateurs">
       <div className="space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">

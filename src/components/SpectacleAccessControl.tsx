@@ -81,12 +81,12 @@ export const SpectacleAccessControl: React.FC<SpectacleAccessControlProps> = ({ 
   }
 
   // Allow immediate access for private school teachers - no approval needed
-  if (profile?.role === 'teacher_private') {
+  if (profile?.role === 'scolaire-privee') {
     return <>{children}</>;
   }
 
   // For public school teachers, check verification status
-  if (profile?.role === 'teacher_public') {
+  if (profile?.role === 'scolaire-publique') {
     if (loading) {
       return (
         <div className="flex items-center justify-center p-8">

@@ -377,8 +377,8 @@ export default function AdminBookings() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Tous les types</SelectItem>
-                  <SelectItem value="teacher_private">École privée</SelectItem>
-                  <SelectItem value="teacher_public">École publique</SelectItem>
+                  <SelectItem value="scolaire-privee">École privée</SelectItem>
+                  <SelectItem value="scolaire-publique">École publique</SelectItem>
                   <SelectItem value="association">Association</SelectItem>
                   <SelectItem value="partner">Partenaire</SelectItem>
                   <SelectItem value="b2c">B2C</SelectItem>

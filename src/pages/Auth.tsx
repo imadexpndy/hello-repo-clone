@@ -154,11 +154,11 @@ const Auth = () => {
       
       if (profile) {
         switch (profile.admin_role) {
-          case 'teacher_private':
+          case 'scolaire-privee':
             userType = 'professional';
             professionalType = 'scolaire-privee';
             break;
-          case 'teacher_public':
+          case 'scolaire-publique':
             userType = 'professional';
             professionalType = 'scolaire-publique';
             break;
@@ -212,8 +212,8 @@ const Auth = () => {
         case 'super_admin':
           navigate('/admin');
           break;
-        case 'teacher_private':
-        case 'teacher_public':
+        case 'scolaire-privee':
+        case 'scolaire-publique':
           navigate('/teacher');
           break;
         case 'association':

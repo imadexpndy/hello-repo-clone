@@ -143,8 +143,8 @@ export default function AdminStatistics() {
 
     const usersByRole = Object.entries(roleCounts).map(([role, count]) => ({
       role: role === 'b2c_user' ? 'Utilisateurs B2C' : 
-            role === 'teacher_private' ? 'Enseignants Privés' :
-            role === 'teacher_public' ? 'Enseignants Publics' :
+            role === 'scolaire-privee' ? 'Enseignants Privés' :
+            role === 'scolaire-publique' ? 'Enseignants Publics' :
             role === 'association' ? 'Associations' :
             role === 'partner' ? 'Partenaires' :
             role.startsWith('admin_') ? 'Administrateurs' : role,

@@ -78,8 +78,8 @@ export default function Profile() {
     // Fallback to admin_role for backward compatibility
     const roleNames = {
       admin: 'Administrateur',
-      teacher_private: 'Enseignant École Privée',
-      teacher_public: 'Enseignant École Publique', 
+      'scolaire-privee': 'Enseignant École Privée',
+      'scolaire-publique': 'Enseignant École Publique', 
       association: 'Association',
       partner: 'Partenaire',
       b2c_user: 'Client Particulier'

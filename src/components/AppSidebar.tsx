@@ -80,8 +80,8 @@ export function AppSidebar() {
     // Check user_type first
     if (userType) {
       switch (userType) {
-        case 'teacher_private':
-        case 'teacher_public':
+        case 'scolaire-privee':
+        case 'scolaire-publique':
           return [
             ...commonItems,
             { title: "Spectacles", url: "/spectacles", icon: () => <img src="/src/assets/Asset 11@4x.png" alt="Spectacles" className="h-4 w-4" /> },
@@ -147,8 +147,8 @@ export function AppSidebar() {
 
     switch (role) {
 
-      case 'teacher_private':
-      case 'teacher_public':
+      case 'scolaire-privee':
+      case 'scolaire-publique':
         return [
           ...commonItems,
           { title: "Tableau de Bord", url: "/teacher/dashboard", icon: LayoutDashboard },
@@ -193,8 +193,8 @@ export function AppSidebar() {
     // Use user_type as primary source
     if (profile?.user_type) {
       switch (profile.user_type) {
-        case 'teacher_private':
-        case 'teacher_public':
+        case 'scolaire-privee':
+        case 'scolaire-publique':
         case 'particulier':
           return '/';
         case 'association':
@@ -207,8 +207,8 @@ export function AppSidebar() {
       case 'admin_full':
       case 'super_admin':
         return '/admin';
-      case 'teacher_private':
-      case 'teacher_public':
+      case 'scolaire-privee':
+      case 'scolaire-publique':
         return '/';
       case 'association':
         return '/association';

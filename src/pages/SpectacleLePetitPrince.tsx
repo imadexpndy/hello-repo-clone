@@ -41,10 +41,10 @@ export default function SpectacleLePetitPrince() {
       let detectedUserType = '';
       let detectedProfessionalType = '';
       
-      if (profile?.user_type === 'teacher_private') {
+      if (profile.user_type === "scolaire-privee") {
         detectedUserType = 'professional';
         detectedProfessionalType = 'scolaire-privee';
-      } else if (profile?.user_type === 'teacher_public') {
+      } else if (profile.user_type === "scolaire-publique") {
         detectedUserType = 'professional';
         detectedProfessionalType = 'scolaire-publique';
       } else if (profile?.user_type === 'association') {

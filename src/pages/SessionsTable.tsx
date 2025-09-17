@@ -55,9 +55,9 @@ export default function SessionsTable() {
         `);
 
       // Filter sessions based on user type
-      if (profile?.user_type === 'teacher_private') {
+      if (profile.user_type === "scolaire-privee") {
         query = query.eq('session_type', 'scolaire-privee');
-      } else if (profile?.user_type === 'teacher_public') {
+      } else if (profile.user_type === "scolaire-publique") {
         query = query.eq('session_type', 'scolaire-publique');
       } else if (profile?.user_type === 'association') {
         query = query.eq('session_type', 'association');

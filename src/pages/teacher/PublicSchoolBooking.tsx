@@ -194,7 +194,7 @@ export default function PublicSchoolBooking() {
     }
   };
 
-  if (profile?.role !== 'teacher_public') {
+  if (profile?.role !== 'scolaire-publique') {
     return <div>Accès réservé aux enseignants d'écoles publiques</div>;
   }
 

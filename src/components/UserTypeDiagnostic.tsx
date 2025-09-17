@@ -41,9 +41,9 @@ export const UserTypeDiagnostic = () => {
         <div>
           <h3 className="font-semibold">Expected User Type:</h3>
           <div className="p-2 bg-blue-100 rounded">
-            {profile?.user_type === 'teacher_private' ? (
+            {profile?.user_type === "scolaire-privee" ? (
               <span className="text-green-600 font-bold">✅ Should be SCOLAIRE-PRIVEE</span>
-            ) : profile?.user_type === 'teacher_public' ? (
+            ) : profile?.user_type === "scolaire-publique" ? (
               <span className="text-blue-600 font-bold">✅ Should be SCOLAIRE-PUBLIQUE</span>
             ) : profile?.user_type === 'association' ? (
               <span className="text-purple-600 font-bold">✅ Should be ASSOCIATION</span>
