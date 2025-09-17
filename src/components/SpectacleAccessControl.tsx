@@ -75,18 +75,18 @@ export const SpectacleAccessControl: React.FC<SpectacleAccessControlProps> = ({ 
     };
   }, [user]);
 
-  // Allow access for non-teacher roles (B2C, associations, partners, admins)
-  if (!profile?.role?.includes('teacher')) {
+  // Allow immediate access for particuliers and private schools - no verification needed
+  if (profile?.user_type === 'particulier' || profile?.user_type === 'scolaire-privee') {
     return <>{children}</>;
   }
 
-  // Allow immediate access for private school teachers - no approval needed
-  if (profile?.role === 'scolaire-privee') {
+  // Allow access for non-teacher roles (associations, partners, admins)
+  if (!profile?.role?.includes('teacher') && profile?.user_type !== 'scolaire-publique' && profile?.user_type !== 'association') {
     return <>{children}</>;
   }
 
-  // For public school teachers, check verification status
-  if (profile?.role === 'scolaire-publique') {
+  // For public school teachers and associations, check verification status
+  if (profile?.user_type === 'scolaire-publique' || profile?.user_type === 'association') {
     if (loading) {
       return (
         <div className="flex items-center justify-center p-8">

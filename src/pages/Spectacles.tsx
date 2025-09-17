@@ -2128,9 +2128,9 @@ export default function Spectacles() {
                           <i class="fas fa-clock" style="color: #e83e8c;"></i>
                           <span>50 minutes</span>
                         </div>
-                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display alice-chez-les-merveilles-age-study" id="alice-chez-les-merveilles-age-study" data-age="5 ans et +" data-study-level="MS, GS, CP">
+                        <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;" class="age-level-display alice-chez-les-merveilles-age-study" id="alice-chez-les-merveilles-age-study" data-age="4 ans et +" data-study-level="MS, GS, CP">
                           <i class="fas fa-child" style="color: #e83e8c;"></i>
-                          <span class="age-level-text">5 ans et +</span>
+                          <span class="age-level-text">4 ans et +</span>
                         </div>
                         <div style="display: flex; align-items: center; gap: 6px; background: #f8f9fa; padding: 6px 10px; border-radius: 12px; font-size: 11px; color: #666; font-weight: 600;">
                           <i class="fas fa-users" style="color: #e83e8c;"></i>

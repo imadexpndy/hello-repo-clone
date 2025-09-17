@@ -282,6 +282,12 @@ const signOut = async () => {
       await logUserLogout(user.id);
     }
 
+    // CRITICAL: Remove admin bypass tokens FIRST to prevent auto-login
+    try { localStorage.removeItem('admin_bypass'); } catch {}
+    try { localStorage.removeItem('admin_user'); } catch {}
+    try { sessionStorage.removeItem('adminAccess'); } catch {}
+    try { sessionStorage.removeItem('adminTimestamp'); } catch {}
+
     // Clean up local/session storage and attempt global sign out
     cleanupAuthState();
     

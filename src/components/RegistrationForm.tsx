@@ -266,8 +266,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
       const verificationStatus = 
         userType === 'scolaire-publique' ? 'pending' :
         userType === 'association' ? 'pending' :
-        userType === 'scolaire-privee' ? 'approved' :
-        'approved';
+        'approved'; // Private schools and particuliers get immediate approval
 
       const { error: profileError } = await supabase
         .from('profiles')
@@ -282,7 +281,7 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
           verification_documents: uploadedDocs.length > 0 ? uploadedDocs : null,
           contact_person: userType === 'association' ? formData.contactPerson : null,
           admin_role: role, // Add the admin_role field which is used by the auth system
-          is_verified: userType === 'scolaire-privee' ? true : false, // Private schools get immediate verification
+          is_verified: (userType === 'scolaire-privee' || userType === 'b2c') ? true : false, // Private schools and particuliers get immediate verification
           user_type: userType === 'scolaire-privee' ? 'scolaire-privee' : 
                      userType === 'scolaire-publique' ? 'scolaire-publique' : 
                      userType === 'association' ? 'association' : 
@@ -305,13 +304,6 @@ export const RegistrationForm: React.FC<RegistrationFormProps> = ({ onBack }) =>
           toast({
             title: "En attente de vérification",
             description: "Votre compte sera activé après validation par un administrateur",
-          });
-        }, 1000);
-      } else if (userType === 'scolaire-privee') {
-        setTimeout(() => {
-          toast({
-            title: "Compte activé",
-            description: "Votre compte école privée est immédiatement disponible",
           });
         }, 1000);
       }

@@ -1,5 +1,5 @@
--- Fix handle_new_user function to use correct column names and create proper profile records
--- This ensures that when users sign up, their profiles are created correctly
+-- Fix handle_new_user function to resolve registration 500 error
+-- This needs to be run directly on the production database
 
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS trigger
