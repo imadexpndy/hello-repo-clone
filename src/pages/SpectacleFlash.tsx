@@ -400,7 +400,7 @@ export default function SpectacleFlash() {
       <VideoPopup 
         isOpen={isVideoOpen} 
         onClose={() => setIsVideoOpen(false)} 
-        videoUrl="https://youtube.com/shorts/iARC1DejKHo?feature=share" 
+        videoUrl="https://youtu.be/hGlWErHd4QQ" 
       />
       
       {userTypeDisplay && (

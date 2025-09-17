@@ -400,7 +400,7 @@ export default function SpectacleAliceChezLesMerveilles() {
       <VideoPopup 
         isOpen={isVideoOpen} 
         onClose={() => setIsVideoOpen(false)} 
-        videoUrl="https://youtube.com/shorts/iARC1DejKHo?feature=share" 
+        videoUrl="https://youtu.be/o3jTv-5ms4k" 
       />
       
       {userTypeDisplay && (

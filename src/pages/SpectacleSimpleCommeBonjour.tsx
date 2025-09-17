@@ -383,7 +383,7 @@ export default function SpectacleSimpleCommeBonjour() {
       <VideoPopup 
         isOpen={isVideoOpen} 
         onClose={() => setIsVideoOpen(false)} 
-        videoUrl="https://youtube.com/shorts/iARC1DejKHo?feature=share" 
+        videoUrl="https://youtu.be/MsJP3DOhBE0" 
       />
       
       {userTypeDisplay && (

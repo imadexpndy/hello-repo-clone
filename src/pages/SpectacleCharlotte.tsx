@@ -357,7 +357,7 @@ export default function SpectacleCharlotte() {
       <VideoPopup 
         isOpen={isVideoOpen} 
         onClose={() => setIsVideoOpen(false)} 
-        videoUrl="https://youtube.com/shorts/iARC1DejKHo?feature=share" 
+        videoUrl="https://youtu.be/_OXwu_5_C8U" 
       />
       
       {userTypeDisplay && (
