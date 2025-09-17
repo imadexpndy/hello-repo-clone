@@ -1,46 +1,102 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = 'http://127.0.0.1:54321'
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0'
+const SUPABASE_URL = "https://aioldzmwwhukzabrizkt.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFpb2xkem13d2h1a3phYnJpemt0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU3ODk4NTMsImV4cCI6MjA3MTM2NTg1M30.-49m-IWTu6Iz3keHYjUYQrI2pq12whVgVpah_cG8npA";
 
-const supabase = createClient(supabaseUrl, supabaseKey)
+const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-async function fixProfile() {
+async function fixNewUserProfile() {
+  console.log('=== Fixing New User Profile Creation Issue ===');
+  
   try {
-    console.log('Updating profile role...')
-    
-    const { data, error } = await supabase
+    // 1. Check current profiles
+    console.log('1. Checking current profiles...');
+    const { data: profiles, error: profilesError } = await supabase
       .from('profiles')
-      .update({ 
-        role: 'teacher_private'
-      })
-      .eq('user_id', '66d69bb9-c018-4970-b22f-092c19d7a08c')
-      .select()
-
-    if (error) {
-      console.error('Error updating profile:', error)
-      return
-    }
-
-    console.log('Profile updated successfully:', data)
+      .select('*');
     
-    // Verify the update
-    const { data: profile, error: fetchError } = await supabase
-      .from('profiles')
-      .select('user_id, user_type, professional_type, role, admin_role, verification_status')
-      .eq('user_id', '66d69bb9-c018-4970-b22f-092c19d7a08c')
-      .single()
+    console.log(`Found ${profiles?.length || 0} profiles in database`);
+    
+    // 2. Try to create a test profile to see what happens
+    console.log('\n2. Testing profile creation as authenticated user...');
+    
+    // First, let's try to sign up a test user to see the flow
+    const testEmail = `test-${Date.now()}@example.com`;
+    const testPassword = 'TestPassword123!';
+    
+    console.log(`Creating test user: ${testEmail}`);
+    
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      email: testEmail,
+      password: testPassword,
+      options: {
+        data: {
+          full_name: 'Test User'
+        }
+      }
+    });
 
-    if (fetchError) {
-      console.error('Error fetching profile:', fetchError)
-      return
+    if (signUpError) {
+      console.error('Sign up error:', signUpError.message);
+    } else {
+      console.log('Sign up successful:', {
+        user_id: signUpData.user?.id,
+        email: signUpData.user?.email,
+        confirmed: signUpData.user?.email_confirmed_at ? 'Yes' : 'No'
+      });
+      
+      // Wait a moment for the trigger to fire
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Check if profile was created
+      const { data: newProfiles, error: checkError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('email', testEmail);
+      
+      if (newProfiles && newProfiles.length > 0) {
+        console.log('✅ Profile created automatically:', newProfiles[0]);
+      } else {
+        console.log('❌ Profile NOT created automatically');
+        console.log('This confirms the handle_new_user trigger is not working');
+        
+        // Try to create profile manually while signed in
+        if (signUpData.user) {
+          console.log('Attempting manual profile creation...');
+          
+          const { data: manualProfile, error: manualError } = await supabase
+            .from('profiles')
+            .insert({
+              user_id: signUpData.user.id,
+              email: signUpData.user.email,
+              admin_role: null,
+              user_type: 'particulier',
+              full_name: 'Test User',
+              verification_status: 'approved',
+              is_verified: true
+            })
+            .select();
+          
+          if (manualError) {
+            console.error('Manual profile creation failed:', manualError.message);
+          } else {
+            console.log('✅ Manual profile creation successful:', manualProfile);
+          }
+        }
+      }
     }
-
-    console.log('Updated profile:', profile)
+    
+    // 3. Final check
+    console.log('\n3. Final profiles check...');
+    const { data: finalProfiles } = await supabase
+      .from('profiles')
+      .select('email, user_type, admin_role, created_at');
+    
+    console.log('All profiles:', finalProfiles);
     
   } catch (error) {
-    console.error('Script error:', error)
+    console.error('Error in fixNewUserProfile:', error);
   }
 }
 
-fixProfile()
+fixNewUserProfile();

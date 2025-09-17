@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug Devis Generation</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <h1>Debug Devis Generation</h1>
+    <button onclick="testDevisGeneration()">Test PDF Generation</button>
+    <div id="result"></div>
+
+    <script>
+        function testDevisGeneration() {
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Simple test
+                doc.setFontSize(18);
+                doc.text('Test PDF Generation', 20, 20);
+                doc.text('This is a test document', 20, 40);
+                
+                // Try to generate PDF
+                const pdfBytes = doc.output('arraybuffer');
+                console.log('PDF generated successfully, size:', pdfBytes.byteLength);
+                
+                // Create blob and download link
+                const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                const url = URL.createObjectURL(blob);
+                
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'test-devis.pdf';
+                link.click();
+                
+                document.getElementById('result').innerHTML = 'PDF generated successfully!';
+                
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('result').innerHTML = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -677,47 +677,41 @@ const ReservationFlow = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/8 via-primary/4 to-primary/12 p-4 relative overflow-hidden">
-      <div className="min-h-screen flex items-center justify-center">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-br from-primary/8 to-transparent rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+      {/* Step Indicator */}
+      <div className="w-full max-w-4xl mx-auto mb-8 relative z-20">
+        <div className="flex items-center justify-center space-x-4 bg-white/80 backdrop-blur-sm rounded-lg p-4 shadow-sm">
+          {[
+            { num: 1, label: 'Profil', active: step >= 1 },
+            { num: 2, label: 'Séance', active: step >= 2 },
+            { num: 3, label: 'Informations', active: step >= 3 },
+            { num: 4, label: 'Confirmation', active: step >= 4 },
+            ...(userType === 'scolaire-privee' ? [{ num: 5, label: 'Devis', active: step >= 5 }] : [])
+          ].map((stepItem, index, array) => (
+            <div key={stepItem.num} className="flex items-center">
+              <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${
+                stepItem.active 
+                  ? 'bg-primary text-primary-foreground' 
+                  : 'bg-gray-200 text-gray-500'
+              }`}>
+                {stepItem.num}
+              </div>
+              <span className={`ml-2 text-sm font-medium ${
+                stepItem.active ? 'text-primary' : 'text-gray-500'
+              }`}>
+                {stepItem.label}
+              </span>
+              {index < array.length - 1 && (
+                <div className={`w-8 h-0.5 mx-4 ${
+                  step > stepItem.num ? 'bg-primary' : 'bg-gray-200'
+                }`} />
+              )}
+            </div>
+          ))}
+        </div>
       </div>
-      
-      <div className="w-full max-w-2xl relative z-10">
-        <Card className="backdrop-blur-xl bg-primary/8 border-primary/30 shadow-2xl">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-transparent to-primary/12 rounded-xl pointer-events-none" />
-          
-          <CardHeader className="text-center relative pb-8 pt-12">
-            <div className="mb-6">
-              <img 
-                src="/lovable-uploads/b82bf764-c505-4dd6-960c-99a6acf57b3e.png" 
-                alt="L'École du Jeune Spectateur" 
-                className="h-16 w-auto mx-auto drop-shadow-lg"
-              />
-            </div>
-            <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary via-primary to-primary-glow bg-clip-text text-transparent">
-              Réservation - {spectacle.title}
-            </CardTitle>
-            <CardDescription className="text-lg text-muted-foreground mt-3">
-              {spectacle.description}
-            </CardDescription>
-            <div className="w-16 h-1 bg-gradient-to-r from-primary to-primary-glow mx-auto rounded-full mt-4" />
-            
-            {/* Progress indicator */}
-            <div className="flex justify-center mt-6 space-x-2">
-              {[2, 3, 4].map((stepNum) => (
-                <div
-                  key={stepNum}
-                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                    step >= stepNum ? 'bg-primary' : 'bg-primary/20'
-                  }`}
-                />
-              ))}
-            </div>
-          </CardHeader>
-          
-          <CardContent className="relative px-8 pb-8">
+
+      <div className="min-h-screen">
+        <div className="w-full max-w-2xl mx-auto relative z-10">
 
 
             {/* Step 2: Session Selection */}
@@ -1151,24 +1145,21 @@ const ReservationFlow = () => {
                           return;
                         }
 
-                        // Get the mapped session UUID from the database using raw SQL
+                        // Get the mapped session UUID from the database
                         console.log('Looking up session mapping for:', selectedSession);
-                        const { data: sessionMappingResult, error: mappingError } = await supabase
-                          .from('sessions')
-                          .select(`
-                            id,
-                            session_id_mapping!inner(frontend_id)
-                          `)
-                          .eq('session_id_mapping.frontend_id', selectedSession)
+                        const { data: mappingResult, error: mappingError } = await supabase
+                          .from('session_id_mapping' as any)
+                          .select('database_uuid')
+                          .eq('frontend_id', selectedSession)
                           .single();
 
-                        if (mappingError || !sessionMappingResult) {
+                        if (mappingError || !mappingResult) {
                           console.error('Session mapping error:', mappingError);
                           toast.error('Session non trouvée dans la base de données');
                           return;
                         }
 
-                        const sessionUUID = sessionMappingResult.id;
+                        const sessionUUID = (mappingResult as any).database_uuid;
                         console.log('Found session UUID:', sessionUUID);
 
                         const bookingData = {
@@ -1251,8 +1242,8 @@ const ReservationFlow = () => {
                         
                         toast.success('Devis généré avec succès!');
                         
-                        // Proceed to payment step
-                        setStep(4);
+                        // Go to devis review step instead of payment
+                        setStep(6);
                         
                       } catch (error) {
                         console.error('Error generating devis:', error);
@@ -1524,10 +1515,159 @@ const ReservationFlow = () => {
                 </div>
               </div>
             )}
-          </CardContent>
-        </Card>
-      </div>
-      
+
+      {/* Step 6: Devis Review - Full Screen Layout */}
+      {step === 6 && (
+        <div className="fixed inset-0 bg-gradient-to-br from-green-50 to-blue-50 z-50 overflow-y-auto">
+          <div className="max-w-7xl mx-auto min-h-screen flex flex-col py-8">
+            <div className="grid lg:grid-cols-2 gap-6 flex-1">
+              {/* Left Column - PDF Preview */}
+              <div className="lg:col-span-1">
+                <div className="bg-white rounded-2xl shadow-xl overflow-hidden h-full">
+                  <div className="bg-gradient-to-r from-[#BDCF00] to-[#A8B800] px-6 py-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-4">
+                        <img 
+                          src="/lovable-uploads/b82bf764-c505-4dd6-960c-99a6acf57b3e.png" 
+                          alt="L'École du Jeune Spectateur" 
+                          className="h-10 w-auto"
+                        />
+                        <h2 className="text-xl font-semibold text-white">Aperçu du devis</h2>
+                      </div>
+                      <Button
+                        onClick={() => {
+                          if (devisUrl) {
+                            const link = document.createElement('a');
+                            link.href = devisUrl;
+                            link.download = `devis-${currentBookingId?.slice(0, 8)}.pdf`;
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                          }
+                        }}
+                        variant="outline"
+                        size="sm"
+                        className="bg-white/10 border-white/20 text-white hover:bg-white/20"
+                      >
+                        <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Télécharger PDF
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  {devisUrl && (
+                    <div className="p-4 h-full">
+                      <div className="border-2 border-gray-200 rounded-xl overflow-hidden bg-gray-50 h-full">
+                        <iframe
+                          src={devisUrl}
+                          className="w-full h-full"
+                          title="Aperçu du devis"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Right Column - Summary & Actions */}
+              <div className="space-y-6 flex flex-col">
+                {/* Reservation Summary */}
+                <div className="bg-white rounded-2xl shadow-xl overflow-hidden flex-1">
+                  <div className="bg-gradient-to-r from-[#BDCF00] to-[#A8B800] px-6 py-4">
+                    <h3 className="text-xl font-semibold text-white">Résumé de la réservation</h3>
+                  </div>
+                  <div className="p-6 space-y-6">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                        <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2h4a1 1 0 110 2h-1v12a2 2 0 01-2 2H6a2 2 0 01-2-2V6H3a1 1 0 110-2h4z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Spectacle</p>
+                        <p className="font-semibold text-gray-900 text-lg">{spectacle.title}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                        <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3a4 4 0 118 0v4m-4 6v6m-4-6h8" />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Date & Heure</p>
+                        <p className="font-semibold text-gray-900">{getAvailableSessions()?.find(s => s.id === selectedSession)?.date}</p>
+                        <p className="text-sm text-gray-600">{getAvailableSessions()?.find(s => s.id === selectedSession)?.time}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center space-x-4">
+                      <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                        <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Participants</p>
+                        <p className="font-semibold text-gray-900">{formData.childrenCount || 0} élèves</p>
+                        {(formData.accompaniersCount || 0) > 0 && (
+                          <p className="text-sm text-gray-600">{formData.accompaniersCount} accompagnateurs</p>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="border-t pt-6">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xl font-semibold text-gray-900">Total</span>
+                        <span className="text-3xl font-bold text-green-600">
+                          {((formData.childrenCount || 0) + (formData.accompaniersCount || 0)) * 100} DH
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="bg-white rounded-2xl shadow-xl p-6 space-y-4">
+                  <Button
+                    onClick={() => setStep(4)}
+                    variant="glow"
+                    size="xl"
+                    className="w-full bg-gradient-to-r from-[#BDCF00] to-[#A8B800] hover:from-[#A8B800] hover:to-[#9AA600] text-white font-semibold py-5 text-xl shadow-lg"
+                  >
+                    <svg className="w-6 h-6 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    Approuver et payer
+                  </Button>
+                  
+                  <Button 
+                    onClick={() => setStep(5)}
+                    variant="outline"
+                    size="xl"
+                    className="w-full border-2 border-blue-300 text-blue-700 hover:bg-blue-50 py-4 text-lg"
+                  >
+                    <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 17l-5-5m0 0l5-5m-5 5h12" />
+                    </svg>
+                    Modifier la réservation
+                  </Button>
+                  
+                  <div className="pt-2">
+                    <p className="text-xs text-gray-500 text-center">
+                      En approuvant, vous acceptez nos conditions générales de vente
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Reservation Confirmation Dialog */}
       {showConfirmationDialog && confirmationData && (
         <ReservationConfirmationDialog
@@ -1539,7 +1679,8 @@ const ReservationFlow = () => {
           reservationData={confirmationData}
         />
       )}
-    </div>
+        </div>
+      </div>
     </div>
   );
 };

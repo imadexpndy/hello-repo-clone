@@ -68,8 +68,8 @@ export default function Profile() {
     if (profile?.user_type) {
       const userTypeNames = {
         particulier: 'Client Particulier',
-        teacher_private: 'École Privée',
-        teacher_public: 'École Publique',
+        'scolaire-privee': 'École Privée',
+        'scolaire-publique': 'École Publique',
         association: 'Association'
       };
       return userTypeNames[profile.user_type as keyof typeof userTypeNames] || profile.user_type;

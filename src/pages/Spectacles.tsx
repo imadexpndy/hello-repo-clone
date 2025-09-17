@@ -112,6 +112,7 @@ export default function Spectacles() {
     if (detectedUserType === 'particulier' || detectedUserType === 'individual') {
       if (arabicCard) {
         arabicCard.style.display = 'none';
+        console.log('✅ Hidden Arabic Le Petit Prince for particulier user');
       }
     } else {
       if (arabicCard) {
@@ -151,7 +152,7 @@ export default function Spectacles() {
         console.log('✅ Hidden Arabic Le Petit Prince for private school');
       }
     } else if (detectedUserType === 'particulier') {
-      // Show BOTH French and Arabic versions for individual users
+      // Show ONLY French version for individual users, hide Arabic
       if (frenchCard) {
         frenchCard.style.setProperty('display', 'block', 'important');
         frenchCard.style.visibility = 'visible';
@@ -160,10 +161,8 @@ export default function Spectacles() {
       }
       
       if (arabicCard) {
-        arabicCard.style.setProperty('display', 'block', 'important');
-        arabicCard.style.visibility = 'visible';
-        arabicCard.style.opacity = '1';
-        console.log('✅ Shown Arabic Le Petit Prince for individual user');
+        arabicCard.style.setProperty('display', 'none', 'important');
+        console.log('✅ Hidden Arabic Le Petit Prince for individual user');
       }
     }
     console.log('=== END DEBUG ===');

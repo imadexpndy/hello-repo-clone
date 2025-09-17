@@ -44,6 +44,26 @@ export function AppSidebar() {
   const location = useLocation();
   const isCollapsed = state === "collapsed";
 
+  // Check if user has specific admin permission
+  const hasPermission = (permission: string) => {
+    if (!profile || !isAdmin) return false;
+    
+    // Super admin has all permissions
+    if (profile.role === 'super_admin') return true;
+    
+    // For now, use role-based permissions until admin_user_permissions table is populated
+    const rolePermissions: Record<string, string[]> = {
+      'admin_spectacles': ['spectacles_read', 'spectacles_write'],
+      'admin_bookings': ['bookings_read', 'bookings_write'],
+      'admin_users': ['users_read', 'users_write'],
+      'admin_full': ['spectacles_read', 'spectacles_write', 'bookings_read', 'bookings_write', 'users_read', 'users_write', 'reports_read'],
+      'super_admin': ['super_admin']
+    };
+    
+    const userPermissions = rolePermissions[profile.role] || [];
+    return userPermissions.includes(permission) || userPermissions.includes('super_admin');
+  };
+
   const isActive = (path: string) => location.pathname === path;
 
   // Navigation items based on user type
@@ -89,21 +109,43 @@ export function AppSidebar() {
     }
 
     // Fallback to admin_role for admin users and others
-    switch (role) {
-      case 'admin_full':
-      case 'super_admin':
-        return [
-          ...commonItems,
-          { title: "Spectacles", url: "/admin/spectacles", icon: () => <img src="/src/assets/Asset 11@4x.png" alt="Spectacles" className="h-4 w-4" /> },
-          { title: "Sessions", url: "/admin/sessions", icon: Calendar },
+    if (role && (role.startsWith('admin_') || role === 'super_admin')) {
+      const adminItems = [...commonItems];
+      
+      // Add admin navigation items based on permissions
+      if (hasPermission('spectacles_read')) {
+        adminItems.push(
+          { title: "Spectacles", url: "/admin/spectacles", icon: LayoutDashboard },
+          { title: "Sessions", url: "/admin/sessions", icon: Calendar }
+        );
+      }
+      
+      if (hasPermission('bookings_read')) {
+        adminItems.push(
           { title: "Réservations", url: "/admin/bookings", icon: ClipboardList },
-          { title: "Demandes d'Inscription", url: "/admin/registrations", icon: UserCheck },
+          { title: "Demandes d'Inscription", url: "/admin/registrations", icon: UserCheck }
+        );
+      }
+      
+      if (hasPermission('users_read')) {
+        adminItems.push(
           { title: "Utilisateurs", url: "/admin/users", icon: Users },
-          { title: "Organisations", url: "/admin/organizations", icon: Building2 },
+          { title: "Organisations", url: "/admin/organizations", icon: Building2 }
+        );
+      }
+      
+      if (hasPermission('super_admin')) {
+        adminItems.push(
           { title: "Communications", url: "/admin/communications", icon: Mail },
           { title: "Audit", url: "/admin/audit", icon: Shield },
-          { title: "Statistiques", url: "/admin/analytics", icon: BarChart3 },
-        ];
+          { title: "Statistiques", url: "/admin/analytics", icon: BarChart3 }
+        );
+      }
+      
+      return adminItems;
+    }
+
+    switch (role) {
 
       case 'teacher_private':
       case 'teacher_public':

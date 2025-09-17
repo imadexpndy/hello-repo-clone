@@ -16,7 +16,7 @@ interface Profile {
   phone: string | null;
   whatsapp: string | null;
   role: 'admin_spectacles' | 'admin_schools' | 'admin_partners' | 'admin_support' | 'admin_notifications' | 'admin_editor' | 'admin_full' | 'super_admin' | 'teacher_private' | 'teacher_public' | 'association' | 'partner' | 'b2c_user';
-  user_type: 'particulier' | 'teacher_private' | 'teacher_public' | 'association' | null;
+  user_type: 'particulier' | 'scolaire-privee' | 'scolaire-publique' | 'association' | null;
   professional_type: 'scolaire-privee' | 'scolaire-publique' | 'association' | null;
   organization_id: string | null;
   is_verified: boolean;
